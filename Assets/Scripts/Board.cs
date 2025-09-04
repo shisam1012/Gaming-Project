@@ -6,6 +6,8 @@ public class Board : MonoBehaviour
     public int height;
     public GameObject cellPrefab;
     private BackGroundTile [,] allTiles;
+    public GameObject[] stonePrefabs;
+
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -22,18 +24,29 @@ public class Board : MonoBehaviour
 
     private void SetUp()
     {
-        for(int i = 0; i < width; i++)
+        for (int i = 0; i < width; i++)
         {
             for (int j = 0; j < height; j++)
             {
-                Vector2 tempPosition = new Vector2 (i, j);
-                GameObject backgroundTile = Instantiate(cellPrefab, tempPosition, Quaternion.identity) as GameObject;
-                backgroundTile.transform.parent = this.transform;
-                backgroundTile.name = "( " + i + "_" + j + " )";
+                Vector2 tempPosition = new Vector2(i, j);
+                GameObject cell = Instantiate(cellPrefab, tempPosition, Quaternion.identity);
+                cell.transform.parent = this.transform;
+                cell.name = "( " + i + "_" + j + " )";
+
+                BackGroundTile bgTile = cell.GetComponent<BackGroundTile>();
+                Stone stoneTile = cell.GetComponent<Stone>();
+
+                if (bgTile != null)
+                {
+                    bgTile.SetTileSprite(0); 
+                    allTiles[i, j] = bgTile;
+                }
+
+                if (stoneTile != null)
+                    stoneTile.Initialize(stonePrefabs);
             }
-
         }
-
     }
+
 
 }

@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 7181372325008217437}
   - component: {fileID: 8241841059845080060}
   - component: {fileID: 2373946690555587331}
+  - component: {fileID: 1316336266138765702}
   m_Layer: 0
   m_Name: Cell
   m_TagString: Untagged
@@ -100,8 +101,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e67808d5647300458c8a28ed587cdf3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  stones:
-  - {fileID: 8811056620333135080, guid: fc3a378ebfe72e040af03da4aad943f9, type: 3}
-  - {fileID: 2111010181200912205, guid: 3c6cd59163f186845853788b64e959ac, type: 3}
-  - {fileID: 1811444150169121927, guid: 102c4ad3db10eb447ace2d30f4576f9d, type: 3}
-  - {fileID: 4940041137682231859, guid: e1cc66d37f535f14c97d9e165a41c0ec, type: 3}
+  tileRenderer: {fileID: 8241841059845080060}
+  tileSprites:
+  - {fileID: 21300000, guid: 857b05722a6ff534398a7e37451cd9f6, type: 3}
+--- !u!114 &1316336266138765702
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5507944404235456927}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d3e9a9bc7dd2694ab8955d228bc3562, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
