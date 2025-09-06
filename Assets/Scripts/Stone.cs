@@ -10,24 +10,13 @@ public class Stone : MonoBehaviour
 
     private bool isDragging = false;
     private List<Vector2Int> draggedStones = new List<Vector2Int>();
-    private List<Stone> draggedStoneObjects = new List<Stone>();  //can be public for future uses
+    private List<Stone> draggedStoneObjects = new List<Stone>();
 
     [HideInInspector]
     public Color originalColor;
     private SpriteRenderer spriteRenderer;
 
-    [System.Obsolete] 
-    private void Start()
-    {
-        board = FindObjectOfType<Board>();
-        column = Mathf.RoundToInt(transform.position.x);
-        row = Mathf.RoundToInt(transform.position.y);
-    }
-    public void Initialize(GameObject[] stonePrefabs)
-    {
-        if (stonePrefabs.Length == 0) return;   // this should not happen
-
-    }
+    private const int MinToDragOver = 3;
 
     private void Awake()
     {
@@ -35,16 +24,19 @@ public class Stone : MonoBehaviour
         originalColor = spriteRenderer.color;
     }
 
+    private void Start()
+    {
+        board = FindObjectOfType<Board>();
+        column = Mathf.RoundToInt(transform.position.x);
+        row = Mathf.RoundToInt(transform.position.y);
+    }
+
     private void OnMouseDown()
     {
         isDragging = true;
-
-        foreach (var s in draggedStoneObjects)
-            s.ResetHighlight();
-
+        ResetDraggedHighlights();
         draggedStones.Clear();
         draggedStoneObjects.Clear();
-
         AddStoneToPath(column, row);
     }
 
@@ -61,7 +53,7 @@ public class Stone : MonoBehaviour
 
         Vector2Int newPos = new Vector2Int(x, y);
 
-        //"backtrack" the drag to the previous stone
+        // backtrack
         if (draggedStones.Count > 1 && newPos == draggedStones[draggedStones.Count - 2])
         {
             Stone lastStone = draggedStoneObjects[draggedStoneObjects.Count - 1];
@@ -71,27 +63,19 @@ public class Stone : MonoBehaviour
             return;
         }
 
-        if (draggedStones.Contains(newPos))
-            return;
+        if (draggedStones.Contains(newPos)) return;
 
-        
         if (draggedStones.Count > 0)
         {
             Vector2Int lastPos = draggedStones[draggedStones.Count - 1];
             int dx = Mathf.Abs(lastPos.x - x);
             int dy = Mathf.Abs(lastPos.y - y);
 
-            //only allow dragging to immediate neighbor stones (including diagonals)
-
-            if (dx > 1 || dy > 1)
-                return;
-
-            //prevent dragging over stones of a different color to enforce matching rules
+            if (dx > 1 || dy > 1) return;
 
             Stone lastStone = board.allStones[lastPos.x, lastPos.y].GetComponent<Stone>();
             Stone currentStone = board.allStones[x, y].GetComponent<Stone>();
-            if (lastStone.originalColor != currentStone.originalColor)
-                return;
+            if (lastStone.originalColor != currentStone.originalColor) return;
         }
 
         AddStoneToPath(x, y);
@@ -101,20 +85,21 @@ public class Stone : MonoBehaviour
     {
         isDragging = false;
 
-        Debug.Log("Path:");
-        foreach (var pos in draggedStones)
+        Debug.Log("Path length: " + draggedStones.Count);
+        if (draggedStones.Count >= MinToDragOver)
         {
-            Debug.Log($"({pos.x}, {pos.y})");
+            Debug.Log("calling remove stones.....");
+            board.RemoveStones(draggedStones);
         }
 
-        foreach (var stone in draggedStoneObjects)
-            stone.ResetHighlight();
+        ResetDraggedHighlights();
+        draggedStones.Clear();
+        draggedStoneObjects.Clear();
     }
 
     private void AddStoneToPath(int x, int y)
     {
         draggedStones.Add(new Vector2Int(x, y));
-
         Stone stone = board.allStones[x, y].GetComponent<Stone>();
         if (stone != null)
         {
@@ -123,9 +108,15 @@ public class Stone : MonoBehaviour
         }
     }
 
+    private void ResetDraggedHighlights()
+    {
+        foreach (var s in draggedStoneObjects)
+            s.ResetHighlight();
+    }
+
     public void Highlight()
     {
-        spriteRenderer.color = originalColor * 1.5f; // slightly brighter to indicate highlight
+        spriteRenderer.color = originalColor * 1.5f;
     }
 
     public void ResetHighlight()
