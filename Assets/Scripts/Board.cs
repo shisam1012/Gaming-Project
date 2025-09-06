@@ -46,7 +46,7 @@ public class Board : MonoBehaviour
                 int stoneToUse = Random.Range(0, stonePrefabs.Length);
                 GameObject stone = Instantiate(stonePrefabs[stoneToUse], tempPosition, Quaternion.identity);
                 stone.transform.parent = this.transform;
-                stone.name = this.gameObject.name + "_stone";
+                stone.name = "( " + i + "_" + j + " )" + "_stone";
                 allStones[i,j] = stone;
             }
         }
