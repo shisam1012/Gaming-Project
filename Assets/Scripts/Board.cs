@@ -6,6 +6,7 @@ public class Board : MonoBehaviour
     public int height;
     public GameObject cellPrefab;
     private BackGroundTile [,] allTiles;
+    public GameObject[,] allStones; 
     public GameObject[] stonePrefabs;
 
 
@@ -13,14 +14,11 @@ public class Board : MonoBehaviour
     void Start()
     {
         allTiles = new BackGroundTile[width,height];
+        allStones = new GameObject[width,height];
         SetUp();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+   
 
     private void SetUp()
     {
@@ -44,6 +42,12 @@ public class Board : MonoBehaviour
 
                 if (stoneTile != null)
                     stoneTile.Initialize(stonePrefabs);
+
+                int stoneToUse = Random.Range(0, stonePrefabs.Length);
+                GameObject stone = Instantiate(stonePrefabs[stoneToUse], tempPosition, Quaternion.identity);
+                stone.transform.parent = this.transform;
+                stone.name = this.gameObject.name + "_stone";
+                allStones[i,j] = stone;
             }
         }
     }

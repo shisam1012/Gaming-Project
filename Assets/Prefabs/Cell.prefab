@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 7181372325008217437}
   - component: {fileID: 8241841059845080060}
   - component: {fileID: 2373946690555587331}
-  - component: {fileID: 1316336266138765702}
   m_Layer: 0
   m_Name: Cell
   m_TagString: Untagged
@@ -104,15 +103,3 @@ MonoBehaviour:
   tileRenderer: {fileID: 8241841059845080060}
   tileSprites:
   - {fileID: 21300000, guid: 857b05722a6ff534398a7e37451cd9f6, type: 3}
---- !u!114 &1316336266138765702
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5507944404235456927}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2d3e9a9bc7dd2694ab8955d228bc3562, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
