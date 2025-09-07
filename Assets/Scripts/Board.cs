@@ -61,7 +61,7 @@ public class Board : MonoBehaviour
             if (stoneObj != null)
             {
                 Debug.Log("Removing stone at: " + pos.x + "," + pos.y);
-                Destroy(stoneObj);
+                Destroy(stoneObj.gameObject);
                 allStones[pos.x, pos.y] = null;
             }
         }
