@@ -26,9 +26,13 @@ public class Stone : MonoBehaviour
 
     private void Start()
     {
-        board = FindObjectOfType<Board>();
         column = Mathf.RoundToInt(transform.position.x);
         row = Mathf.RoundToInt(transform.position.y);
+    }
+
+    public void Init(Board board)
+    {
+        this.board = board;
     }
 
     private void OnMouseDown()
@@ -48,7 +52,7 @@ public class Stone : MonoBehaviour
         int x = Mathf.RoundToInt(worldPos.x);
         int y = Mathf.RoundToInt(worldPos.y);
 
-        if (x < 0 || x >= board.width || y < 0 || y >= board.height)
+        if (x < 0 || x >= board.Width || y < 0 || y >= board.Height)
             return;
 
         Vector2Int newPos = new Vector2Int(x, y);
@@ -73,8 +77,8 @@ public class Stone : MonoBehaviour
 
             if (dx > 1 || dy > 1) return;
 
-            Stone lastStone = board.allStones[lastPos.x, lastPos.y].GetComponent<Stone>();
-            Stone currentStone = board.allStones[x, y].GetComponent<Stone>();
+            Stone lastStone = board.allStones[lastPos.x, lastPos.y];
+            Stone currentStone = board.allStones[x, y];
             if (lastStone.originalColor != currentStone.originalColor) return;
         }
 
