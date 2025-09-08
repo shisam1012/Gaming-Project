@@ -1,20 +1,24 @@
+using NUnit.Framework.Constraints;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Board : MonoBehaviour
 {
-    public int width;
-    public int height;
+    [SerializeField] private int width;
+    [SerializeField] private int height;
     public GameObject cellPrefab;      // רק הרקע
-    public GameObject[] stonePrefabs;  // האבנים עצמן
+    [SerializeField] private Stone[] stonePrefabsRef;  // האבנים עצמן
 
-    public GameObject[,] allStones;
+    public Stone[,] allStones;
     private BackGroundTile[,] allTiles;
+
+    public int Width => width;
+    public int Height => height;
 
     void Start()
     {
         allTiles = new BackGroundTile[width, height];
-        allStones = new GameObject[width, height];
+        allStones = new Stone[width, height];
         SetUp();
     }
 
@@ -39,9 +43,10 @@ public class Board : MonoBehaviour
                 }
 
                 
-                int stoneToUse = Random.Range(0, stonePrefabs.Length);
-                GameObject stone = Instantiate(stonePrefabs[stoneToUse], tempPosition, Quaternion.identity);
-                stone.transform.parent = this.transform;
+                int stoneToUse = Random.Range(0, stonePrefabsRef.Length);
+                Stone stone = Instantiate(stonePrefabsRef[stoneToUse], tempPosition, Quaternion.identity);
+                stone.Init(this);
+                stone.transform.parent = transform;
                 stone.name = "( " + i + "_" + j + " )_stone";
                 allStones[i, j] = stone;
             }
@@ -52,11 +57,11 @@ public class Board : MonoBehaviour
     {
         foreach (var pos in stonePositions)
         {
-            GameObject stoneObj = allStones[pos.x, pos.y];
+            Stone stoneObj = allStones[pos.x, pos.y];
             if (stoneObj != null)
             {
                 Debug.Log("Removing stone at: " + pos.x + "," + pos.y);
-                Destroy(stoneObj);
+                Destroy(stoneObj.gameObject);
                 allStones[pos.x, pos.y] = null;
             }
         }

@@ -964,11 +964,11 @@ MonoBehaviour:
   width: 7
   height: 10
   cellPrefab: {fileID: 5507944404235456927, guid: 01153e6387cd3c240b6a41bbb4b7be38, type: 3}
-  stonePrefabs:
-  - {fileID: 8811056620333135080, guid: fc3a378ebfe72e040af03da4aad943f9, type: 3}
-  - {fileID: 2111010181200912205, guid: 3c6cd59163f186845853788b64e959ac, type: 3}
-  - {fileID: 1811444150169121927, guid: 102c4ad3db10eb447ace2d30f4576f9d, type: 3}
-  - {fileID: 4940041137682231859, guid: e1cc66d37f535f14c97d9e165a41c0ec, type: 3}
+  stonePrefabsRef:
+  - {fileID: -2949798157984707379, guid: fc3a378ebfe72e040af03da4aad943f9, type: 3}
+  - {fileID: 6099646008171434998, guid: 3c6cd59163f186845853788b64e959ac, type: 3}
+  - {fileID: 3491868228263366608, guid: 102c4ad3db10eb447ace2d30f4576f9d, type: 3}
+  - {fileID: -658407287396442835, guid: e1cc66d37f535f14c97d9e165a41c0ec, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
