@@ -1,0 +1,7 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:VisualElement name="container" class="menu text-auto-size" style="flex-grow: 1; justify-content: space-evenly; height: auto;">
+        <ui:Button text="Start" name="btnStart" class="text-auto-size unity-button" style="margin-top: 2px;" />
+        <ui:Button text="Settings" name="btnSettings" class="button text-auto-size unity-button" />
+        <ui:Button text="Exit" selectable="true" name="btnExit" class="button text-auto-size unity-button" />
+    </ui:VisualElement>
+</ui:UXML>
