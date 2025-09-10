@@ -3,29 +3,27 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.UI;                // for StandaloneInputModule
+using UnityEngine.UI;
 #if ENABLE_INPUT_SYSTEM
-using UnityEngine.InputSystem.UI;   // for InputSystemUIInputModule (new input system)
+using UnityEngine.InputSystem.UI;
 #endif
 
-[DefaultExecutionOrder(-100)] // run early to set up scene input
+[DefaultExecutionOrder(-100)]
 public class Board : MonoBehaviour
 {
-    // --- Inspector (configure in Unity) ---
+
     [SerializeField] private int width = 8;
     [SerializeField] private int height = 8;
-    [SerializeField] private GameObject cellPrefab;       // Background cell (has BackGroundTile)
-    [SerializeField] private Stone[] stonePrefabsRef;     // Stone prefabs to spawn
+    [SerializeField] private GameObject cellPrefab; 
+    [SerializeField] private Stone[] stonePrefabsRef;
 
-    // --- Runtime grids ---
     [SerializeField] private Stone[,] allStones;
     private BackGroundTile[,] allTiles;
 
-    // --- Public read-only for other scripts ---
     public int Width  => width;
     public int Height => height;
 
-    // --- Busy flag to lock input while board settles ---
+
     private bool isBusy = false;
     public bool IsBusy => isBusy;
 
@@ -41,7 +39,7 @@ public class Board : MonoBehaviour
         SetUp();
     }
 
-    // Build the board: background tiles + random stones
+
     private void SetUp()
     {
         for (int x = 0; x < width; x++)
@@ -50,17 +48,16 @@ public class Board : MonoBehaviour
             {
                 var pos = new Vector2(x, y);
 
-                // Background cell
                 var cell = Instantiate(cellPrefab, pos, Quaternion.identity, transform);
                 cell.name = $"( {x}_{y} )";
                 var bgTile = cell.GetComponent<BackGroundTile>();
                 if (bgTile != null)
                 {
-                    bgTile.SetTileSprite(0);   // e.g., sand
+                    bgTile.SetTileSprite(0);
                     allTiles[x, y] = bgTile;
                 }
 
-                // Stone
+        
                 int idx = Random.Range(0, stonePrefabsRef.Length);
                 var stone = Instantiate(stonePrefabsRef[idx], pos, Quaternion.identity, transform);
                 stone.Init(this);
@@ -72,7 +69,7 @@ public class Board : MonoBehaviour
         }
     }
 
-    // ===== Grid helpers (safe API) =====
+
     public bool InBounds(int x, int y) => x >= 0 && x < width && y >= 0 && y < height;
 
     public Stone GetStone(int x, int y)
@@ -87,18 +84,15 @@ public class Board : MonoBehaviour
         allStones[x, y] = s;
     }
 
-    // ===== Called by Stone.cs after a valid drag =====
     public void RemoveStones(List<Vector2Int> stonePositions)
     {
-        if (isBusy) return; // block re-entry while settling
+        if (isBusy) return;
         StartCoroutine(RemoveStonesRoutine(stonePositions));
     }
 
     private IEnumerator RemoveStonesRoutine(List<Vector2Int> stonePositions)
     {
         isBusy = true;
-
-        // 1) Destroy stones and clear grid
         foreach (var pos in stonePositions)
         {
             var s = GetStone(pos.x, pos.y);
@@ -108,28 +102,24 @@ public class Board : MonoBehaviour
             SetStone(pos.x, pos.y, null);
         }
 
-        // 2) (Optional) Flip background tiles under cleared stones (e.g., "wet")
         FlipBackgroundTiles(stonePositions);
 
-        // 3) Gravity (collapse)
         CollapseAllColumns();
-        yield return null; // let one frame pass (or wait for tweens if you add them)
+        yield return null;
 
-        // 4) Refill
         RefillBoard();
         yield return null;
 
-        // 5) (Optional) Cascades would run here
 
         isBusy = false;
     }
 
-    // Pack stones downward in each column
+
     private void CollapseAllColumns()
     {
         for (int x = 0; x < width; x++)
         {
-            int writeY = 0; // next lowest empty slot
+            int writeY = 0;
             for (int y = 0; y < height; y++)
             {
                 var s = GetStone(x, y);
@@ -149,7 +139,7 @@ public class Board : MonoBehaviour
         }
     }
 
-    // Fill empty cells with new random stones at their final grid positions
+
     private void RefillBoard()
     {
         for (int x = 0; x < width; x++)
@@ -170,7 +160,7 @@ public class Board : MonoBehaviour
         }
     }
 
-    // Optional: mark background tiles affected by the clear (for goals/visuals)
+
     private void FlipBackgroundTiles(IEnumerable<Vector2Int> cleared)
     {
         if (allTiles == null) return;
@@ -178,44 +168,42 @@ public class Board : MonoBehaviour
         {
             if (!InBounds(p.x, p.y)) continue;
             var tile = allTiles[p.x, p.y];
-            tile?.SetTileSprite(2); // pick your "wet" index
+            tile?.SetTileSprite(2);
         }
     }
 
-    // --- Scene input setup ---
+
     private void EnsureEventSystemAndRaycaster()
     {
-        // Ensure Physics2DRaycaster on Main Camera (for sprite clicks/touches)
         var cam = Camera.main;
         if (cam != null && cam.GetComponent<Physics2DRaycaster>() == null)
         {
             cam.gameObject.AddComponent<Physics2DRaycaster>();
         }
 
-        // Ensure EventSystem exists
         var es = FindObjectOfType<EventSystem>();
         if (es == null)
         {
             var go = new GameObject("EventSystem", typeof(EventSystem));
-#if ENABLE_INPUT_SYSTEM
-            go.AddComponent<InputSystemUIInputModule>();
-#else
-            go.AddComponent<StandaloneInputModule>();
-#endif
-        }
-        else
-        {
-#if ENABLE_INPUT_SYSTEM
-            if (es.GetComponent<InputSystemUIInputModule>() == null && es.GetComponent<StandaloneInputModule>() == null)
-            {
-                es.gameObject.AddComponent<InputSystemUIInputModule>();
-            }
-#else
-            if (es.GetComponent<StandaloneInputModule>() == null)
-            {
-                es.gameObject.AddComponent<StandaloneInputModule>();
-            }
-#endif
-        }
+        #if ENABLE_INPUT_SYSTEM
+                    go.AddComponent<InputSystemUIInputModule>();
+        #else
+                    go.AddComponent<StandaloneInputModule>();
+        #endif
+                }
+                else
+                {
+        #if ENABLE_INPUT_SYSTEM
+                    if (es.GetComponent<InputSystemUIInputModule>() == null && es.GetComponent<StandaloneInputModule>() == null)
+                    {
+                        es.gameObject.AddComponent<InputSystemUIInputModule>();
+                    }
+        #else
+                    if (es.GetComponent<StandaloneInputModule>() == null)
+                    {
+                        es.gameObject.AddComponent<StandaloneInputModule>();
+                    }
+        #endif
+                }
     }
 }

@@ -9,7 +9,13 @@ public class Stone : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointerU
 {
     private Board board;
 
-    public enum StoneType { Orange, Blue, Green, Pink }
+    public enum StoneType
+    {
+        Type1,
+        Type2,
+        Type3,
+        Type4
+    }
 
     [SerializeField] private StoneType type;
     public StoneType Type => type;
@@ -17,7 +23,6 @@ public class Stone : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointerU
     [HideInInspector] public int column;
     [HideInInspector] public int row;
 
-    // Lock a whole drag to the first stone's type
     private StoneType activeDragType;
     private bool hasActiveDragType = false;
 
@@ -33,7 +38,6 @@ public class Stone : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointerU
 
     private void Reset()
     {
-        // auto-size collider to sprite on add
         spriteRenderer = GetComponent<SpriteRenderer>();
         boxCollider = GetComponent<BoxCollider2D>();
         if (spriteRenderer && boxCollider)
@@ -60,11 +64,10 @@ public class Stone : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointerU
 
     private void Start()
     {
-        // Ensure we’re snapped to grid indices
         column = Mathf.RoundToInt(transform.position.x);
         row    = Mathf.RoundToInt(transform.position.y);
 
-        // Make sure z=0 so raycasts are clean with an ortho camera
+        // keep z=0 for raycasts
         var p = transform.position;
         if (Mathf.Abs(p.z) > 0.0001f)
             transform.position = new Vector3(p.x, p.y, 0f);
@@ -126,14 +129,16 @@ public class Stone : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointerU
         // Already in the path? ignore
         if (draggedStones.Contains(newPos)) return;
 
-        // 8-way adjacency (diagonals allowed). For 4-way only, require dx+dy==1.
+        // --- 4-WAY ONLY (no diagonals) ---
+        // Manhattan distance must be exactly 1
         if (draggedStones.Count > 0)
         {
             Vector2Int lastPos = draggedStones[draggedStones.Count - 1];
             int dx = Mathf.Abs(lastPos.x - x);
             int dy = Mathf.Abs(lastPos.y - y);
-            if (dx > 1 || dy > 1) return;
+            if (dx + dy != 1) return;  // <-- changed from (dx > 1 || dy > 1)
         }
+        // ----------------------------------
 
         // TYPE LOCK: only allow tiles of the starting type
         var currStone = board.GetStone(x, y);
@@ -169,7 +174,6 @@ public class Stone : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointerU
         var stone = board.GetStone(x, y);
         if (!stone) return; // ignore empty cells (during/after gravity)
 
-        // if it's the first tile, lock the type here too (extra safety)
         if (!hasActiveDragType)
         {
             activeDragType = stone.Type;
