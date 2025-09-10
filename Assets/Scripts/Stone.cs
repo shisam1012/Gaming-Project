@@ -1,7 +1,8 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
-public class Stone : MonoBehaviour
+public class Stone : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointerUpHandler
 {
     private Board board;
 
@@ -13,7 +14,7 @@ public class Stone : MonoBehaviour
     public int column;
     public int row;
 
-    // NEW: lock the whole drag to one type
+    // Lock a whole drag to the first stone's type
     private StoneType activeDragType;
     private bool hasActiveDragType = false;
 
@@ -38,20 +39,26 @@ public class Stone : MonoBehaviour
         row    = Mathf.RoundToInt(transform.position.y);
     }
 
-    public void Init(Board boardRef) { board = boardRef; }
+    public void Init(Board boardRef) => board = boardRef;
 
-    private void OnMouseDown()
+    // ----------------------------
+    // Touch / Pointer input hooks
+    // ----------------------------
+    public void OnPointerDown(PointerEventData eventData)
     {
         if (board == null || board.IsBusy) return;
 
         isDragging = true;
         hasActiveDragType = false;
+
         ResetDraggedHighlights();
         draggedStones.Clear();
         draggedStoneObjects.Clear();
 
-        // first tile sets the lock type
+        // Start from this stone
         AddStoneToPath(column, row);
+
+        // Lock drag to first stone type
         if (draggedStoneObjects.Count > 0)
         {
             activeDragType = draggedStoneObjects[0].Type;
@@ -59,14 +66,14 @@ public class Stone : MonoBehaviour
         }
     }
 
-    private void OnMouseDrag()
+    public void OnDrag(PointerEventData eventData)
     {
         if (!isDragging || board == null || board.IsBusy) return;
 
         var cam = Camera.main;
-        if (!cam) return;
+        if (cam == null) return;
 
-        Vector2 worldPos = cam.ScreenToWorldPoint(Input.mousePosition);
+        Vector2 worldPos = cam.ScreenToWorldPoint(eventData.position);
         int x = Mathf.RoundToInt(worldPos.x);
         int y = Mathf.RoundToInt(worldPos.y);
 
@@ -74,19 +81,22 @@ public class Stone : MonoBehaviour
 
         Vector2Int newPos = new Vector2Int(x, y);
 
-        // backtrack one step
+        // Backtrack one step
         if (draggedStones.Count > 1 && newPos == draggedStones[draggedStones.Count - 2])
         {
             var lastStoneObj = draggedStoneObjects[draggedStoneObjects.Count - 1];
             if (lastStoneObj) lastStoneObj.ResetHighlight();
+
             draggedStones.RemoveAt(draggedStones.Count - 1);
             draggedStoneObjects.RemoveAt(draggedStoneObjects.Count - 1);
             return;
         }
 
+        // Already in the path? ignore
         if (draggedStones.Contains(newPos)) return;
 
-        // adjacency (diagonals allowed). If you want 4-way only: if (dx + dy != 1) return;
+        // Adjacency (diagonals allowed, same as your original).
+        // If you want 4-way only, replace with: if (dx + dy != 1) return;
         if (draggedStones.Count > 0)
         {
             Vector2Int lastPos = draggedStones[draggedStones.Count - 1];
@@ -95,7 +105,7 @@ public class Stone : MonoBehaviour
             if (dx > 1 || dy > 1) return;
         }
 
-        // TYPE LOCK: compare against the starting stone's type
+        // TYPE LOCK: only allow tiles of the starting type
         var currStone = board.GetStone(x, y);
         if (currStone == null) return;
         if (hasActiveDragType && currStone.Type != activeDragType) return;
@@ -103,7 +113,7 @@ public class Stone : MonoBehaviour
         AddStoneToPath(x, y);
     }
 
-    private void OnMouseUp()
+    public void OnPointerUp(PointerEventData eventData)
     {
         if (!isDragging) return;
         isDragging = false;
@@ -119,14 +129,17 @@ public class Stone : MonoBehaviour
         hasActiveDragType = false;
     }
 
+    // ----------------------------
+    // Path helpers
+    // ----------------------------
     private void AddStoneToPath(int x, int y)
     {
         if (board == null) return;
 
         var stone = board.GetStone(x, y);
-        if (!stone) return;
+        if (!stone) return; // ignore empty cells (during/after gravity)
 
-        // if this is the first tile of the drag, lock the type here too (redundant safety)
+        // if it's the first tile, lock the type here too (extra safety)
         if (!hasActiveDragType)
         {
             activeDragType = stone.Type;
