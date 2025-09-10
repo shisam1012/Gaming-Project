@@ -1,7 +1,10 @@
+// FILE: Stone.cs
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
+[RequireComponent(typeof(SpriteRenderer))]
+[RequireComponent(typeof(BoxCollider2D))]  // make sure raycasts can hit this
 public class Stone : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointerUpHandler
 {
     private Board board;
@@ -11,8 +14,8 @@ public class Stone : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointerU
     [SerializeField] private StoneType type;
     public StoneType Type => type;
 
-    public int column;
-    public int row;
+    [HideInInspector] public int column;
+    [HideInInspector] public int row;
 
     // Lock a whole drag to the first stone's type
     private StoneType activeDragType;
@@ -24,19 +27,47 @@ public class Stone : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointerU
 
     [HideInInspector] public Color originalColor;
     private SpriteRenderer spriteRenderer;
+    private BoxCollider2D boxCollider;
 
     private const int MinToDragOver = 3;
+
+    private void Reset()
+    {
+        // auto-size collider to sprite on add
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        boxCollider = GetComponent<BoxCollider2D>();
+        if (spriteRenderer && boxCollider)
+        {
+            boxCollider.isTrigger = false;
+            boxCollider.size = spriteRenderer.bounds.size;
+            boxCollider.offset = Vector2.zero;
+        }
+    }
 
     private void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
+        boxCollider = GetComponent<BoxCollider2D>();
         if (spriteRenderer) originalColor = spriteRenderer.color;
+
+        // safety: if sprite changes at runtime, keep collider in sync once
+        if (spriteRenderer && boxCollider && boxCollider.size.sqrMagnitude < 0.0001f)
+        {
+            boxCollider.size = spriteRenderer.bounds.size;
+            boxCollider.offset = Vector2.zero;
+        }
     }
 
     private void Start()
     {
+        // Ensure we’re snapped to grid indices
         column = Mathf.RoundToInt(transform.position.x);
         row    = Mathf.RoundToInt(transform.position.y);
+
+        // Make sure z=0 so raycasts are clean with an ortho camera
+        var p = transform.position;
+        if (Mathf.Abs(p.z) > 0.0001f)
+            transform.position = new Vector3(p.x, p.y, 0f);
     }
 
     public void Init(Board boardRef) => board = boardRef;
@@ -95,8 +126,7 @@ public class Stone : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointerU
         // Already in the path? ignore
         if (draggedStones.Contains(newPos)) return;
 
-        // Adjacency (diagonals allowed, same as your original).
-        // If you want 4-way only, replace with: if (dx + dy != 1) return;
+        // 8-way adjacency (diagonals allowed). For 4-way only, require dx+dy==1.
         if (draggedStones.Count > 0)
         {
             Vector2Int lastPos = draggedStones[draggedStones.Count - 1];

@@ -1,7 +1,14 @@
+// FILE: Board.cs
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;                // for StandaloneInputModule
+#if ENABLE_INPUT_SYSTEM
+using UnityEngine.InputSystem.UI;   // for InputSystemUIInputModule (new input system)
+#endif
 
+[DefaultExecutionOrder(-100)] // run early to set up scene input
 public class Board : MonoBehaviour
 {
     // --- Inspector (configure in Unity) ---
@@ -11,7 +18,7 @@ public class Board : MonoBehaviour
     [SerializeField] private Stone[] stonePrefabsRef;     // Stone prefabs to spawn
 
     // --- Runtime grids ---
-    [SerializeField] private Stone[,] allStones;          // Keep private; use GetStone/SetStone
+    [SerializeField] private Stone[,] allStones;
     private BackGroundTile[,] allTiles;
 
     // --- Public read-only for other scripts ---
@@ -21,6 +28,11 @@ public class Board : MonoBehaviour
     // --- Busy flag to lock input while board settles ---
     private bool isBusy = false;
     public bool IsBusy => isBusy;
+
+    private void Awake()
+    {
+        EnsureEventSystemAndRaycaster();
+    }
 
     private void Start()
     {
@@ -125,11 +137,9 @@ public class Board : MonoBehaviour
 
                 if (y != writeY)
                 {
-                    // Move stone down in grid
                     SetStone(x, writeY, s);
                     SetStone(x, y, null);
 
-                    // Keep stone's indices + transform in sync
                     s.column = x;
                     s.row = writeY;
                     s.transform.position = new Vector2(x, writeY);
@@ -169,6 +179,43 @@ public class Board : MonoBehaviour
             if (!InBounds(p.x, p.y)) continue;
             var tile = allTiles[p.x, p.y];
             tile?.SetTileSprite(2); // pick your "wet" index
+        }
+    }
+
+    // --- Scene input setup ---
+    private void EnsureEventSystemAndRaycaster()
+    {
+        // Ensure Physics2DRaycaster on Main Camera (for sprite clicks/touches)
+        var cam = Camera.main;
+        if (cam != null && cam.GetComponent<Physics2DRaycaster>() == null)
+        {
+            cam.gameObject.AddComponent<Physics2DRaycaster>();
+        }
+
+        // Ensure EventSystem exists
+        var es = FindObjectOfType<EventSystem>();
+        if (es == null)
+        {
+            var go = new GameObject("EventSystem", typeof(EventSystem));
+#if ENABLE_INPUT_SYSTEM
+            go.AddComponent<InputSystemUIInputModule>();
+#else
+            go.AddComponent<StandaloneInputModule>();
+#endif
+        }
+        else
+        {
+#if ENABLE_INPUT_SYSTEM
+            if (es.GetComponent<InputSystemUIInputModule>() == null && es.GetComponent<StandaloneInputModule>() == null)
+            {
+                es.gameObject.AddComponent<InputSystemUIInputModule>();
+            }
+#else
+            if (es.GetComponent<StandaloneInputModule>() == null)
+            {
+                es.gameObject.AddComponent<StandaloneInputModule>();
+            }
+#endif
         }
     }
 }
