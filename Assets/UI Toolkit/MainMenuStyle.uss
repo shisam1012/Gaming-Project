@@ -1,0 +1,89 @@
+.header {
+    color: rgb(255, 250, 230);
+    -unity-text-outline-width: 3px;
+    -unity-text-outline-color: rgb(223, 164, 164);
+    width: 100%;
+    height: 10%;
+    align-self: center;
+    -unity-font-style: bold;
+    font-size: 50%;
+}
+
+.unity-button {
+    width: 100%;
+    height: 20%;
+    align-self: center;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+    border-bottom-right-radius: 15px;
+    border-bottom-left-radius: 15px;
+    margin-top: 50px;
+    background-image: url("project://database/Assets/Art/Textures/circle.png?fileID=2800000&guid=3a655c245d130b4429c1f10258098ce6&type=3#circle");
+    -unity-slice-left: 16;
+    -unity-slice-top: 16;
+    -unity-slice-right: 16;
+    -unity-slice-bottom: 16;
+    border-top-width: 0;
+    border-right-width: 0;
+    border-bottom-width: 0;
+    border-left-width: 0;
+    -unity-slice-scale: 2.9px;
+    background-color: rgb(161, 161, 161);
+    -unity-background-image-tint-color: rgb(243, 177, 255);
+    -unity-font-definition: url("project://database/Assets/Fonts/Pixuf.ttf?fileID=12800000&guid=d98362dccd0b78840a04ae67cbb9005b&type=3#Pixuf");
+    -unity-font-style: normal;
+    text-shadow: 1px 1px 0 rgb(186, 136, 218);
+    color: rgb(255, 255, 255);
+}
+
+.panel {
+    -unity-background-image-tint-color: rgba(56, 56, 56, 0.74);
+    background-color: rgba(138, 58, 156, 0.71);
+}
+
+.menu {
+    width: 70%;
+    height: 50%;
+    align-items: auto;
+    align-self: center;
+}
+
+.unity-text-element {
+    -unity-font-definition: url("project://database/Assets/Fonts/Pixuf.ttf?fileID=12800000&guid=d98362dccd0b78840a04ae67cbb9005b&type=3#Pixuf");
+    font-size: initial;
+    -unity-text-align: middle-center;
+    align-content: auto;
+    -unity-text-outline-color: rgb(255, 255, 255);
+    color: rgb(255, 255, 255);
+    text-shadow: 5px 6px 0 rgb(129, 37, 155);
+}
+
+.unity-button:active {
+    transition-property: background-color, scale, rotate;
+    background-image: url("project://database/Assets/Art/Textures/circle.png?fileID=2800000&guid=3a655c245d130b4429c1f10258098ce6&type=3#circle");
+    -unity-background-image-tint-color: rgb(194, 255, 255);
+    -unity-background-scale-mode: stretch-to-fill;
+    transition-duration: 0s, 0.25s, 0.5ms;
+    -unity-slice-left: 16;
+    -unity-slice-top: 16;
+    -unity-slice-right: 16;
+    -unity-slice-bottom: 16;
+    -unity-slice-scale: 2.9px;
+    scale: 1.2 1.2;
+    rotate: 5deg;
+    transition-timing-function: ease, ease-in-out, ease-in;
+}
+
+.panel:disabled {
+    transition-property: translate;
+    transition-duration: 0.5s;
+    translate: 0 -100%;
+    transition-timing-function: ease-out;
+}
+
+.panel:focus {
+    transition-property: translate;
+    transition-duration: 0.5s;
+    translate: 0 -100%;
+    transition-timing-function: ease-out;
+}
