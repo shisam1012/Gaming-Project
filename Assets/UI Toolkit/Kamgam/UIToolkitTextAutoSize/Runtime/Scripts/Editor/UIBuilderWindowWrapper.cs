@@ -275,7 +275,7 @@ namespace Kamgam.UIToolkitTextAutoSize
             var playerPanels = UIElementsUtilityProxy.GetAllPanels(null, ContextType.Player);
             foreach (var panel in playerPanels)
             {
-                if (panel == null || panel.visualTree == null)
+                if (panel == null || panel.visualTree == null || panel.visualTree.childCount == 0)
                     continue;
                 
                 var elementZero = panel.visualTree.ElementAt(0);
