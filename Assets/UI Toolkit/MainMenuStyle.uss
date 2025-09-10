@@ -18,18 +18,18 @@
     border-bottom-right-radius: 15px;
     border-bottom-left-radius: 15px;
     margin-top: 50px;
-    background-image: url("project://database/Assets/Art/Textures/circle.png?fileID=2800000&guid=3a655c245d130b4429c1f10258098ce6&type=3#circle");
-    -unity-slice-left: 16;
-    -unity-slice-top: 16;
-    -unity-slice-right: 16;
-    -unity-slice-bottom: 16;
+    background-image: url("project://database/Assets/Art/Textures/gemstone-btn.png?fileID=2800000&guid=9cf49394b6b2cbd40b6033b2f740ad9e&type=3#gemstone-btn");
+    -unity-slice-left: 15;
+    -unity-slice-top: 15;
+    -unity-slice-right: 15;
+    -unity-slice-bottom: 15;
     border-top-width: 0;
     border-right-width: 0;
     border-bottom-width: 0;
     border-left-width: 0;
-    -unity-slice-scale: 2.9px;
-    background-color: rgb(161, 161, 161);
-    -unity-background-image-tint-color: rgb(243, 177, 255);
+    -unity-slice-scale: 9px;
+    background-color: rgba(161, 161, 161, 0);
+    -unity-background-image-tint-color: rgb(254, 148, 255);
     -unity-font-definition: url("project://database/Assets/Fonts/Pixuf.ttf?fileID=12800000&guid=d98362dccd0b78840a04ae67cbb9005b&type=3#Pixuf");
     -unity-font-style: normal;
     text-shadow: 1px 1px 0 rgb(186, 136, 218);
@@ -59,19 +59,18 @@
 }
 
 .unity-button:active {
-    transition-property: background-color, scale, rotate;
-    background-image: url("project://database/Assets/Art/Textures/circle.png?fileID=2800000&guid=3a655c245d130b4429c1f10258098ce6&type=3#circle");
+    background-image: url("project://database/Assets/Art/Textures/gemstone-btn.png?fileID=2800000&guid=9cf49394b6b2cbd40b6033b2f740ad9e&type=3#gemstone-btn");
     -unity-background-image-tint-color: rgb(194, 255, 255);
     -unity-background-scale-mode: stretch-to-fill;
-    transition-duration: 0s, 0.25s, 0.5ms;
-    -unity-slice-left: 16;
-    -unity-slice-top: 16;
-    -unity-slice-right: 16;
-    -unity-slice-bottom: 16;
-    -unity-slice-scale: 2.9px;
+    -unity-slice-left: 15;
+    -unity-slice-top: 15;
+    -unity-slice-right: 15;
+    -unity-slice-bottom: 15;
+    -unity-slice-scale: 6px;
     scale: 1.2 1.2;
     rotate: 5deg;
-    transition-timing-function: ease, ease-in-out, ease-in;
+    transition-duration: 0.5ms;
+    transition-property: all;
 }
 
 .panel:disabled {
