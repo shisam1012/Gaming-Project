@@ -28,7 +28,17 @@ public class Board : MonoBehaviour
     private bool isBusy = false;
     public bool IsBusy => isBusy;
 
-    [System.Obsolete]
+    //-- 4-WAY ONLY (no diagonals) --
+    private static readonly Vector2Int[] directions = new Vector2Int[]
+    {
+        new Vector2Int(0, 1),   // up
+        new Vector2Int(0, -1),  // down
+        new Vector2Int(-1, 0),  // left
+        new Vector2Int(1, 0)    // right
+    };
+
+
+    //[System.Obsolete]
     private void Awake()
     {
         EnsureEventSystemAndRaycaster();
@@ -55,11 +65,11 @@ public class Board : MonoBehaviour
                 var bgTile = cell.GetComponent<BackGroundTile>();
                 if (bgTile != null)
                 {
-                    bgTile.SetTileSprite(0);
+                    //bgTile.SetTileSprite(0);
+                    bgTile.SetTileType(BackGroundTile.BackgroundType.Sand);
                     allTiles[x, y] = bgTile;
                 }
-
-        
+              
                 int idx = Random.Range(0, stonePrefabsRef.Length);
                 var stone = Instantiate(stonePrefabsRef[idx], pos, Quaternion.identity, transform);
                 stone.Init(this);
@@ -69,6 +79,8 @@ public class Board : MonoBehaviour
                 allStones[x, y] = stone;
             }
         }
+        allTiles[width -1, height-1].SetTileType(BackGroundTile.BackgroundType.Fluid);
+
     }
 
 
@@ -105,7 +117,7 @@ public class Board : MonoBehaviour
         }
 
         FlipBackgroundTiles(stonePositions);
-
+        FloodFillFluid();
         CollapseAllColumns();
         yield return null;
 
@@ -178,7 +190,46 @@ public class Board : MonoBehaviour
         }
     }
 
-    [System.Obsolete]
+    private void FloodFillFluid()
+    {
+        var start = new Vector2Int(width - 1, height - 1); //starting point of the fluid in the board
+
+        var queue = new Queue<Vector2Int>(); //for indices to explore
+        var visited = new HashSet<Vector2Int>(); //for visited indices
+
+        queue.Enqueue(start);
+        visited.Add(start);
+
+        while (queue.Count > 0)
+        {
+            var current = queue.Dequeue();
+            var tile = allTiles[current.x, current.y];
+
+            // fill with fluid only the empty tiles
+            if (tile.Type == BackGroundTile.BackgroundType.Empty)
+            {
+                tile.SetTileType(BackGroundTile.BackgroundType.Fluid);
+            }
+
+            foreach (var dir in directions)
+            {
+                var next = current + dir;
+                if (!InBounds(next.x, next.y)) continue;
+                if (visited.Contains(next)) continue;
+
+                var nextTile = allTiles[next.x, next.y];
+                // enqueue neighbors if they are empty or already with fluid to allow the spreading
+                if (nextTile.Type == BackGroundTile.BackgroundType.Empty || nextTile.Type == BackGroundTile.BackgroundType.Fluid)
+                {
+                    queue.Enqueue(next);
+                    visited.Add(next);
+                }
+            }
+        }
+    }
+
+
+    //[System.Obsolete]
     private void EnsureEventSystemAndRaycaster()
     {
         var cam = Camera.main;
