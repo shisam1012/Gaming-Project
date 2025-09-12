@@ -16,6 +16,7 @@ public class Board : MonoBehaviour
     [SerializeField] private int height = 8;
     [SerializeField] private GameObject cellPrefab; 
     [SerializeField] private Stone[] stonePrefabsRef;
+    [SerializeField] private EventSystem es;
 
     [SerializeField] private Stone[,] allStones;
     private BackGroundTile[,] allTiles;
@@ -27,6 +28,7 @@ public class Board : MonoBehaviour
     private bool isBusy = false;
     public bool IsBusy => isBusy;
 
+    [System.Obsolete]
     private void Awake()
     {
         EnsureEventSystemAndRaycaster();
@@ -168,11 +170,15 @@ public class Board : MonoBehaviour
         {
             if (!InBounds(p.x, p.y)) continue;
             var tile = allTiles[p.x, p.y];
-            tile?.SetTileSprite(2);
+            //tile?.SetTileSprite(2);
+            if (tile != null && tile.Type == BackGroundTile.BackgroundType.Sand)
+            {
+                tile.SetTileType(BackGroundTile.BackgroundType.Empty); 
+            }
         }
     }
 
-
+    [System.Obsolete]
     private void EnsureEventSystemAndRaycaster()
     {
         var cam = Camera.main;
@@ -181,7 +187,7 @@ public class Board : MonoBehaviour
             cam.gameObject.AddComponent<Physics2DRaycaster>();
         }
 
-        var es = FindObjectOfType<EventSystem>();
+       //var es = FindObjectOfType<EventSystem>();
         if (es == null)
         {
             var go = new GameObject("EventSystem", typeof(EventSystem));
