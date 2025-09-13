@@ -2,35 +2,38 @@ using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 
 public class MainMenuEvents : MonoBehaviour
 {
-    private UIDocument _document;
+    [SerializeField] private UIDocument _document;
+    private VisualElement _rootElem;
+    //private VisualElement _mainPanel;
     private Button _btnStart, _btnSettings, _btnExit;
     //private AudioSource _audioSource; // uncomment when there's audio
     private List<Button> _menuButtons;
     private void Awake()
     {
         //_audioSource = GetComponent<AudioSource>();
-        _document = GetComponent<UIDocument>();
+        _rootElem = _document.rootVisualElement;
     }
     private void OnEnable()
     {
-        _btnStart = _document.rootVisualElement.Q<Button>("btnStart");
-        _btnStart.clicked += OnStartGameClick;
-        _btnSettings = _document.rootVisualElement.Q<Button>("btnSettings");
-        _btnSettings.clicked += OnSettingsClick;
-        _btnExit = _document.rootVisualElement.Q<Button>("btnExit");
-        _btnExit.clicked += OnExitClick;
-
-        _menuButtons = _document.rootVisualElement.Query<Button>().ToList();
-
-        for (int i = 0;  i < _menuButtons.Count; i++)
-        {
-            _menuButtons[i].clicked += OnAllButtonsClick;
-        }
+        //_btnStart = _rootElem.Q<Button>("btnStart");
+        //_btnSettings = _rootElem.Q<Button>("btnSettings");
+        //_btnExit = _rootElem.Q<Button>("btnExit");
         
+        _menuButtons = _rootElem.Query<Button>().ToList();
+        _btnStart = _menuButtons[0];
+        _btnSettings = _menuButtons[1];
+        _btnExit = _menuButtons[2];
+        AddBtnFunctionality();
+        //_mainPanel = _rootElem.Q<VisualElement>("panel");
+        //_mainPanel.RemoveFromClassList("show");
+
+        //// Automatically show the panel after a delay (for demonstration)
+        //Invoke(nameof(ShowPanel), 1f); // Change the delay as needed
     }
 
     private void OnDisable()
@@ -39,12 +42,26 @@ public class MainMenuEvents : MonoBehaviour
         _btnSettings.clicked -= OnSettingsClick;
         _btnExit.clicked -= OnExitClick;
 
-        for (int i = 0; i < _menuButtons.Count; i++)
+        foreach (Button btn in _menuButtons)
         {
-            _menuButtons[i].clicked -= OnAllButtonsClick;
+            btn.clicked -= OnAllButtonsClick;
         }
     }
-
+    private void AddBtnFunctionality()
+    {
+        _btnStart.clicked += OnStartGameClick;
+        _btnSettings.clicked += OnSettingsClick;
+        _btnExit.clicked += OnExitClick;
+        foreach (Button btn in _menuButtons)
+        {
+            btn.clicked += OnAllButtonsClick;
+        }
+    }
+    
+    //private void ShowPanel()
+    //{
+    //    _mainPanel.AddToClassList("show");
+    //}
     private void OnExitClick()
     {
         //throw new NotImplementedException();
@@ -69,7 +86,8 @@ public class MainMenuEvents : MonoBehaviour
     }
     private void OnStartGameClick()
     {
-        Debug.Log("Play game lol");
+        //Debug.Log("Play game lol");
         //gameObject.SetActive(false); // straight to the game
+        SceneManager.LoadScene(sceneBuildIndex:1);
     }
 }
