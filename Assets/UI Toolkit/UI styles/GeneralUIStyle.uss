@@ -1,18 +1,37 @@
-.header {
-    color: rgb(255, 250, 230);
-    -unity-text-outline-width: 3px;
-    -unity-text-outline-color: rgb(223, 164, 164);
+.footer {
+    background-color: rgb(230, 230, 230);
     width: 100%;
-    height: 10%;
+    height: 15%;
+    justify-content: flex-end;
+    translate: 0 100%;
+    transition-property: translate;
+    transition-duration: 400ms;
+}
+
+.header {
+    background-color: rgb(230, 230, 230);
+    width: 100%;
+    height: 15%;
+    translate: 0 -100%;
+    transition-property: translate;
+    transition-duration: 400ms;
+}
+
+.menu.menu-active .header,
+.pause.pause-active .header,
+.pause.pause-active .footer {
+    translate: 0 0;
+}
+
+.title {
     align-self: center;
     -unity-font-style: bold;
-    font-size: 50%;
+    text-shadow: 3px 3px 0 rgb(55, 55, 55);
+    flex-grow: 1;
+    width: 100%;
 }
 
 .unity-button {
-    width: 100%;
-    height: 20%;
-    align-self: center;
     border-top-left-radius: 15px;
     border-top-right-radius: 15px;
     border-bottom-right-radius: 15px;
@@ -38,18 +57,29 @@
 .panel {
     background-color: rgba(138, 58, 156, 0.71);
     flex-grow: 1;
-
 }
 
-.container{
-    flex-grow: 1; 
-    justify-content: space-evenly; 
+.sections{
+    flex-grow: 1;
     height: auto;
 }
-.menu {
+
+.body,
+.container {
+    flex-grow: 1;
+    justify-content: space-evenly;
+    height: auto;
+}
+
+.menu-items {
     width: 70%;
-    height: 50%;
+    flex-grow:1;
     align-items: auto;
+    align-self: center;
+}
+.menu-item{
+    width: 100%;
+    height: 20%;
     align-self: center;
 }
 
@@ -62,12 +92,12 @@
     color: rgb(255, 255, 255);
     text-shadow: 5px 6px 0 rgb(129, 37, 155);
 }
-.unity-text-element.simple-font{
-    -unity-font-definition:url("project://database/Assets/TextMesh Pro/Fonts/LiberationSans.ttf");
+
+.simple-font {
+    -unity-font-definition: url("project://database/Assets/TextMesh%20Pro/Fonts/LiberationSans.ttf?fileID=12800000&guid=e3265ab4bf004d28a9537516768c1c75&type=3#LiberationSans");
 }
-.unity-button.simple-font{
-    -unity-font-definition:url("project://database/Assets/TextMesh Pro/Fonts/LiberationSans.ttf");
-}
+
+
 
 .unity-button:active {
     background-image: url("project://database/Assets/Art/Textures/gemstone-btn.png?fileID=2800000&guid=9cf49394b6b2cbd40b6033b2f740ad9e&type=3#gemstone-btn");
@@ -83,23 +113,3 @@
     transition-duration: 0.5ms;
     transition-property: all;
 }
-
-/* .panel:disabled {
-    transition-property: translate;
-    transition-duration: 0.5s;
-    translate: 0 -100%;
-    transition-timing-function: ease-out;
-} */
-
-
-    /* Move into view */
-/* .panel.show {
-    transform: translateY(100%); 
-} */
-
-/* .panel:focus {
-    transition-property: translate;
-    transition-duration: 0.5s;
-    translate: 0 -100%;
-    transition-timing-function: ease-out;
-} */

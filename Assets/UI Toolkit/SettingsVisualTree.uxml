@@ -1,6 +1,12 @@
 <ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <Style src="project://database/Assets/UI%20Toolkit/MainMenuStyle.uss?fileID=7433441132597879392&amp;guid=b3eb3eefc7054fb4bbeedbc144c40145&amp;type=3#MainMenuStyle" />
-    <ui:VisualElement class="panel" style="flex-grow: 1; transition-timing-function: ease-in;">
-        <ui:GroupBox />
+    <Style src="project://database/Assets/UI%20Toolkit/UI%20styles/Backgrounds.uss?fileID=7433441132597879392&amp;guid=ad54ee5845b07024ab422840b3a220e3&amp;type=3#Backgrounds" />
+    <Style src="project://database/Assets/UI%20Toolkit/UI%20styles/UISliders.uss?fileID=7433441132597879392&amp;guid=fa349ede73cd25741bd8078c95a009af&amp;type=3#UISliders" />
+    <Style src="project://database/Assets/UI%20Toolkit/UI%20styles/UIToggles.uss?fileID=7433441132597879392&amp;guid=3e2420a58c6b7c94abce1c703b0c22bf&amp;type=3#UIToggles" />
+    <ui:VisualElement name="PanelSettings" class="panel" style="flex-grow: 1; transition-timing-function: ease-in;">
+        <ui:Label text="Settings" name="Title" class="text-auto-size" />
+        <ui:Button text="Back" name="btnBack" />
+        <ui:Slider label="Music Volume" value="42" high-value="100" name="sliderMusic" />
+        <ui:Slider label="SFX Volume" value="42" high-value="100" name="SliderSFX" />
+        <ui:Toggle label="Simple Font" name="toggleFont" />
     </ui:VisualElement>
 </ui:UXML>
