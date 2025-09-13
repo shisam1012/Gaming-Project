@@ -29,11 +29,10 @@ public class Board : MonoBehaviour
     public int Width  => width;
     public int Height => height;
 
-<<<<<<< HEAD
+
     public GameWinScreen GameWinScreen => gameWinScreen;
 
-=======
->>>>>>> origin/main
+
     private bool isBusy = false;
     public bool IsBusy => isBusy;
 
