@@ -19,11 +19,14 @@ public class Board : MonoBehaviour
     [SerializeField] private EventSystem es;
 
     [SerializeField] private Stone[,] allStones;
+    [SerializeField] private GameWinScreen gameWinScreen;
+
     private BackGroundTile[,] allTiles;
 
     public int Width  => width;
     public int Height => height;
 
+    public GameWinScreen GameWinScreen => gameWinScreen;
 
     private bool isBusy = false;
     public bool IsBusy => isBusy;
@@ -118,6 +121,10 @@ public class Board : MonoBehaviour
 
         FlipBackgroundTiles(stonePositions);
         FloodFillFluid();
+        if (allTiles[0,0].Type == BackGroundTile.BackgroundType.Fluid)
+        {
+            GameWinScreen.SetUp();
+        }
         CollapseAllColumns();
         yield return null;
 
