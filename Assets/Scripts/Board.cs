@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using UnityEngine.Events;
+
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem.UI;
 #endif
@@ -30,13 +32,21 @@ public class Board : MonoBehaviour
     private bool isBusy = false;
     public bool IsBusy => isBusy;
 
-    private static readonly Vector2Int[] directions = new Vector2Int[]
+    private static readonly Vector2Int[] directions =
     {
-        new Vector2Int(0, 1), 
-        new Vector2Int(0, -1),  
-        new Vector2Int(-1, 0), 
-        new Vector2Int(1, 0)  
+        new Vector2Int(0, 1),
+        new Vector2Int(0, -1),
+        new Vector2Int(-1, 0),
+        new Vector2Int(1, 0)
     };
+
+    [Header("Endpoints")]
+    [SerializeField] private Vector2Int fluidSource = new Vector2Int(3, 3);
+    [SerializeField] private Vector2Int destination = new Vector2Int(3, 0);
+    [SerializeField] private bool randomizeEndpointsOnStart = true;
+
+    [Header("Win Event")]
+    public UnityEvent onWin;
 
     private void Awake()
     {
@@ -48,15 +58,11 @@ public class Board : MonoBehaviour
         allTiles  = new BackGroundTile[width, height];
         allStones = new Stone[width, height];
         SetUp();
-
         EnsureSolvableAfterRefill();
     }
 
 #if UNITY_EDITOR
-    // Editor hotkeys to test without menus:
-    // R       = reshuffle once (ALWAYS)
-    // Shift+R = force at least one reshuffle, then ensure solvable
-    // D       = dump board state to Console
+    // D = Dump,  Shift+R = reshuffle->ensure,  R = reshuffle once
     private void Update()
     {
         if (!Application.isPlaying || isBusy) return;
@@ -66,7 +72,6 @@ public class Board : MonoBehaviour
             DumpBoardToConsole();
             return;
         }
-
         if ((Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift)) &&
             Input.GetKeyDown(KeyCode.R))
         {
@@ -74,8 +79,6 @@ public class Board : MonoBehaviour
             EnsureSolvableAfterRefill(forceAtLeastOnce: true);
             return;
         }
-
-        // R => reshuffle once (always)
         if (Input.GetKeyDown(KeyCode.R))
         {
             Debug.Log("[Board] Hotkey: Reshuffle once (always)");
@@ -87,6 +90,7 @@ public class Board : MonoBehaviour
 
     private void SetUp()
     {
+        // 1) Spawn grid
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
@@ -112,10 +116,33 @@ public class Board : MonoBehaviour
             }
         }
 
+        // 2) Choose endpoints by rule (start: inner row [1..h-2], end: y=0 or y=h-1)
+        if (randomizeEndpointsOnStart)
+        {
+            int startY = (height >= 3) ? Random.Range(1, height - 1) : 0;
+            int startX = Random.Range(0, width);
+            fluidSource = new Vector2Int(startX, startY);
 
-        allTiles[width - 1, height - 1].SetTileType(BackGroundTile.BackgroundType.Fluid);
+            int endY = (Random.value < 0.5f) ? 0 : (height - 1);
+            int endX = Random.Range(0, width);
+            destination = new Vector2Int(endX, endY);
+            if (destination == fluidSource)
+                destination = new Vector2Int((endX + 1) % width, endY);
+        }
+
+        fluidSource = ClampToBoard(fluidSource);
+        destination = ClampToBoard(destination);
+
+        allTiles[fluidSource.x, fluidSource.y].SetTileType(BackGroundTile.BackgroundType.Fluid);
+        allTiles[destination.x, destination.y].SetTileType(BackGroundTile.BackgroundType.Fluid);
     }
 
+    private Vector2Int ClampToBoard(Vector2Int p)
+    {
+        int cx = Mathf.Clamp(p.x, 0, width - 1);
+        int cy = Mathf.Clamp(p.y, 0, height - 1);
+        return new Vector2Int(cx, cy);
+    }
 
     public bool InBounds(int x, int y) => x >= 0 && x < width && y >= 0 && y < height;
 
@@ -131,7 +158,6 @@ public class Board : MonoBehaviour
         allStones[x, y] = s;
     }
 
-
     public void RemoveStones(List<Vector2Int> stonePositions)
     {
         if (isBusy) return;
@@ -146,24 +172,23 @@ public class Board : MonoBehaviour
         {
             var s = GetStone(pos.x, pos.y);
             if (s == null) continue;
-
             Destroy(s.gameObject);
             SetStone(pos.x, pos.y, null);
         }
 
-
         FlipBackgroundTiles(stonePositions);
 
-
-        FloodFillFluid();
-
+        var flooded = FloodFillFluid();
+        if (flooded.Contains(destination))
+        {
+            Debug.LogWarning("[WIN] Fluid reached destination! 🎉");
+            onWin?.Invoke();
+        }
 
         CollapseAllColumns();
         yield return null;
-
         RefillBoard();
         yield return null;
-
 
         EnsureSolvableAfterRefill();
 
@@ -203,8 +228,7 @@ public class Board : MonoBehaviour
                 if (GetStone(x, y) != null) continue;
 
                 int idx = Random.Range(0, stonePrefabsRef.Length);
-                var spawnPos = new Vector2(x, y);
-                var stone = Instantiate(stonePrefabsRef[idx], spawnPos, Quaternion.identity, transform);
+                var stone = Instantiate(stonePrefabsRef[idx], new Vector2(x, y), Quaternion.identity, transform);
                 stone.Init(this);
                 stone.column = x;
                 stone.row = y;
@@ -228,10 +252,9 @@ public class Board : MonoBehaviour
         }
     }
 
-    private void FloodFillFluid()
+    private HashSet<Vector2Int> FloodFillFluid()
     {
-        var start = new Vector2Int(width - 1, height - 1); 
-
+        var start = fluidSource;
         var queue = new Queue<Vector2Int>();
         var visited = new HashSet<Vector2Int>();
 
@@ -244,9 +267,7 @@ public class Board : MonoBehaviour
             var tile = allTiles[current.x, current.y];
 
             if (tile.Type == BackGroundTile.BackgroundType.Empty)
-            {
                 tile.SetTileType(BackGroundTile.BackgroundType.Fluid);
-            }
 
             foreach (var dir in directions)
             {
@@ -263,8 +284,9 @@ public class Board : MonoBehaviour
                 }
             }
         }
-    }
 
+        return visited;
+    }
 
     private void EnsureSolvableAfterRefill(bool forceAtLeastOnce = false)
     {
@@ -304,10 +326,10 @@ public class Board : MonoBehaviour
                 if (s == null) continue;
 
                 int size = FloodCountSameType(x, y, s.Type, visited);
-                if (size >= 3) return true; 
+                if (size >= 3) return true;
             }
         }
-        return false; 
+        return false;
     }
 
     private int FloodCountSameType(int sx, int sy, Stone.StoneType type, bool[,] visited)
@@ -348,7 +370,7 @@ public class Board : MonoBehaviour
     {
         var list = new List<Stone>(width * height);
 
-
+        // collect
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
@@ -362,7 +384,7 @@ public class Board : MonoBehaviour
             }
         }
 
-
+        // shuffle
         for (int i = 0; i < list.Count; i++)
         {
             int j = Random.Range(i, list.Count);
@@ -384,7 +406,6 @@ public class Board : MonoBehaviour
             }
         }
     }
-
 
 #if UNITY_EDITOR
     [ContextMenu("Debug/Force Reshuffle (Always)")]
@@ -442,7 +463,6 @@ public class Board : MonoBehaviour
         Debug.Log("=====================");
     }
 #endif
-
 
     private void EnsureEventSystemAndRaycaster()
     {
