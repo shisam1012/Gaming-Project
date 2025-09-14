@@ -13,5 +13,10 @@ namespace Assets.UI_Toolkit.UI_scripts
             if (element == null) return;
             element.style.display = enabled ? DisplayStyle.Flex : DisplayStyle.None;
         }
+
+        //public static void ToggleSettings(this VisualElement element, bool enabled)
+        //{
+        //    if (element == null) return;
+        //}
     }
 }
