@@ -35,16 +35,25 @@
 
 .unity-button.settings-button {
     background-image: url("project://database/Assets/Art/Textures/UI-textures/Cozy%20GUI%20-%20Tileset%20(By%20Pizza%20Doggy).png?fileID=-4104073166698897813&amp;guid=4d44c2eac7bcb9841918553f1e413aa0&amp;type=3#settings1"); 
-    width: 150px; 
-    height: 150px; 
-    max-width: 100%;
 }
 
 .settings-button:active {
     background-image: url("project://database/Assets/Art/Textures/UI-textures/Cozy%20GUI%20-%20Tileset%20(By%20Pizza%20Doggy).png?fileID=3134815996161665821&amp;guid=4d44c2eac7bcb9841918553f1e413aa0&amp;type=3#settings1-active");
 }
 
+.pause-button{
+    background-image: url("project://database/Assets/Art/Textures/UI-textures/Cozy%20GUI%20-%20Tileset%20(By%20Pizza%20Doggy).png?fileID=-242055420863910321&amp;guid=4d44c2eac7bcb9841918553f1e413aa0&amp;type=3#pause1")
+}
+.pause-button:active{
+    background-image: url("project://database/Assets/Art/Textures/UI-textures/Cozy%20GUI%20-%20Tileset%20(By%20Pizza%20Doggy).png?fileID=-242055420863910321&amp;guid=4d44c2eac7bcb9841918553f1e413aa0&amp;type=3#pause1-active")
+}
 .unity-button:active {
     transition-duration: 0.5ms;
     transition-property: all;
+}
+
+.unity-button.small {
+    width: 150px; 
+    height: 150px; 
+    max-width: 100%;
 }
