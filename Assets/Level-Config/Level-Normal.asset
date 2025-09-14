@@ -14,11 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   width: 7
   height: 10
-  shape: {fileID: 0}
+  shape: {fileID: 11400000, guid: c315a73e9c11dfb4dbdc972de0ab797c, type: 2}
   timeLimitSeconds: 60
   pauseSeconds: 2
   allowPowerUps: 1
   powerUps: []
-  startInside: {x: 0, y: 0}
-  destinationOnBorder: {x: 0, y: 0}
+  startInside: {x: 3, y: 5}
+  destinationOnBorder: {x: 3, y: 0}
   description: 
