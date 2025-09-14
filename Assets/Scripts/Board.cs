@@ -42,8 +42,8 @@ public class Board : MonoBehaviour
 
     // ===== Endpoints (start on inner rows; end on top or bottom, and end has NO STONE) =====
     [Header("Endpoints")]
-    [SerializeField] private Vector2Int fluidSource = new Vector2Int(3, 3); // Start (inner row)
-    [SerializeField] private Vector2Int destination = new Vector2Int(3, 0); // End (top/bottom edge)
+    [SerializeField] private Vector2Int fluidSource = new Vector2Int(3, 3);
+    [SerializeField] private Vector2Int destination = new Vector2Int(3, 0);
     [SerializeField] private bool randomizeEndpointsOnStart = true;
 
     [Header("Win Event")]
@@ -179,7 +179,6 @@ public class Board : MonoBehaviour
 
         isBusy = true;
 
-        // 1) Destroy selected stones
         foreach (var pos in stonePositions)
         {
             var s = GetStone(pos.x, pos.y);
@@ -189,13 +188,10 @@ public class Board : MonoBehaviour
             SetStone(pos.x, pos.y, null);
         }
 
-        // 2) Cleared cells become Empty so fluid can flow through
         FlipBackgroundTiles(stonePositions);
 
-        // 3) Spread fluid from start; allow stepping onto destination even if still Sand
         var flooded = FloodFillFluid();
 
-        // 4) Win check (unchanged call site)
         if (flooded.Contains(destination))
         {
             Debug.LogWarning("[WIN] Fluid reached destination! 🎉");
@@ -206,15 +202,12 @@ public class Board : MonoBehaviour
             Debug.Log("[Board] Not yet: start hasn’t connected to end.");
         }
 
-        // 5) Gravity collapse (skip destination if you made it a hole elsewhere)
         CollapseAllColumns();
         yield return null;
 
-        // 6) Refill (also skips destination if you've implemented that)
         RefillBoard();
         yield return null;
 
-        // 7) Ensure there is at least one possible match
         EnsureSolvableAfterRefill();
 
         isBusy = false;
@@ -226,7 +219,6 @@ public class Board : MonoBehaviour
         {
             int writeY = 0;
 
-            // If destination is at the bottom of this column, skip that slot
             if (IsDestinationCell(x, writeY))
                 writeY++;
 
@@ -235,7 +227,6 @@ public class Board : MonoBehaviour
                 var s = GetStone(x, y);
                 if (s == null) continue;
 
-                // Find next valid write slot (skip destination if encountered)
                 while (IsDestinationCell(x, writeY))
                     writeY++;
 
@@ -286,10 +277,6 @@ public class Board : MonoBehaviour
             }
         }
     }
-
-  /// Flood from fluidSource through Empty/Fluid; also allow stepping onto the
-/// destination even if it's Sand. Convert Empty (and destination) to Fluid.
-/// Returns all visited cells (so win check works).
 private HashSet<Vector2Int> FloodFillFluid()
 {
     var queue = new Queue<Vector2Int>();
@@ -303,7 +290,6 @@ private HashSet<Vector2Int> FloodFillFluid()
         var current = queue.Dequeue();
         var tile = allTiles[current.x, current.y];
 
-        // Paint path as it opens
         if (tile.Type == BackGroundTile.BackgroundType.Empty)
             tile.SetTileType(BackGroundTile.BackgroundType.Fluid);
 
@@ -313,18 +299,16 @@ private HashSet<Vector2Int> FloodFillFluid()
             if (!InBounds(next.x, next.y)) continue;
             if (visited.Contains(next)) continue;
 
-            // --- SPECIAL CASE: destination is passable even if it's Sand ---
             if (next == destination)
             {
-                // Turn destination blue when reached and consider it visited.
+
                 allTiles[next.x, next.y].SetTileType(BackGroundTile.BackgroundType.Fluid);
                 visited.Add(next);
-                queue.Enqueue(next);     // optional: enqueue lets fluid propagate past end
+                queue.Enqueue(next);
                 continue;
             }
 
             var nextTile = allTiles[next.x, next.y];
-            // Regular passability: Empty or already Fluid
             if (nextTile.Type == BackGroundTile.BackgroundType.Empty ||
                 nextTile.Type == BackGroundTile.BackgroundType.Fluid)
             {
@@ -421,7 +405,6 @@ private HashSet<Vector2Int> FloodFillFluid()
     {
         var list = new List<Stone>(width * height);
 
-        // collect all existing stones
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
