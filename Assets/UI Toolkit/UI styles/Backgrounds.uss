@@ -1,0 +1,7 @@
+.dark-pink-bg{
+	background-color: var(--pink-dark1);
+}
+
+.transparent-overlay{
+	background-color: var(--purple-dark-transparent);
+}

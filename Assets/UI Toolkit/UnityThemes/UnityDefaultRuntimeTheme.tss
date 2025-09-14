@@ -1,1 +1,10 @@
 @import url("unity-theme://default");
+
+@import url("/Assets/UI Toolkit/UI styles/GeneralUIStyle.uss");
+@import url("/Assets/UI Toolkit/UI styles/UIButtons.uss");
+@import url("/Assets/UI Toolkit/UI styles/UISliders.uss");
+@import url("/Assets/UI Toolkit/UI styles/UIToggles.uss");
+@import url("/Assets/UI Toolkit/UI styles/Backgrounds.uss");
+@import url("/Assets/UI Toolkit/UI styles/Colors.uss");
+
+

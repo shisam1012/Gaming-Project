@@ -1,6 +1,9 @@
 <ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <Style src="project://database/Assets/UI%20Toolkit/MainMenuStyle.uss?fileID=7433441132597879392&amp;guid=b3eb3eefc7054fb4bbeedbc144c40145&amp;type=3#MainMenuStyle" />
-    <ui:VisualElement class="panel" style="flex-grow: 1; transition-timing-function: ease-in;">
-        <ui:GroupBox />
+    <ui:VisualElement name="PanelSettings" class="panel transparent-overlay" style="flex-grow: 1; transition-timing-function: ease-in;">
+        <ui:Label text="Settings" name="Title" class="text-auto-size" />
+        <ui:Button text="Back" name="btnBack" />
+        <ui:Slider label="Music Volume" value="42" high-value="100" name="sliderMusic" />
+        <ui:Slider label="SFX Volume" value="42" high-value="100" name="SliderSFX" />
+        <ui:Toggle label="Simple Font" name="toggleFont" />
     </ui:VisualElement>
 </ui:UXML>

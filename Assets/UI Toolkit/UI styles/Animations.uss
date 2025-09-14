@@ -1,0 +1,15 @@
+.transition-down{
+    translate: 0 100%;
+    transition-property: translate;
+    transition-duration: 400ms;
+}
+
+.transition-up{
+    translate: 0 -100%;
+    transition-property: translate;
+    transition-duration: 400ms;
+}
+
+.undo-transition {
+    translate: 0 0;
+}
