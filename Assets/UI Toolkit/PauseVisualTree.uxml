@@ -1,6 +1,6 @@
 <ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <Style src="project://database/Assets/UI%20Toolkit/UI%20styles/GeneralUIStyle.uss?fileID=7433441132597879392&amp;guid=b3eb3eefc7054fb4bbeedbc144c40145&amp;type=3#GeneralUIStyle" />
-    <ui:VisualElement class="pause panel">
+    <ui:Template name="btnSettings" src="project://database/Assets/UI%20Toolkit/Templates/btnSettings.uxml?fileID=9197481963319205126&amp;guid=e9234e0d7c22a5c499b5995438319140&amp;type=3#btnSettings" />
+    <ui:VisualElement class="pause panel transparent-overlay">
         <ui:VisualElement class="sections">
             <ui:VisualElement class="header">
                 <ui:Label text="Pause" class="title text-auto-size" />
@@ -8,11 +8,10 @@
             <ui:VisualElement class="body">
                 <ui:VisualElement class="menu container">
                     <ui:Button text="Resume" name="btnResume" class="text-auto-size unity-button menu-item" />
-                    <ui:Button text="Settings" name="btnSettings" class="text-auto-size unity-button menu-item" />
-                    <ui:Button text="Exit" name="btnExit" class="text-auto-size unity-button menu-item" />
                 </ui:VisualElement>
             </ui:VisualElement>
-            <ui:VisualElement class="footer">
+            <ui:VisualElement class="footer stick-corner">
+                <ui:Instance template="btnSettings" />
             </ui:VisualElement>
         </ui:VisualElement>
     </ui:VisualElement>

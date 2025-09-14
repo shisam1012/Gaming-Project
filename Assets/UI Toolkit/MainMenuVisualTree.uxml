@@ -1,13 +1,14 @@
 <ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <Style src="project://database/Assets/UI%20Toolkit/UI%20styles/GeneralUIStyle.uss?fileID=7433441132597879392&amp;guid=b3eb3eefc7054fb4bbeedbc144c40145&amp;type=3" />
-    <ui:VisualElement name="panel" class="menu panel">
-        <ui:VisualElement class="header"> 
-            <ui:Label text="FlowGarden" name="HeaderTitle" display-tooltip-when-elided="false" triple-click-selects-line="false" selectable="false" class="title text-auto-size text-auto-size-max-200" />
+    <ui:Template name="btnSettings" src="project://database/Assets/UI%20Toolkit/Templates/btnSettings.uxml?fileID=9197481963319205126&amp;guid=e9234e0d7c22a5c499b5995438319140&amp;type=3#btnSettings" />
+    <ui:VisualElement name="panel" class="menu panel transparent-overlay">
+        <ui:VisualElement name="headerPanel" class="header dark-pink-bg">
+            <ui:Label text="FlowGarden" name="headerTitle" display-tooltip-when-elided="false" triple-click-selects-line="false" selectable="false" class="title text-auto-size text-auto-size-max-200" />
         </ui:VisualElement>
-        <ui:VisualElement name="container" class="container menu-items text-auto-size">
+        <ui:VisualElement name="container" class="container  menu-items text-auto-size">
             <ui:Button text="Start" name="btnStart" class="text-auto-size unity-button menu-item" />
-            <!-- <ui:Button text="Settings" name="btnSettings" class="text-auto-size unity-button menu-item" /> -->
-            <!-- <ui:Button text="Exit" name="btnExit" class="text-auto-size unity-button menu-item" /> -->
+        </ui:VisualElement>
+        <ui:VisualElement name="footerPanel" class="footer dark-pink-bg stick-corner">
+            <ui:Instance template="btnSettings" name="btnSettings" />
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>
