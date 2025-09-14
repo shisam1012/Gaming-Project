@@ -54,7 +54,6 @@ public class Stone : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointerU
         boxCollider = GetComponent<BoxCollider2D>();
         if (spriteRenderer) originalColor = spriteRenderer.color;
 
-        // safety: if sprite changes at runtime, keep collider in sync once
         if (spriteRenderer && boxCollider && boxCollider.size.sqrMagnitude < 0.0001f)
         {
             boxCollider.size = spriteRenderer.bounds.size;
@@ -75,9 +74,6 @@ public class Stone : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointerU
 
     public void Init(Board boardRef) => board = boardRef;
 
-    // ----------------------------
-    // Touch / Pointer input hooks
-    // ----------------------------
     public void OnPointerDown(PointerEventData eventData)
     {
         if (board == null || board.IsBusy) return;
@@ -89,10 +85,8 @@ public class Stone : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointerU
         draggedStones.Clear();
         draggedStoneObjects.Clear();
 
-        // Start from this stone
         AddStoneToPath(column, row);
 
-        // Lock drag to first stone type
         if (draggedStoneObjects.Count > 0)
         {
             activeDragType = draggedStoneObjects[0].Type;
@@ -126,17 +120,14 @@ public class Stone : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointerU
             return;
         }
 
-        // Already in the path? ignore
         if (draggedStones.Contains(newPos)) return;
 
-        // --- 4-WAY ONLY (no diagonals) ---
-        // Manhattan distance must be exactly 1
         if (draggedStones.Count > 0)
         {
             Vector2Int lastPos = draggedStones[draggedStones.Count - 1];
             int dx = Mathf.Abs(lastPos.x - x);
             int dy = Mathf.Abs(lastPos.y - y);
-            if (dx + dy != 1) return;  // <-- changed from (dx > 1 || dy > 1)
+            if (dx + dy != 1) return; 
         }
         // ----------------------------------
 
@@ -164,16 +155,12 @@ public class Stone : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointerU
         hasActiveDragType = false;
     }
 
-    // ----------------------------
-    // Path helpers
-    // ----------------------------
     private void AddStoneToPath(int x, int y)
     {
         if (board == null) return;
 
         var stone = board.GetStone(x, y);
-        if (!stone) return; // ignore empty cells (during/after gravity)
-
+        if (!stone) return; 
         if (!hasActiveDragType)
         {
             activeDragType = stone.Type;
