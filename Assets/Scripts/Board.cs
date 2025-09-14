@@ -7,6 +7,7 @@ using UnityEngine.UI;
 using UnityEngine.Events;
 
 #if ENABLE_INPUT_SYSTEM
+using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.UI;
 #endif
 
@@ -139,21 +140,45 @@ public class Board : MonoBehaviour
     {
         if (!Application.isPlaying || isBusy) return;
 
+#if ENABLE_INPUT_SYSTEM
+        // ---- New Input System (Keyboard) ----
+        var kb = Keyboard.current;
+        if (kb == null) return;
+
+        if (kb.dKey.wasPressedThisFrame)
+        {
+            DumpBoardToConsole();
+            return;
+        }
+
+        bool shift = (kb.leftShiftKey?.isPressed ?? false) || (kb.rightShiftKey?.isPressed ?? false);
+        if (shift && kb.rKey.wasPressedThisFrame)
+        {
+            EnsureSolvableAfterRefill(forceAtLeastOnce: true);
+            return;
+        }
+
+        if (kb.rKey.wasPressedThisFrame)
+        {
+            ReshuffleStones();
+            DumpBoardToConsole();
+        }
+#else
+        // ---- Old Input Manager (fallback) ----
         if (Input.GetKeyDown(KeyCode.D)) { DumpBoardToConsole(); return; }
 
         if ((Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift)) &&
             Input.GetKeyDown(KeyCode.R))
         {
-            Debug.Log("[Board] Hotkey: Force reshuffle then ensure solvable");
             EnsureSolvableAfterRefill(forceAtLeastOnce: true);
             return;
         }
         if (Input.GetKeyDown(KeyCode.R))
         {
-            Debug.Log("[Board] Hotkey: Reshuffle once (always)");
             ReshuffleStones();
             DumpBoardToConsole();
         }
+#endif
     }
 #endif
 
