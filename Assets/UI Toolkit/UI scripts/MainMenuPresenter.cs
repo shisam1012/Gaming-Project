@@ -8,7 +8,7 @@ namespace game.ui
     {
         private Button _btnStart, _btnSettings;
         public Action OpenSettings { set => _btnSettings.clicked += value; }
-
+        public Action StartGame { set => _btnStart.clicked += value; }
         public MainMenuPresenter(VisualElement root) {
             _btnStart = root.Q<Button>("btnStart");
             _btnSettings = root.Q<Button>("btnSettings");
@@ -19,5 +19,6 @@ namespace game.ui
             _btnStart.clicked += () => Debug.Log("Pressed Start");
             _btnSettings.clicked += () => Debug.Log("Pressed Settings");
         }
+
     }
 }

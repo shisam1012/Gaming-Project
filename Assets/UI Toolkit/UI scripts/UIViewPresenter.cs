@@ -10,9 +10,7 @@ namespace game.ui
     {
         [SerializeField] private UIDocument _baseView;
         private VisualElement _rootElem;
-        private VisualElement _mainMenuView;
-        private VisualElement _settingsView;
-        private VisualElement _pauseView, _inGameView;
+        private VisualElement _mainMenuView, _settingsView, _pauseView, _inGameView;
 
         private enum ViewState
         {
@@ -29,10 +27,12 @@ namespace game.ui
             _rootElem = _baseView.rootVisualElement;
             SetVisualElements();
             SetMainMenuPresenter();
+            SetInGamePresenter();
             SetPausePresenter();
             SetSettingsPresenter();
             UpdateViews();
         }
+
         private void SetVisualElements()
         {
             _currentViewState = ViewState.MainMenu;
@@ -42,12 +42,18 @@ namespace game.ui
             _pauseView = _rootElem.Q("PauseView");
             _inGameView = _rootElem.Q("InGameView");
             Debug.Log("setVisualElements");
-            
+        }
+        private void SetInGamePresenter()
+        {
+            InGamePresenter inGamePresenter = new(_inGameView)
+            {
+                PauseAction = () => ToggleView(ViewState.Pause)
+            };
         }
 
         private void SetSettingsPresenter()
         {
-            SettingsPresenter menuPresenter = new(_settingsView)
+            SettingsPresenter settingsPresenter = new(_settingsView)
             {
                 BackAction = () =>
                 {
@@ -59,9 +65,10 @@ namespace game.ui
 
         private void SetMainMenuPresenter()
         {
-            MainMenuPresenter menuPresenter = new(_mainMenuView)
+            MainMenuPresenter mainMenuPresenter = new(_mainMenuView)
             {
-                OpenSettings = () => ToggleSettings(enable: true, isPaused: false)
+                StartGame = () => ToggleView(ViewState.InGame),
+                OpenSettings = () => ToggleView(ViewState.Settings)
             };
         }
 
@@ -69,24 +76,15 @@ namespace game.ui
         {
             PausePresenter pausePresenter = new(_pauseView)
             {
-                OpenSettings = () => ToggleSettings(enable: true, isPaused: true)
+                ResumeGame = () => ToggleView(ViewState.InGame),
+                OpenSettings = () => ToggleView(ViewState.Settings)
             };
         }
 
-        private void ToggleSettings(bool enable, bool isPaused) {
+        private void ToggleView(ViewState newState) {
+            Debug.Log($"Toggle from {_currentViewState} to {newState}");
             _previousViewState = _currentViewState;
-            if (enable)
-            {
-                _currentViewState = ViewState.Settings;
-            }
-            else if (isPaused)
-            {
-                _currentViewState = ViewState.Pause;
-            }
-            else
-            {
-                _currentViewState = ViewState.MainMenu;
-            }
+            _currentViewState = newState;
             UpdateViews();
         }
 
@@ -95,6 +93,7 @@ namespace game.ui
             _mainMenuView.Display(_currentViewState == ViewState.MainMenu);
             _settingsView.Display(_currentViewState == ViewState.Settings);
             _pauseView.Display(_currentViewState == ViewState.Pause);
+            _inGameView.Display(_currentViewState == ViewState.InGame);
             Debug.Log($"update to view {_currentViewState}");
         }
 

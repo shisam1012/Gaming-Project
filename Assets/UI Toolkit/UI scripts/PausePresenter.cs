@@ -7,8 +7,8 @@ namespace game.ui
     public class PausePresenter
     {
         private Button _btnResume, _btnSettings;
+        public Action ResumeGame { set => _btnResume.clicked += value; }
         public Action OpenSettings { set => _btnSettings.clicked += value; }
-
         public PausePresenter(VisualElement root)
         {
             _btnResume = root.Q<Button>("btnResume");
