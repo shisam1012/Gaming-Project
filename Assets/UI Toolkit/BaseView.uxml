@@ -1,0 +1,12 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:Template name="MainMenuVisualTree" src="project://database/Assets/UI%20Toolkit/MainMenuVisualTree.uxml?fileID=9197481963319205126&amp;guid=7834454bb26cb364fa41bb4777830a3c&amp;type=3#MainMenuVisualTree" />
+    <ui:Template name="PauseVisualTree" src="project://database/Assets/UI%20Toolkit/PauseVisualTree.uxml?fileID=9197481963319205126&amp;guid=347211cc9a3fc2345b15ee56535c67a0&amp;type=3#PauseVisualTree" />
+    <ui:Template name="SettingsVisualTree" src="project://database/Assets/UI%20Toolkit/SettingsVisualTree.uxml?fileID=9197481963319205126&amp;guid=d23e4fa883276a84a9068f57a4f7493c&amp;type=3#SettingsVisualTree" />
+    <ui:Template name="InGameVisualTree" src="project://database/Assets/UI%20Toolkit/InGameVisualTree.uxml?fileID=9197481963319205126&amp;guid=31bab2a14687d784689e547a4dc9ea31&amp;type=3#InGameVisualTree" />
+    <ui:VisualElement name="Base" style="flex-grow: 1;">
+        <ui:Instance template="MainMenuVisualTree" name="MainMenuView" style="flex-grow: 1; flex-shrink: 0;" />
+        <ui:Instance template="PauseVisualTree" name="PauseView" style="flex-shrink: 0; flex-grow: 1; display: none;" />
+        <ui:Instance template="SettingsVisualTree" name="SettingsView" style="display: none; flex-grow: 1; flex-shrink: 0;" />
+        <ui:Instance template="InGameVisualTree" name="InGameView" style="display: none;" />
+    </ui:VisualElement>
+</ui:UXML>

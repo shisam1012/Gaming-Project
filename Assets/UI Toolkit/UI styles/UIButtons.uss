@@ -1,0 +1,59 @@
+.unity-button{
+    background-color: transparent;
+    border-top-width: 0; 
+    border-right-width: 0; 
+    border-bottom-width: 0; 
+    border-left-width: 0; 
+}
+
+.unity-button.menu-item {
+    background-image: url("project://database/Assets/Art/Textures/gemstone-btn.png?fileID=2800000&guid=9cf49394b6b2cbd40b6033b2f740ad9e&type=3#gemstone-btn");
+    -unity-slice-left: 15;
+    -unity-slice-top: 15;
+    -unity-slice-right: 15;
+    -unity-slice-bottom: 15;
+    -unity-slice-scale: 9px;
+    -unity-background-image-tint-color: var(--sand);
+    -unity-font-definition: url("project://database/Assets/Fonts/Pixuf.ttf?fileID=12800000&guid=d98362dccd0b78840a04ae67cbb9005b&type=3#Pixuf");
+    -unity-font-style: normal;
+    text-shadow: 1px 1px 0 rgb(186, 136, 218);
+    color: rgb(255, 255, 255);
+}
+
+.menu-item:active {
+    background-image: url("project://database/Assets/Art/Textures/gemstone-btn.png?fileID=2800000&guid=9cf49394b6b2cbd40b6033b2f740ad9e&type=3#gemstone-btn");
+    -unity-background-image-tint-color: rgb(194, 255, 255);
+    -unity-background-scale-mode: stretch-to-fill;
+    -unity-slice-left: 15;
+    -unity-slice-top: 15;
+    -unity-slice-right: 15;
+    -unity-slice-bottom: 15;
+    -unity-slice-scale: 6px;
+    scale: 1.2 1.2;
+    rotate: 5deg;
+}
+
+.unity-button.settings-button {
+    background-image: url("project://database/Assets/Art/Textures/UI-textures/Cozy%20GUI%20-%20Tileset%20(By%20Pizza%20Doggy).png?fileID=-4104073166698897813&amp;guid=4d44c2eac7bcb9841918553f1e413aa0&amp;type=3#settings1"); 
+}
+
+.settings-button:active {
+    background-image: url("project://database/Assets/Art/Textures/UI-textures/Cozy%20GUI%20-%20Tileset%20(By%20Pizza%20Doggy).png?fileID=3134815996161665821&amp;guid=4d44c2eac7bcb9841918553f1e413aa0&amp;type=3#settings1-active");
+}
+
+.pause-button{
+    background-image: url("project://database/Assets/Art/Textures/UI-textures/Cozy%20GUI%20-%20Tileset%20(By%20Pizza%20Doggy).png?fileID=-242055420863910321&amp;guid=4d44c2eac7bcb9841918553f1e413aa0&amp;type=3#pause1")
+}
+.pause-button:active{
+    background-image: url("project://database/Assets/Art/Textures/UI-textures/Cozy%20GUI%20-%20Tileset%20(By%20Pizza%20Doggy).png?fileID=-242055420863910321&amp;guid=4d44c2eac7bcb9841918553f1e413aa0&amp;type=3#pause1-active")
+}
+.unity-button:active {
+    transition-duration: 0.5ms;
+    transition-property: all;
+}
+
+.unity-button.small {
+    width: 150px; 
+    height: 150px; 
+    max-width: 100%;
+}
