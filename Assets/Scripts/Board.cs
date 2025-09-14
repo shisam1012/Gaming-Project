@@ -24,7 +24,7 @@ public class Board : MonoBehaviour
     [SerializeField] private EventSystem es;
 
     [Header("Runtime Grids (debug viewable)")]
-    [SerializeField] private Stone[,] allStones;
+    private Stone[,] allStones;
     private BackGroundTile[,] allTiles;
     private bool[,] playable;
 
