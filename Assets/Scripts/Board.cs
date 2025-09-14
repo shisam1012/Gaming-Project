@@ -40,9 +40,10 @@ public class Board : MonoBehaviour
         new Vector2Int(1, 0)
     };
 
+    // ===== Endpoints (start on inner rows; end on top or bottom, and end has NO STONE) =====
     [Header("Endpoints")]
-    [SerializeField] private Vector2Int fluidSource = new Vector2Int(3, 3);
-    [SerializeField] private Vector2Int destination = new Vector2Int(3, 0);
+    [SerializeField] private Vector2Int fluidSource = new Vector2Int(3, 3); // Start (inner row)
+    [SerializeField] private Vector2Int destination = new Vector2Int(3, 0); // End (top/bottom edge)
     [SerializeField] private bool randomizeEndpointsOnStart = true;
 
     [Header("Win Event")]
@@ -88,35 +89,33 @@ public class Board : MonoBehaviour
     }
 #endif
 
+    // ---------- Helpers ----------
+    private Vector2Int ClampToBoard(Vector2Int p)
+    {
+        int cx = Mathf.Clamp(p.x, 0, width - 1);
+        int cy = Mathf.Clamp(p.y, 0, height - 1);
+        return new Vector2Int(cx, cy);
+    }
+
+    private bool IsDestinationCell(int x, int y) => (x == destination.x && y == destination.y);
+
+    public bool InBounds(int x, int y) => x >= 0 && x < width && y >= 0 && y < height;
+
+    public Stone GetStone(int x, int y)
+    {
+        if (!InBounds(x, y)) return null;
+        return allStones[x, y];
+    }
+
+    private void SetStone(int x, int y, Stone s)
+    {
+        if (!InBounds(x, y)) return;
+        allStones[x, y] = s;
+    }
+
+    // ---------- Setup ----------
     private void SetUp()
     {
-        // 1) Spawn grid
-        for (int x = 0; x < width; x++)
-        {
-            for (int y = 0; y < height; y++)
-            {
-                var pos = new Vector2(x, y);
-
-                var cell = Instantiate(cellPrefab, pos, Quaternion.identity, transform);
-                cell.name = $"({x}_{y})";
-                var bgTile = cell.GetComponent<BackGroundTile>();
-                if (bgTile != null)
-                {
-                    bgTile.SetTileType(BackGroundTile.BackgroundType.Sand);
-                    allTiles[x, y] = bgTile;
-                }
-
-                int idx = Random.Range(0, stonePrefabsRef.Length);
-                var stone = Instantiate(stonePrefabsRef[idx], pos, Quaternion.identity, transform);
-                stone.Init(this);
-                stone.column = x;
-                stone.row = y;
-                stone.name = $"({x}_{y})_stone";
-                allStones[x, y] = stone;
-            }
-        }
-
-        // 2) Choose endpoints by rule (start: inner row [1..h-2], end: y=0 or y=h-1)
         if (randomizeEndpointsOnStart)
         {
             int startY = (height >= 3) ? Random.Range(1, height - 1) : 0;
@@ -133,77 +132,112 @@ public class Board : MonoBehaviour
         fluidSource = ClampToBoard(fluidSource);
         destination = ClampToBoard(destination);
 
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                var pos = new Vector2(x, y);
+
+                var cell = Instantiate(cellPrefab, pos, Quaternion.identity, transform);
+                cell.name = $"({x}_{y})";
+                var bgTile = cell.GetComponent<BackGroundTile>();
+                if (bgTile != null)
+                {
+                    bgTile.SetTileType(BackGroundTile.BackgroundType.Sand);
+                    allTiles[x, y] = bgTile;
+                }
+
+                if (IsDestinationCell(x, y))
+                {
+                    allStones[x, y] = null;
+                    continue;
+                }
+
+                int idx = Random.Range(0, stonePrefabsRef.Length);
+                var stone = Instantiate(stonePrefabsRef[idx], pos, Quaternion.identity, transform);
+                stone.Init(this);
+                stone.column = x;
+                stone.row = y;
+                stone.name = $"({x}_{y})_stone";
+                allStones[x, y] = stone;
+            }
+        }
+
         allTiles[fluidSource.x, fluidSource.y].SetTileType(BackGroundTile.BackgroundType.Fluid);
-        allTiles[destination.x, destination.y].SetTileType(BackGroundTile.BackgroundType.Fluid);
     }
 
-    private Vector2Int ClampToBoard(Vector2Int p)
-    {
-        int cx = Mathf.Clamp(p.x, 0, width - 1);
-        int cy = Mathf.Clamp(p.y, 0, height - 1);
-        return new Vector2Int(cx, cy);
-    }
-
-    public bool InBounds(int x, int y) => x >= 0 && x < width && y >= 0 && y < height;
-
-    public Stone GetStone(int x, int y)
-    {
-        if (!InBounds(x, y)) return null;
-        return allStones[x, y];
-    }
-
-    private void SetStone(int x, int y, Stone s)
-    {
-        if (!InBounds(x, y)) return;
-        allStones[x, y] = s;
-    }
-
+    // ---------- Gameplay ----------
     public void RemoveStones(List<Vector2Int> stonePositions)
     {
         if (isBusy) return;
         StartCoroutine(RemoveStonesRoutine(stonePositions));
     }
 
-    private IEnumerator RemoveStonesRoutine(List<Vector2Int> stonePositions)
+   private IEnumerator RemoveStonesRoutine(List<Vector2Int> stonePositions)
     {
+        if (stonePositions == null || stonePositions.Count == 0) yield break;
+
         isBusy = true;
 
+        // 1) Destroy selected stones
         foreach (var pos in stonePositions)
         {
             var s = GetStone(pos.x, pos.y);
             if (s == null) continue;
+
             Destroy(s.gameObject);
             SetStone(pos.x, pos.y, null);
         }
 
+        // 2) Cleared cells become Empty so fluid can flow through
         FlipBackgroundTiles(stonePositions);
 
+        // 3) Spread fluid from start; allow stepping onto destination even if still Sand
         var flooded = FloodFillFluid();
+
+        // 4) Win check (unchanged call site)
         if (flooded.Contains(destination))
         {
             Debug.LogWarning("[WIN] Fluid reached destination! 🎉");
             onWin?.Invoke();
         }
+        else
+        {
+            Debug.Log("[Board] Not yet: start hasn’t connected to end.");
+        }
 
+        // 5) Gravity collapse (skip destination if you made it a hole elsewhere)
         CollapseAllColumns();
         yield return null;
+
+        // 6) Refill (also skips destination if you've implemented that)
         RefillBoard();
         yield return null;
 
+        // 7) Ensure there is at least one possible match
         EnsureSolvableAfterRefill();
 
         isBusy = false;
-    }
+}
 
     private void CollapseAllColumns()
     {
         for (int x = 0; x < width; x++)
         {
             int writeY = 0;
+
+            // If destination is at the bottom of this column, skip that slot
+            if (IsDestinationCell(x, writeY))
+                writeY++;
+
             for (int y = 0; y < height; y++)
             {
                 var s = GetStone(x, y);
                 if (s == null) continue;
+
+                // Find next valid write slot (skip destination if encountered)
+                while (IsDestinationCell(x, writeY))
+                    writeY++;
 
                 if (y != writeY)
                 {
@@ -225,6 +259,7 @@ public class Board : MonoBehaviour
         {
             for (int y = height - 1; y >= 0; y--)
             {
+                if (IsDestinationCell(x, y)) continue;
                 if (GetStone(x, y) != null) continue;
 
                 int idx = Random.Range(0, stonePrefabsRef.Length);
@@ -252,42 +287,58 @@ public class Board : MonoBehaviour
         }
     }
 
-    private HashSet<Vector2Int> FloodFillFluid()
+  /// Flood from fluidSource through Empty/Fluid; also allow stepping onto the
+/// destination even if it's Sand. Convert Empty (and destination) to Fluid.
+/// Returns all visited cells (so win check works).
+private HashSet<Vector2Int> FloodFillFluid()
+{
+    var queue = new Queue<Vector2Int>();
+    var visited = new HashSet<Vector2Int>();
+
+    queue.Enqueue(fluidSource);
+    visited.Add(fluidSource);
+
+    while (queue.Count > 0)
     {
-        var start = fluidSource;
-        var queue = new Queue<Vector2Int>();
-        var visited = new HashSet<Vector2Int>();
+        var current = queue.Dequeue();
+        var tile = allTiles[current.x, current.y];
 
-        queue.Enqueue(start);
-        visited.Add(start);
+        // Paint path as it opens
+        if (tile.Type == BackGroundTile.BackgroundType.Empty)
+            tile.SetTileType(BackGroundTile.BackgroundType.Fluid);
 
-        while (queue.Count > 0)
+        foreach (var dir in directions)
         {
-            var current = queue.Dequeue();
-            var tile = allTiles[current.x, current.y];
+            var next = current + dir;
+            if (!InBounds(next.x, next.y)) continue;
+            if (visited.Contains(next)) continue;
 
-            if (tile.Type == BackGroundTile.BackgroundType.Empty)
-                tile.SetTileType(BackGroundTile.BackgroundType.Fluid);
-
-            foreach (var dir in directions)
+            // --- SPECIAL CASE: destination is passable even if it's Sand ---
+            if (next == destination)
             {
-                var next = current + dir;
-                if (!InBounds(next.x, next.y)) continue;
-                if (visited.Contains(next)) continue;
+                // Turn destination blue when reached and consider it visited.
+                allTiles[next.x, next.y].SetTileType(BackGroundTile.BackgroundType.Fluid);
+                visited.Add(next);
+                queue.Enqueue(next);     // optional: enqueue lets fluid propagate past end
+                continue;
+            }
 
-                var nextTile = allTiles[next.x, next.y];
-                if (nextTile.Type == BackGroundTile.BackgroundType.Empty ||
-                    nextTile.Type == BackGroundTile.BackgroundType.Fluid)
-                {
-                    queue.Enqueue(next);
-                    visited.Add(next);
-                }
+            var nextTile = allTiles[next.x, next.y];
+            // Regular passability: Empty or already Fluid
+            if (nextTile.Type == BackGroundTile.BackgroundType.Empty ||
+                nextTile.Type == BackGroundTile.BackgroundType.Fluid)
+            {
+                visited.Add(next);
+                queue.Enqueue(next);
             }
         }
-
-        return visited;
     }
 
+    return visited;
+}
+
+
+    // ---------- Playability / Debug ----------
     private void EnsureSolvableAfterRefill(bool forceAtLeastOnce = false)
     {
         int attempts = 0;
@@ -370,7 +421,7 @@ public class Board : MonoBehaviour
     {
         var list = new List<Stone>(width * height);
 
-        // collect
+        // collect all existing stones
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
@@ -384,20 +435,20 @@ public class Board : MonoBehaviour
             }
         }
 
-        // shuffle
         for (int i = 0; i < list.Count; i++)
         {
             int j = Random.Range(i, list.Count);
             (list[i], list[j]) = (list[j], list[i]);
         }
 
-        // place back
         int k = 0;
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
             {
+                if (IsDestinationCell(x, y)) continue;
                 if (k >= list.Count) continue;
+
                 var s = list[k++];
                 s.column = x;
                 s.row = y;
