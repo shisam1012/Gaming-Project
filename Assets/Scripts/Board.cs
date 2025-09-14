@@ -14,8 +14,8 @@ using UnityEngine.InputSystem.UI;
 public class Board : MonoBehaviour
 {
     [Header("Board Size & Prefabs")]
-    [SerializeField] private int width = 8;
-    [SerializeField] private int height = 8;
+    [SerializeField] private int width = 7;   // default 7x10
+    [SerializeField] private int height = 10;
     [SerializeField] private GameObject cellPrefab;
     [SerializeField] private Stone[] stonePrefabsRef;
 
@@ -25,6 +25,7 @@ public class Board : MonoBehaviour
     [Header("Runtime Grids (debug viewable)")]
     [SerializeField] private Stone[,] allStones;
     private BackGroundTile[,] allTiles;
+    private bool[,] playable;
 
     public int Width  => width;
     public int Height => height;
@@ -40,39 +41,106 @@ public class Board : MonoBehaviour
         new Vector2Int(1, 0)
     };
 
-    // ===== Endpoints (start on inner rows; end on top or bottom, and end has NO STONE) =====
+    // Endpoints
     [Header("Endpoints")]
     [SerializeField] private Vector2Int fluidSource = new Vector2Int(3, 3);
     [SerializeField] private Vector2Int destination = new Vector2Int(3, 0);
-    [SerializeField] private bool randomizeEndpointsOnStart = true;
+    [SerializeField] private bool randomizeEndpointsOnStart = false; 
 
     [Header("Win Event")]
     public UnityEvent onWin;
+
+
+    private LevelConfig activeLevel;
+
+    // ===== Public API (called by LevelManager) =====
+    public void ApplyLevel(LevelConfig level)
+    {
+        activeLevel = level;
+
+
+        ClearBoardVisuals();
+
+
+        width  = activeLevel.GetWidth();
+        height = activeLevel.GetHeight();
+
+        playable = new bool[width, height];
+        for (int x = 0; x < width; x++)
+            for (int y = 0; y < height; y++)
+                playable[x, y] = activeLevel.IsPlayable(x, y);
+
+        fluidSource = ClampToBoard(activeLevel.startInside);
+        destination = ClampToBoard(activeLevel.destinationOnBorder);
+
+        if (IsOnBorder(fluidSource))
+            Debug.LogWarning("[Board] Start should be inside, but is on border.");
+        if (!IsOnBorder(destination))
+            Debug.LogWarning("[Board] Destination should be on border.");
+
+        allTiles  = new BackGroundTile[width, height];
+        allStones = new Stone[width, height];
+
+        SetUp();
+        EnsureSolvableAfterRefill();
+    }
+
+    private void Start()
+    {
+        if (UnityEngine.Object.FindFirstObjectByType<LevelManager>() != null) return;
+
+        playable = new bool[width, height];
+        for (int x = 0; x < width; x++)
+            for (int y = 0; y < height; y++)
+                playable[x, y] = true;
+
+        allTiles  = new BackGroundTile[width, height];
+        allStones = new Stone[width, height];
+
+        if (randomizeEndpointsOnStart)
+        {
+            int startY = (height >= 3) ? Random.Range(1, height - 1) : 0;
+            int startX = Random.Range(0, width);
+            fluidSource = new Vector2Int(startX, startY);
+
+            int endY = (Random.value < 0.5f) ? 0 : (height - 1);
+            int endX = Random.Range(0, width);
+            destination = new Vector2Int(endX, endY);
+            if (destination == fluidSource)
+                destination = new Vector2Int((endX + 1) % width, endY);
+        }
+
+        SetUp();
+        EnsureSolvableAfterRefill();
+    }
 
     private void Awake()
     {
         EnsureEventSystemAndRaycaster();
     }
 
-    private void Start()
+    // ---------- Clear visuals to avoid duplicates ----------
+    private void ClearBoardVisuals()
     {
-        allTiles  = new BackGroundTile[width, height];
-        allStones = new Stone[width, height];
-        SetUp();
-        EnsureSolvableAfterRefill();
+        for (int i = transform.childCount - 1; i >= 0; i--)
+        {
+            var ch = transform.GetChild(i);
+#if UNITY_EDITOR
+            if (!Application.isPlaying) DestroyImmediate(ch.gameObject);
+            else Destroy(ch.gameObject);
+#else
+            Destroy(ch.gameObject);
+#endif
+        }
     }
 
 #if UNITY_EDITOR
-    // D = Dump,  Shift+R = reshuffle->ensure,  R = reshuffle once
     private void Update()
     {
         if (!Application.isPlaying || isBusy) return;
 
-        if (Input.GetKeyDown(KeyCode.D))
-        {
-            DumpBoardToConsole();
-            return;
-        }
+        if (Input.GetKeyDown(KeyCode.D)) { DumpBoardToConsole(); return; }
+
         if ((Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift)) &&
             Input.GetKeyDown(KeyCode.R))
         {
@@ -98,8 +166,9 @@ public class Board : MonoBehaviour
     }
 
     private bool IsDestinationCell(int x, int y) => (x == destination.x && y == destination.y);
-
-    public bool InBounds(int x, int y) => x >= 0 && x < width && y >= 0 && y < height;
+    private bool InBounds(int x, int y) => x >= 0 && x < width && y >= 0 && y < height;
+    private bool IsOnBorder(Vector2Int p) => p.x == 0 || p.x == width - 1 || p.y == 0 || p.y == height - 1;
+    private bool IsPlayable(int x, int y) => InBounds(x, y) && (playable == null || playable[x, y]);
 
     public Stone GetStone(int x, int y)
     {
@@ -113,30 +182,17 @@ public class Board : MonoBehaviour
         allStones[x, y] = s;
     }
 
-    // ---------- Setup ----------
+    // ---------- Build ----------
     private void SetUp()
     {
-        if (randomizeEndpointsOnStart)
-        {
-            int startY = (height >= 3) ? Random.Range(1, height - 1) : 0;
-            int startX = Random.Range(0, width);
-            fluidSource = new Vector2Int(startX, startY);
-
-            int endY = (Random.value < 0.5f) ? 0 : (height - 1);
-            int endX = Random.Range(0, width);
-            destination = new Vector2Int(endX, endY);
-            if (destination == fluidSource)
-                destination = new Vector2Int((endX + 1) % width, endY);
-        }
-
-        fluidSource = ClampToBoard(fluidSource);
-        destination = ClampToBoard(destination);
-
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
             {
+                if (!IsPlayable(x, y)) { allTiles[x, y] = null; allStones[x, y] = null; continue; }
+
                 var pos = new Vector2(x, y);
+
 
                 var cell = Instantiate(cellPrefab, pos, Quaternion.identity, transform);
                 cell.name = $"({x}_{y})";
@@ -162,8 +218,8 @@ public class Board : MonoBehaviour
                 allStones[x, y] = stone;
             }
         }
-
-        allTiles[fluidSource.x, fluidSource.y].SetTileType(BackGroundTile.BackgroundType.Fluid);
+        if (IsPlayable(fluidSource.x, fluidSource.y) && allTiles[fluidSource.x, fluidSource.y] != null)
+            allTiles[fluidSource.x, fluidSource.y].SetTileType(BackGroundTile.BackgroundType.Fluid);
     }
 
     // ---------- Gameplay ----------
@@ -173,7 +229,7 @@ public class Board : MonoBehaviour
         StartCoroutine(RemoveStonesRoutine(stonePositions));
     }
 
-   private IEnumerator RemoveStonesRoutine(List<Vector2Int> stonePositions)
+    private IEnumerator RemoveStonesRoutine(List<Vector2Int> stonePositions)
     {
         if (stonePositions == null || stonePositions.Count == 0) yield break;
 
@@ -211,7 +267,7 @@ public class Board : MonoBehaviour
         EnsureSolvableAfterRefill();
 
         isBusy = false;
-}
+    }
 
     private void CollapseAllColumns()
     {
@@ -219,16 +275,18 @@ public class Board : MonoBehaviour
         {
             int writeY = 0;
 
-            if (IsDestinationCell(x, writeY))
-                writeY++;
+            while (writeY < height && (!IsPlayable(x, writeY) || IsDestinationCell(x, writeY))) writeY++;
 
             for (int y = 0; y < height; y++)
             {
+                if (!IsPlayable(x, y)) continue;
                 var s = GetStone(x, y);
                 if (s == null) continue;
 
-                while (IsDestinationCell(x, writeY))
+                while (writeY < height && (!IsPlayable(x, writeY) || IsDestinationCell(x, writeY)))
                     writeY++;
+
+                if (writeY >= height) break;
 
                 if (y != writeY)
                 {
@@ -250,6 +308,7 @@ public class Board : MonoBehaviour
         {
             for (int y = height - 1; y >= 0; y--)
             {
+                if (!IsPlayable(x, y)) continue;
                 if (IsDestinationCell(x, y)) continue;
                 if (GetStone(x, y) != null) continue;
 
@@ -269,7 +328,7 @@ public class Board : MonoBehaviour
         if (allTiles == null) return;
         foreach (var p in cleared)
         {
-            if (!InBounds(p.x, p.y)) continue;
+            if (!IsPlayable(p.x, p.y)) continue;
             var tile = allTiles[p.x, p.y];
             if (tile != null && tile.Type == BackGroundTile.BackgroundType.Sand)
             {
@@ -277,50 +336,53 @@ public class Board : MonoBehaviour
             }
         }
     }
-private HashSet<Vector2Int> FloodFillFluid()
-{
-    var queue = new Queue<Vector2Int>();
-    var visited = new HashSet<Vector2Int>();
 
-    queue.Enqueue(fluidSource);
-    visited.Add(fluidSource);
-
-    while (queue.Count > 0)
+    private HashSet<Vector2Int> FloodFillFluid()
     {
-        var current = queue.Dequeue();
-        var tile = allTiles[current.x, current.y];
+        var queue = new Queue<Vector2Int>();
+        var visited = new HashSet<Vector2Int>();
 
-        if (tile.Type == BackGroundTile.BackgroundType.Empty)
-            tile.SetTileType(BackGroundTile.BackgroundType.Fluid);
+        if (!IsPlayable(fluidSource.x, fluidSource.y)) return visited;
 
-        foreach (var dir in directions)
+        queue.Enqueue(fluidSource);
+        visited.Add(fluidSource);
+
+        while (queue.Count > 0)
         {
-            var next = current + dir;
-            if (!InBounds(next.x, next.y)) continue;
-            if (visited.Contains(next)) continue;
+            var current = queue.Dequeue();
 
-            if (next == destination)
+            var tile = InBounds(current.x, current.y) ? allTiles[current.x, current.y] : null;
+            if (tile != null && tile.Type == BackGroundTile.BackgroundType.Empty)
+                tile.SetTileType(BackGroundTile.BackgroundType.Fluid);
+
+            foreach (var dir in directions)
             {
+                var next = current + dir;
+                if (!IsPlayable(next.x, next.y)) continue;
+                if (visited.Contains(next)) continue;
 
-                allTiles[next.x, next.y].SetTileType(BackGroundTile.BackgroundType.Fluid);
-                visited.Add(next);
-                queue.Enqueue(next);
-                continue;
-            }
+                if (next == destination)
+                {
+                    var destTile = allTiles[next.x, next.y];
+                    if (destTile != null) destTile.SetTileType(BackGroundTile.BackgroundType.Fluid);
+                    visited.Add(next);
+                    queue.Enqueue(next);
+                    continue;
+                }
 
-            var nextTile = allTiles[next.x, next.y];
-            if (nextTile.Type == BackGroundTile.BackgroundType.Empty ||
-                nextTile.Type == BackGroundTile.BackgroundType.Fluid)
-            {
-                visited.Add(next);
-                queue.Enqueue(next);
+                var nextTile = allTiles[next.x, next.y];
+                if (nextTile != null &&
+                   (nextTile.Type == BackGroundTile.BackgroundType.Empty ||
+                    nextTile.Type == BackGroundTile.BackgroundType.Fluid))
+                {
+                    visited.Add(next);
+                    queue.Enqueue(next);
+                }
             }
         }
+
+        return visited;
     }
-
-    return visited;
-}
-
 
     // ---------- Playability / Debug ----------
     private void EnsureSolvableAfterRefill(bool forceAtLeastOnce = false)
@@ -355,6 +417,7 @@ private HashSet<Vector2Int> FloodFillFluid()
         {
             for (int y = 0; y < height; y++)
             {
+                if (!IsPlayable(x, y)) continue;
                 if (visited[x, y]) continue;
 
                 var s = GetStone(x, y);
@@ -369,7 +432,7 @@ private HashSet<Vector2Int> FloodFillFluid()
 
     private int FloodCountSameType(int sx, int sy, Stone.StoneType type, bool[,] visited)
     {
-        if (!InBounds(sx, sy)) return 0;
+        if (!IsPlayable(sx, sy)) return 0;
         var start = GetStone(sx, sy);
         if (start == null || start.Type != type) return 0;
 
@@ -386,7 +449,7 @@ private HashSet<Vector2Int> FloodFillFluid()
             for (int i = 0; i < directions.Length; i++)
             {
                 var n = p + directions[i];
-                if (!InBounds(n.x, n.y)) continue;
+                if (!IsPlayable(n.x, n.y)) continue;
                 if (visited[n.x, n.y]) continue;
 
                 var sn = GetStone(n.x, n.y);
@@ -409,6 +472,9 @@ private HashSet<Vector2Int> FloodFillFluid()
         {
             for (int y = 0; y < height; y++)
             {
+                if (!IsPlayable(x, y)) continue;
+                if (IsDestinationCell(x, y)) continue;
+
                 var s = GetStone(x, y);
                 if (s != null)
                 {
@@ -429,6 +495,7 @@ private HashSet<Vector2Int> FloodFillFluid()
         {
             for (int y = 0; y < height; y++)
             {
+                if (!IsPlayable(x, y)) continue;
                 if (IsDestinationCell(x, y)) continue;
                 if (k >= list.Count) continue;
 
@@ -445,11 +512,7 @@ private HashSet<Vector2Int> FloodFillFluid()
     [ContextMenu("Debug/Force Reshuffle (Always)")]
     public void ForceReshuffleOnce()
     {
-        if (!Application.isPlaying)
-        {
-            Debug.LogWarning("[Board] Play Mode only for reshuffle.");
-            return;
-        }
+        if (!Application.isPlaying) { Debug.LogWarning("[Board] Play Mode only for reshuffle."); return; }
         ReshuffleStones();
         Debug.Log("[Board] Forced reshuffle (once).");
         DumpBoardToConsole();
@@ -458,22 +521,14 @@ private HashSet<Vector2Int> FloodFillFluid()
     [ContextMenu("Debug/Force Reshuffle Until Solvable (Even If Already Solvable)")]
     public void ForceReshuffleUntilSolvable_Always()
     {
-        if (!Application.isPlaying)
-        {
-            Debug.LogWarning("[Board] Play Mode only for reshuffle.");
-            return;
-        }
+        if (!Application.isPlaying) { Debug.LogWarning("[Board] Play Mode only for reshuffle."); return; }
         EnsureSolvableAfterRefill(forceAtLeastOnce: true);
     }
 
     [ContextMenu("Debug/Force Reshuffle Until Solvable")]
     public void ForceReshuffleUntilSolvable()
     {
-        if (!Application.isPlaying)
-        {
-            Debug.LogWarning("[Board] Play Mode only for reshuffle.");
-            return;
-        }
+        if (!Application.isPlaying) { Debug.LogWarning("[Board] Play Mode only for reshuffle."); return; }
         EnsureSolvableAfterRefill();
     }
 
@@ -488,6 +543,7 @@ private HashSet<Vector2Int> FloodFillFluid()
             sb.Append($"y={y}: ");
             for (int x = 0; x < width; x++)
             {
+                if (!IsPlayable(x, y)) { sb.Append('#').Append(' '); continue; }
                 var s = GetStone(x, y);
                 char c = s == null ? '.' : s.Type.ToString()[0];
                 sb.Append(c).Append(' ');
