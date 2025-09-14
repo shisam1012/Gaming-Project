@@ -25,7 +25,6 @@ public class MapShape : ScriptableObject
 1111111
 1111111";
 
-    // Auto-parse whenever you change something in the inspector
     private void OnValidate()
     {
         TryApplyRowsText();
@@ -36,12 +35,11 @@ public class MapShape : ScriptableObject
         if (string.IsNullOrWhiteSpace(rowsText)) return;
 
         string[] lines = rowsText.Replace("\r", "").Split('\n');
-        // ignore empty trailing line
         int lineCount = 0;
         foreach (var line in lines) if (!string.IsNullOrWhiteSpace(line)) lineCount++;
         if (lineCount == 0) return;
 
-        // determine w/h
+
         int h = 0;
         int w = 0;
         foreach (var raw in lines)
@@ -52,7 +50,6 @@ public class MapShape : ScriptableObject
             h++;
         }
 
-        // validate all rows same width
         foreach (var raw in lines)
         {
             var line = raw.Trim();
@@ -74,7 +71,7 @@ public class MapShape : ScriptableObject
             {
                 char c = line[x];
                 bool playable = (c == '1' || c == 'X' || c == '#');
-                // rowsText is given TOP→BOTTOM; our storage is row-major bottom→top
+
                 int topToBottomY = (height - 1) - y;
                 mask[topToBottomY * width + x] = playable;
             }
@@ -85,7 +82,7 @@ public class MapShape : ScriptableObject
     public bool IsPlayable(int x, int y)
     {
         if (x < 0 || x >= width || y < 0 || y >= height) return false;
-        if (mask == null || mask.Length != width * height) return true; // treat as full rectangle
+        if (mask == null || mask.Length != width * height) return true;
         return mask[y * width + x];
     }
 }

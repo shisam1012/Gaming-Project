@@ -1,101 +1,106 @@
-using Assets.UI_Toolkit.UI_scripts;
-using System;
-using UnityEditor;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UIElements;
 
-namespace game.ui
+public class UIViewPresenter : MonoBehaviour
 {
-    public class UIViewPresenter : MonoBehaviour
+    [Header("UI Toolkit")]
+    public UIDocument uiDocument;
+    [Tooltip("Name of the Start button in the UXML (UI Builder 'Name' field, not the text).")]
+    public string startButtonName = "StartButton";
+
+    [Header("Behaviour")]
+    [Tooltip("If true, we will SetActive(false) the GameObject after hiding the start view.")]
+    public bool deactivateGameObjectOnStart = false;
+
+    [Header("Events")]
+    public UnityEvent onStartPressed;
+    // Cache
+    private VisualElement root;
+    private Button startBtn;
+
+    private void Awake()
     {
-        [SerializeField] private UIDocument _baseView;
-        private VisualElement _rootElem;
-        private VisualElement _mainMenuView, _settingsView, _pauseView, _inGameView;
+        if (!uiDocument) uiDocument = GetComponent<UIDocument>();
+    }
 
-        private enum ViewState
-        {
-            MainMenu,
-            Settings,
-            Pause,
-            InGame
-        }
-        private ViewState _currentViewState;
-        private ViewState _previousViewState;
+    private void OnEnable()
+    {
+        BindUI();
+    }
 
-        private void OnEnable()
+    private void OnDisable()
+    {
+        if (startBtn != null) startBtn.clicked -= HandleStartClicked;
+    }
+
+    private void BindUI()
+    {
+        if (!uiDocument)
         {
-            _rootElem = _baseView.rootVisualElement;
-            SetVisualElements();
-            SetMainMenuPresenter();
-            SetInGamePresenter();
-            SetPausePresenter();
-            SetSettingsPresenter();
-            UpdateViews();
+            Debug.LogWarning("[UIViewPresenter] Missing UIDocument.");
+            return;
         }
 
-        private void SetVisualElements()
+        root = uiDocument.rootVisualElement;
+        if (root == null)
         {
-            _currentViewState = ViewState.MainMenu;
-            _previousViewState = ViewState.MainMenu;
-            _mainMenuView = _rootElem.Q("MainMenuView");
-            _settingsView = _rootElem.Q("SettingsView");
-            _pauseView = _rootElem.Q("PauseView");
-            _inGameView = _rootElem.Q("InGameView");
-            Debug.Log("setVisualElements");
+            Debug.LogWarning("[UIViewPresenter] UIDocument has no rootVisualElement yet.");
+            return;
         }
-        private void SetInGamePresenter()
+
+        if (!string.IsNullOrEmpty(startButtonName))
+            startBtn = root.Q<Button>(startButtonName);
+        if (startBtn == null)
         {
-            InGamePresenter inGamePresenter = new(_inGameView)
+            startBtn = root.Q<Button>();
+            if (startBtn == null)
             {
-                PauseAction = () => ToggleView(ViewState.Pause)
-            };
+                Debug.LogWarning("[UIViewPresenter] No Button found in this UIDocument. " +
+                                 "Name your Start button (e.g., 'StartButton') in UI Builder or assign a different name here.");
+                return;
+            }
         }
 
-        private void SetSettingsPresenter()
+        startBtn.clicked -= HandleStartClicked;
+        startBtn.clicked += HandleStartClicked;
+    }
+
+    private void HandleStartClicked()
+    {
+        Time.timeScale = 1f;
+
+        HideStartView();
+
+        onStartPressed?.Invoke();
+    }
+
+
+    public void HideStartView()
+    {
+        if (root == null && uiDocument != null) root = uiDocument.rootVisualElement;
+        if (root != null)
         {
-            SettingsPresenter settingsPresenter = new(_settingsView)
-            {
-                BackAction = () =>
-                {
-                    _currentViewState = _previousViewState;
-                    UpdateViews();
-                }
-            };
+            root.style.display = DisplayStyle.None;
+            root.pickingMode   = PickingMode.Ignore;
         }
 
-        private void SetMainMenuPresenter()
+        if (deactivateGameObjectOnStart)
+            gameObject.SetActive(false);
+    }
+
+    public void ShowStartView()
+    {
+        if (root == null && uiDocument != null) root = uiDocument.rootVisualElement;
+        if (root != null)
         {
-            MainMenuPresenter mainMenuPresenter = new(_mainMenuView)
-            {
-                StartGame = () => ToggleView(ViewState.InGame),
-                OpenSettings = () => ToggleView(ViewState.Settings)
-            };
+            root.style.display = DisplayStyle.Flex;
+            root.pickingMode   = PickingMode.Position;
         }
 
-        private void SetPausePresenter()
-        {
-            PausePresenter pausePresenter = new(_pauseView)
-            {
-                ResumeGame = () => ToggleView(ViewState.InGame),
-                OpenSettings = () => ToggleView(ViewState.Settings)
-            };
-        }
+        if (deactivateGameObjectOnStart && !gameObject.activeSelf)
+            gameObject.SetActive(true);
 
-        private void ToggleView(ViewState newState) {
-            Debug.Log($"Toggle from {_currentViewState} to {newState}");
-            _previousViewState = _currentViewState;
-            _currentViewState = newState;
-            UpdateViews();
-        }
-
-        private void UpdateViews()
-        {
-            _mainMenuView.Display(_currentViewState == ViewState.MainMenu);
-            _settingsView.Display(_currentViewState == ViewState.Settings);
-            _pauseView.Display(_currentViewState == ViewState.Pause);
-            _inGameView.Display(_currentViewState == ViewState.InGame);
-            Debug.Log($"update to view {_currentViewState}");
-        }
-
+        BindUI();
     }
 }
