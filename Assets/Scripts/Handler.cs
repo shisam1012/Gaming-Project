@@ -33,7 +33,7 @@ public class Handler : MonoBehaviour
         // Subscribe to input events
         TouchInputController.OnObjectTouched += OnObjectTouched;
         TouchInputController.OnObjectReleased += OnObjectReleased;
-        TouchInputController.OnDrag += OnDrag;
+        TouchInputController.OnDrag_old += OnDrag;
         
         Debug.Log("[Handler] Successfully subscribed to events");
     }
@@ -43,7 +43,7 @@ public class Handler : MonoBehaviour
         // Unsubscribe from events
         TouchInputController.OnObjectTouched -= OnObjectTouched;
         TouchInputController.OnObjectReleased -= OnObjectReleased;
-        TouchInputController.OnDrag -= OnDrag;
+        TouchInputController.OnDrag_old -= OnDrag;
     }
     
     private void OnObjectTouched(GameObject touchedObject)

@@ -7,15 +7,21 @@ using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 #endif
 
-public class TouchInputController : MonoBehaviour
+public class TouchInputController : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointerUpHandler
 {
     [Header("Input Settings")]
     [SerializeField] private LayerMask interactableLayerMask = -1;
     [SerializeField] private float dragThreshold = 10f;
-    
+
+    public static event Action PointerDown;
+    public static event Action PointerUp;
+    public static event Action<Stone> DragHandler;
+
+
+
     public static event Action<Vector2> OnTouchStart;
     public static event Action<Vector2> OnTouchEnd;
-    public static event Action<Vector2, Vector2> OnDrag;
+    public static event Action<Vector2, Vector2> OnDrag_old;
     public static event Action<GameObject> OnObjectTouched;
     public static event Action<GameObject> OnObjectReleased;
     
@@ -31,21 +37,50 @@ public class TouchInputController : MonoBehaviour
         if (mainCamera == null)
             mainCamera = FindFirstObjectByType<Camera>();
     }
-    
-    private void Update()
+
+    public void OnPointerDown(PointerEventData eventData)
     {
-        HandleInput();
+        Debug.Log("Pointer is down - checking for collision");
+        Camera cam = Camera.main;
+        if (cam == null) return;
+
+        float zDistance = -cam.transform.position.z; // distance to z=0 plane
+        Vector3 worldPos = cam.ScreenToWorldPoint(new Vector3(eventData.position.x, eventData.position.y, zDistance));
+        Vector2 point = new Vector2(worldPos.x, worldPos.y);
+
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, -Vector2.up);
+
+        if (hit.collider == null) return;
+        Vector3 origin = Camera.main.transform.position;
+        Vector3 dir = new Vector3(point.x, point.y, 0) - origin;
+        Debug.DrawRay(origin, dir, Color.green, 2f);
+        Debug.Log("hit + " + hit.collider.gameObject.name);
     }
-    
-    private void HandleInput()
+
+    public void OnDrag(PointerEventData eventData)
     {
-#if ENABLE_INPUT_SYSTEM
-        HandleNewInputSystem();
-#else
-        HandleLegacyInput();
-#endif
+        Debug.Log("Pointer is down - checking for collision");
+        Camera cam = Camera.main;
+        if (cam == null) return;
+
+        float zDistance = -cam.transform.position.z; // distance to z=0 plane
+        Vector3 worldPos = cam.ScreenToWorldPoint(new Vector3(eventData.position.x, eventData.position.y, zDistance));
+        Vector2 point = new Vector2(worldPos.x, worldPos.y);
+
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, -Vector2.up);
+
+        if (hit.collider == null) return;
+        Vector3 origin = Camera.main.transform.position;
+        Vector3 dir = new Vector3(point.x, point.y, 0) - origin;
+        Debug.DrawRay(origin, dir, Color.green, 2f);
+        Debug.Log("hit + " + hit.collider.gameObject.name);
     }
-    
+
+
+    public void OnPointerUp(PointerEventData eventData)
+    {
+    }
+
 #if ENABLE_INPUT_SYSTEM
     private void HandleNewInputSystem()
     {
@@ -138,7 +173,7 @@ public class TouchInputController : MonoBehaviour
         if (isDragging)
         {
             Debug.Log($"[TouchInputController] HandleTouchDrag - Firing OnDrag event - Start: {startTouchPosition}, Current: {currentTouchPosition}");
-            OnDrag?.Invoke(startTouchPosition, currentTouchPosition);
+            OnDrag_old?.Invoke(startTouchPosition, currentTouchPosition);
             
             GameObject draggedOverObject = GetTouchedObject(screenPosition);
             if (draggedOverObject != null && draggedOverObject != touchedObject)
@@ -207,7 +242,8 @@ public class TouchInputController : MonoBehaviour
         Vector3 worldPos = mainCamera.ScreenToWorldPoint(screenPosition);
         return new Vector2(worldPos.x, worldPos.y);
     }
-    
+
+
     public bool IsDragging => isDragging;
     public Vector2 StartTouchPosition => startTouchPosition;
     public Vector2 CurrentTouchPosition => currentTouchPosition;

@@ -36,7 +36,7 @@ public class InteractionController : MonoBehaviour
     {
         TouchInputController.OnTouchStart += OnTouchStart;
         TouchInputController.OnTouchEnd += OnTouchEnd;
-        TouchInputController.OnDrag += OnDrag;
+        TouchInputController.OnDrag_old += OnDrag;
         
 
         if (selectionLineRenderer == null)
@@ -57,7 +57,7 @@ public class InteractionController : MonoBehaviour
 
         TouchInputController.OnTouchStart -= OnTouchStart;
         TouchInputController.OnTouchEnd -= OnTouchEnd;
-        TouchInputController.OnDrag -= OnDrag;
+        TouchInputController.OnDrag_old -= OnDrag;
     }
     
     private void SetupLineRenderer()
