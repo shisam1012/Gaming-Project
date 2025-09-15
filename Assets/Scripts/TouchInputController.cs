@@ -7,17 +7,12 @@ using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 #endif
 
-/// <summary>
-/// Centralized input controller that handles all player input (touch/mouse)
-/// and translates gestures into actions for other systems to consume.
-/// </summary>
 public class TouchInputController : MonoBehaviour
 {
     [Header("Input Settings")]
     [SerializeField] private LayerMask interactableLayerMask = -1;
     [SerializeField] private float dragThreshold = 10f;
     
-    // Events that other systems can subscribe to
     public static event Action<Vector2> OnTouchStart;
     public static event Action<Vector2> OnTouchEnd;
     public static event Action<Vector2, Vector2> OnDrag;
@@ -70,7 +65,6 @@ public class TouchInputController : MonoBehaviour
         }
         else if (isPressed)
         {
-            // Call HandleTouchDrag for any pressed state, let it determine if dragging should start
             Debug.Log($"[TouchInputController] New Input - Touch drag at screen: {screenPosition}");
             HandleTouchDrag(screenPosition);
         }
@@ -90,7 +84,6 @@ public class TouchInputController : MonoBehaviour
         }
         else if (Input.GetMouseButton(0))
         {
-            // Call HandleTouchDrag for any held state, let it determine if dragging should start
             HandleTouchDrag(Input.mousePosition);
         }
         else if (Input.GetMouseButtonUp(0))
@@ -105,51 +98,13 @@ public class TouchInputController : MonoBehaviour
     {
         Debug.Log($"[TouchInputController] HandleTouchStart called at: {screenPosition}");
         
-        // TEMPORARY: Disable UI check to test if this is the issue
-        /*
-        // Check if touching UI - but be more specific about what counts as UI
-        bool isOverUI = false;
-        if (EventSystem.current != null)
-        {
-#if ENABLE_INPUT_SYSTEM
-            // For new input system, check if over UI more carefully
-            var eventData = new PointerEventData(EventSystem.current);
-            eventData.position = screenPosition;
-            var results = new List<RaycastResult>();
-            EventSystem.current.RaycastAll(eventData, results);
-            
-            // Only block if we hit actual UI elements (not game objects)
-            foreach (var result in results)
-            {
-                if (result.gameObject.layer == LayerMask.NameToLayer("UI"))
-                {
-                    isOverUI = true;
-                    Debug.Log($"[TouchInputController] Touch blocked by UI element: {result.gameObject.name}");
-                    break;
-                }
-            }
-#else
-            // For legacy input, use the simpler check
-            isOverUI = EventSystem.current.IsPointerOverGameObject();
-#endif
-        }
-        
-        if (isOverUI)
-        {
-            Debug.Log("[TouchInputController] Touch ignored - pointer over actual UI");
-            return;
-        }
-        */
-            
         startTouchPosition = screenPosition;
         currentTouchPosition = screenPosition;
         isDragging = false;
         
-        // Raycast to find touched object
         touchedObject = GetTouchedObject(screenPosition);
         Debug.Log($"[TouchInputController] GetTouchedObject returned: {(touchedObject ? touchedObject.name : "null")}");
         
-        // Fire events
         Debug.Log($"[TouchInputController] Firing OnTouchStart event");
         OnTouchStart?.Invoke(screenPosition);
         if (touchedObject != null)
@@ -168,7 +123,6 @@ public class TouchInputController : MonoBehaviour
     {
         currentTouchPosition = screenPosition;
         
-        // Check if we've moved enough to start dragging
         if (!isDragging)
         {
             float distance = Vector2.Distance(startTouchPosition, currentTouchPosition);
@@ -186,13 +140,11 @@ public class TouchInputController : MonoBehaviour
             Debug.Log($"[TouchInputController] HandleTouchDrag - Firing OnDrag event - Start: {startTouchPosition}, Current: {currentTouchPosition}");
             OnDrag?.Invoke(startTouchPosition, currentTouchPosition);
             
-            // Also check for objects under the current drag position
             GameObject draggedOverObject = GetTouchedObject(screenPosition);
             if (draggedOverObject != null && draggedOverObject != touchedObject)
             {
                 Debug.Log($"[TouchInputController] Dragged over new object: {draggedOverObject.name}");
                 OnObjectTouched?.Invoke(draggedOverObject);
-                // Don't update touchedObject here as it should remain the originally touched object
             }
         }
     }
@@ -206,7 +158,6 @@ public class TouchInputController : MonoBehaviour
             OnObjectReleased?.Invoke(touchedObject);
         }
         
-        // Reset state
         isDragging = false;
         touchedObject = null;
     }
@@ -220,12 +171,11 @@ public class TouchInputController : MonoBehaviour
         }
         
         Vector3 worldPosition = mainCamera.ScreenToWorldPoint(screenPosition);
-        worldPosition.z = 0f; // For 2D games
+        worldPosition.z = 0f;
         
         Debug.Log($"[TouchInputController] Screen {screenPosition} -> World {worldPosition}");
         Debug.Log($"[TouchInputController] Interactable Layer Mask: {interactableLayerMask.value}");
         
-        // Use layer mask to filter interactions
         Collider2D hit = Physics2D.OverlapPoint(worldPosition, interactableLayerMask);
         
         if (hit != null)
@@ -236,7 +186,6 @@ public class TouchInputController : MonoBehaviour
         {
             Debug.Log($"[TouchInputController] No object hit at world position {worldPosition}");
             
-            // Debug: Check if there are ANY colliders at this position (without layer mask)
             Collider2D anyHit = Physics2D.OverlapPoint(worldPosition);
             if (anyHit != null)
             {
@@ -259,7 +208,6 @@ public class TouchInputController : MonoBehaviour
         return new Vector2(worldPos.x, worldPos.y);
     }
     
-    // Utility methods for other systems
     public bool IsDragging => isDragging;
     public Vector2 StartTouchPosition => startTouchPosition;
     public Vector2 CurrentTouchPosition => currentTouchPosition;

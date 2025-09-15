@@ -34,7 +34,7 @@ public class Stone : MonoBehaviour
     [SerializeField] private float highlightMultiplier = 1.5f;
     [SerializeField] private float animationSpeed = 5f;
     
-    // Visual state
+
     private bool isHighlighted = false;
     private Color targetColor;
 
@@ -54,11 +54,11 @@ public class Stone : MonoBehaviour
 
     private void Start()
     {
-        // Set initial position based on transform
+
         column = Mathf.RoundToInt(transform.position.x);
         row = Mathf.RoundToInt(transform.position.y);
 
-        // Ensure stone is at z=0 for proper 2D raycasting
+
         var position = transform.position;
         if (Mathf.Abs(position.z) > 0.0001f)
         {
@@ -68,7 +68,7 @@ public class Stone : MonoBehaviour
 
     private void Update()
     {
-        // Smooth color transitions
+
         if (spriteRenderer != null && spriteRenderer.color != targetColor)
         {
             spriteRenderer.color = Color.Lerp(spriteRenderer.color, targetColor, Time.deltaTime * animationSpeed);
@@ -81,7 +81,7 @@ public class Stone : MonoBehaviour
         {
             boxCollider.isTrigger = false;
             
-            // Set collider size to match sprite bounds if not already set
+
             if (boxCollider.size.sqrMagnitude < 0.0001f)
             {
                 boxCollider.size = spriteRenderer.bounds.size;
@@ -90,7 +90,7 @@ public class Stone : MonoBehaviour
         }
     }
 
-    // Called by StoneManager when stone is created/reused
+
     public void Initialize()
     {
         if (spriteRenderer != null)
@@ -103,7 +103,7 @@ public class Stone : MonoBehaviour
         SetupCollider();
     }
 
-    // Called by StoneManager when returning stone to pool
+
     public void ResetForPool()
     {
         ResetHighlight();
@@ -112,7 +112,7 @@ public class Stone : MonoBehaviour
         isHighlighted = false;
     }
 
-    // Visual feedback methods (called by controllers)
+
     public void Highlight()
     {
         if (spriteRenderer == null) return;
@@ -145,7 +145,6 @@ public class Stone : MonoBehaviour
         }
     }
 
-    // Position management (called by Board/StoneManager)
     public void SetGridPosition(int newColumn, int newRow)
     {
         column = newColumn;
@@ -166,35 +165,35 @@ public class Stone : MonoBehaviour
         transform.position = new Vector3(newColumn, newRow, 0f);
     }
 
-    // Type management (for dynamic stone types)
+
     public void SetType(StoneType newType)
     {
         type = newType;
     }
 
-    // Utility properties
+
     public Vector2Int GridPosition => new Vector2Int(column, row);
     public Vector2 WorldPosition => new Vector2(transform.position.x, transform.position.y);
     public bool IsHighlighted => isHighlighted;
     public Color OriginalColor => originalColor;
     public Color CurrentColor => spriteRenderer != null ? spriteRenderer.color : Color.white;
 
-    // Component access
+
     public SpriteRenderer SpriteRenderer => spriteRenderer;
     public BoxCollider2D BoxCollider => boxCollider;
 
-    // Debug visualization
+
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireCube(transform.position, Vector3.one * 0.9f);
         
-        // Draw grid position
+
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(new Vector3(column, row, 0), 0.1f);
     }
 
-    // Reset method for editor use
+
     private void Reset()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();

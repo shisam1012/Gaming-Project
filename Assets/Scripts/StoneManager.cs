@@ -1,10 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>
-/// StoneManager is a Singleton that manages all stone objects.
-/// Handles creation, pooling, destruction, and provides global access to stone operations.
-/// </summary>
 public class StoneManager : MonoBehaviour
 {
     private static StoneManager _instance;
@@ -37,14 +33,12 @@ public class StoneManager : MonoBehaviour
     [SerializeField] private string stoneLayerName = "Stone";
     private int stoneLayerIndex = -1;
     
-    // Object pooling
     private Dictionary<Stone.StoneType, Queue<Stone>> stonePools = new Dictionary<Stone.StoneType, Queue<Stone>>();
     private List<Stone> activeStones = new List<Stone>();
     private Transform poolParent;
     
     private void Awake()
     {
-        // Singleton pattern
         if (_instance != null && _instance != this)
         {
             Destroy(gameObject);
@@ -54,12 +48,11 @@ public class StoneManager : MonoBehaviour
         _instance = this;
         DontDestroyOnLoad(gameObject);
         
-        // Cache the stone layer index
         stoneLayerIndex = LayerMask.NameToLayer(stoneLayerName);
         if (stoneLayerIndex == -1)
         {
             Debug.LogWarning($"[StoneManager] Layer '{stoneLayerName}' not found! Using Default layer. Please create a '{stoneLayerName}' layer in Project Settings > Tags and Layers.");
-            stoneLayerIndex = 0; // Default layer
+            stoneLayerIndex = 0;
         }
         else
         {
@@ -73,19 +66,16 @@ public class StoneManager : MonoBehaviour
     {
         if (!usePooling || stonePrefabs == null) return;
         
-        // Create pool parent
         GameObject poolParentObj = new GameObject("StonePool");
         poolParentObj.transform.SetParent(transform);
         poolParent = poolParentObj.transform;
         
-        // Initialize pools for each stone type
         foreach (var stonePrefab in stonePrefabs)
         {
             if (stonePrefab != null)
             {
                 stonePools[stonePrefab.Type] = new Queue<Stone>();
                 
-                // Pre-populate pool
                 for (int i = 0; i < initialPoolSize / stonePrefabs.Length; i++)
                 {
                     Stone pooledStone = CreatePooledStone(stonePrefab);
@@ -100,7 +90,6 @@ public class StoneManager : MonoBehaviour
         Stone stone = Instantiate(prefab, poolParent);
         stone.gameObject.SetActive(false);
         
-        // Set layer for pooled stones
         SetStoneLayer(stone);
         
         return stone;
@@ -110,7 +99,6 @@ public class StoneManager : MonoBehaviour
     {
         Stone stone = null;
         
-        // Check if we have prefabs available
         if (stonePrefabs == null || stonePrefabs.Length == 0)
         {
             Debug.LogWarning("[StoneManager] No stone prefabs assigned! Cannot create stones.");
@@ -119,7 +107,6 @@ public class StoneManager : MonoBehaviour
         
         if (usePooling && stonePools.ContainsKey(stoneType) && stonePools[stoneType].Count > 0)
         {
-            // Get from pool
             stone = stonePools[stoneType].Dequeue();
             stone.transform.position = position;
             stone.transform.SetParent(parent);
@@ -127,7 +114,6 @@ public class StoneManager : MonoBehaviour
         }
         else
         {
-            // Create new stone
             Stone prefab = GetStonePrefab(stoneType);
             if (prefab != null)
             {
@@ -138,9 +124,8 @@ public class StoneManager : MonoBehaviour
         if (stone != null)
         {
             activeStones.Add(stone);
-            stone.Initialize(); // Reset stone state
+            stone.Initialize();
             
-            // Ensure stone is on the correct layer
             SetStoneLayer(stone);
         }
         
@@ -163,15 +148,13 @@ public class StoneManager : MonoBehaviour
         
         if (usePooling && stonePools.ContainsKey(stone.Type))
         {
-            // Return to pool
             stone.gameObject.SetActive(false);
             stone.transform.SetParent(poolParent);
-            stone.ResetForPool(); // Reset stone state for reuse
+            stone.ResetForPool();
             stonePools[stone.Type].Enqueue(stone);
         }
         else
         {
-            // Destroy normally
             Destroy(stone.gameObject);
         }
     }
@@ -225,7 +208,6 @@ public class StoneManager : MonoBehaviour
         
         if (usePooling)
         {
-            // Reinitialize pooling with new prefabs
             ClearPools();
             InitializePooling();
         }
@@ -241,7 +223,6 @@ public class StoneManager : MonoBehaviour
             stoneLayerIndex = 0;
         }
         
-        // Update all active stones to new layer
         foreach (var stone in activeStones)
         {
             if (stone != null)
@@ -267,7 +248,6 @@ public class StoneManager : MonoBehaviour
         stonePools.Clear();
     }
     
-    // Utility methods
     public int GetActiveStoneCount()
     {
         return activeStones.Count;
@@ -309,7 +289,6 @@ public class StoneManager : MonoBehaviour
         return result;
     }
     
-    // Debug info
     public void LogPoolStatus()
     {
         Debug.Log($"StoneManager Status - Active: {activeStones.Count}");
