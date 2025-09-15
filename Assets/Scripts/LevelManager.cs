@@ -78,8 +78,29 @@ public class LevelManager : MonoBehaviour
         Debug.Log($"[LevelManager] Loaded level {index+1}/{levels.Count}: {cfg.name}");
     }
 
-    private void OnBoardWin()
+
+    private void OnBoardWin(int finalScore)
     {
+        float timeRatio = timeLeft / levels[currentIndex].timeLimitSeconds;
+        float bonus = 1;
+
+        if (timeRatio >= 0.75f)
+        {
+            bonus = 1.75f;
+        }
+        else if (timeRatio >= 0.5f)
+        {
+            bonus = 1.5f;
+        }
+        else if (timeRatio >= 0.25f)
+        {
+            bonus = 1.1f;
+        }
+
+        int totalScore = Mathf.RoundToInt(finalScore * bonus);
+        ScoreHandler.instance.SetScore(totalScore);
+        Debug.LogWarning("------total score" + totalScore);
+        //GameWinScreen.SetUp();
         running = false;
         StartCoroutine(AdvanceAfterDelay(betweenLevelDelay));
     }

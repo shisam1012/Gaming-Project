@@ -49,7 +49,7 @@ public class Board : MonoBehaviour
     [SerializeField] private bool randomizeEndpointsOnStart = false; 
 
     [Header("Win Event")]
-    public UnityEvent onWin;
+    public UnityEvent<int> onWin;
 
 
     private LevelConfig activeLevel;
@@ -251,7 +251,7 @@ public class Board : MonoBehaviour
     public void RemoveStones(List<Vector2Int> stonePositions)
     {
         if (isBusy) return;
-       ScoreHandler.instance.UpadteScore(stonePositions.Count);
+        ScoreHandler.instance.UpadteScore(stonePositions.Count);
         StartCoroutine(RemoveStonesRoutine(stonePositions));
         
     }
@@ -278,7 +278,7 @@ public class Board : MonoBehaviour
         if (flooded.Contains(destination))
         {
             Debug.LogWarning("[WIN] Fluid reached destination! 🎉");
-            onWin?.Invoke();
+            onWin?.Invoke(ScoreHandler.instance.GetCurrentScore());
         }
         else
         {
