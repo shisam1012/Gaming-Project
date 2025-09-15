@@ -251,7 +251,9 @@ public class Board : MonoBehaviour
     public void RemoveStones(List<Vector2Int> stonePositions)
     {
         if (isBusy) return;
+       ScoreHandler.instance.UpadteScore(stonePositions.Count);
         StartCoroutine(RemoveStonesRoutine(stonePositions));
+        
     }
 
     private IEnumerator RemoveStonesRoutine(List<Vector2Int> stonePositions)
