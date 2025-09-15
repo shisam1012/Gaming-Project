@@ -82,19 +82,16 @@ public class GameManager : MonoBehaviour
     
     private void FindAndCacheReferences()
     {
-        // Find board if not assigned
         if (board == null)
         {
             board = FindFirstObjectByType<Board>();
         }
         
-        // Find level manager if not assigned
         if (levelManager == null)
         {
             levelManager = FindFirstObjectByType<LevelManager>();
         }
         
-        // Find controllers if not assigned
         if (inputController == null)
         {
             inputController = FindFirstObjectByType<TouchInputController>();
@@ -115,7 +112,6 @@ public class GameManager : MonoBehaviour
     
     private void SetupEventListeners()
     {
-        // Subscribe to board events if available
         if (board != null && board.onWin != null)
         {
             board.onWin.AddListener(OnGameWon);
@@ -126,14 +122,10 @@ public class GameManager : MonoBehaviour
     {
         Debug.Log("[GameManager] Game Won!");
         
-        // Handle win logic
-        if (levelManager != null)
-        {
-            levelManager.AdvanceToNextLevel();
-        }
+        // Level advancement is handled by LevelManager, not here
+        // This prevents double advancement that was skipping levels
     }
     
-    // Game state management
     public void PauseGame()
     {
         isGamePaused = true;
@@ -152,7 +144,6 @@ public class GameManager : MonoBehaviour
     {
         isGameActive = active;
         
-        // Enable/disable input based on game state
         if (inputController != null)
         {
             inputController.enabled = active;
@@ -164,7 +155,6 @@ public class GameManager : MonoBehaviour
         }
     }
     
-    // Utility methods for other systems
     public bool CanPlayerInteract()
     {
         return isGameActive && !isGamePaused && board != null && !board.IsBusy;
@@ -178,7 +168,6 @@ public class GameManager : MonoBehaviour
         }
         else if (board != null)
         {
-            // Fallback: regenerate board
             var currentLevel = board.ActiveLevel;
             if (currentLevel != null)
             {
@@ -195,7 +184,6 @@ public class GameManager : MonoBehaviour
         }
     }
     
-    // Board access methods
     public Stone GetStoneAt(int x, int y)
     {
         return board != null ? board.GetStone(x, y) : null;
@@ -214,7 +202,6 @@ public class GameManager : MonoBehaviour
         }
     }
     
-    // Debug and utility
     private void LogSystemStatus()
     {
         Debug.Log($"[GameManager] Systems Status:");
@@ -231,7 +218,6 @@ public class GameManager : MonoBehaviour
         Debug.Log($"[GameManager] Game State - Active: {isGameActive}, Paused: {isGamePaused}, Can Interact: {CanPlayerInteract()}");
     }
     
-    // Manual assignment methods for inspector
     public void SetBoard(Board newBoard)
     {
         board = newBoard;
@@ -248,8 +234,7 @@ public class GameManager : MonoBehaviour
         {
             _instance = null;
         }
-        
-        // Unsubscribe from events
+
         if (board != null && board.onWin != null)
         {
             board.onWin.RemoveListener(OnGameWon);

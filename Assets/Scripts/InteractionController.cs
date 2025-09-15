@@ -132,6 +132,8 @@ public class InteractionController : MonoBehaviour
         if (!isSelecting)
         {
             Debug.Log("[InteractionController] Starting new selection");
+            // Clear any previous highlighting from all stones before starting new selection
+            ClearAllStoneHighlights();
             StartSelection(selectedObject);
         }
         else
@@ -192,20 +194,51 @@ public class InteractionController : MonoBehaviour
             Debug.Log("[InteractionController] Stone is null, skipping");
             return;
         }
-        
-        if (selectedStones.Contains(stone))
-        {
-            Debug.Log($"[InteractionController] Stone {stone.name} already in selection, skipping");
-            return;
-        }
-        
+
         var stoneComponent = stone.GetComponent<Stone>();
         if (stoneComponent == null) 
         {
             Debug.Log($"[InteractionController] Stone {stone.name} has no Stone component, skipping");
             return;
         }
-        
+
+        // Check if this stone is already in the selection (for drag-back functionality)
+        int existingIndex = selectedStones.IndexOf(stone);
+        if (existingIndex != -1)
+        {
+            // If it's the last stone in the selection, ignore (no change)
+            if (existingIndex == selectedStones.Count - 1)
+            {
+                Debug.Log($"[InteractionController] Stone {stone.name} is already the last selected stone, ignoring");
+                return;
+            }
+            
+            // If it's not the last stone, we're going backwards - remove all stones after this one
+            Debug.Log($"[InteractionController] Going backwards - removing stones after index {existingIndex}");
+            
+            // Reset highlighting on stones that will be removed
+            for (int i = selectedStones.Count - 1; i > existingIndex; i--)
+            {
+                if (selectedStones[i] != null)
+                {
+                    var stoneToRemove = selectedStones[i].GetComponent<Stone>();
+                    if (stoneToRemove != null)
+                    {
+                        stoneToRemove.ResetHighlight();
+                    }
+                }
+                Debug.Log($"[InteractionController] Removing stone at index {i}: {selectedStones[i].name}");
+                selectedStones.RemoveAt(i);
+                selectedPositions.RemoveAt(i);
+            }
+            
+            // Update the last selected stone
+            lastSelectedStone = selectedStones.Count > 0 ? selectedStones[selectedStones.Count - 1] : null;
+            UpdateSelectionVisual();
+            return;
+        }
+
+        // Stone is not in selection, try to add it
         // Check if this stone is adjacent to the last selected stone
         if (lastSelectedStone != null)
         {
@@ -277,27 +310,61 @@ public class InteractionController : MonoBehaviour
     
     private void ClearSelection()
     {
+        // Reset highlighting on all previously selected stones
+        for (int i = 0; i < selectedStones.Count; i++)
+        {
+            if (selectedStones[i] != null)
+            {
+                var stone = selectedStones[i].GetComponent<Stone>();
+                if (stone != null)
+                {
+                    stone.ResetHighlight();
+                }
+            }
+        }
+        
         selectedStones.Clear();
         selectedPositions.Clear();
         lastSelectedStone = null;
         isSelecting = false;
         
+        // Ensure ALL stones are unhighlighted, not just the selected ones
+        ClearAllStoneHighlights();
+        
         UpdateSelectionVisual();
     }
     
+    private void ClearAllStoneHighlights()
+    {
+        // Find all Stone components in the scene and reset their highlights
+        Stone[] allStones = FindObjectsByType<Stone>(FindObjectsSortMode.None);
+        foreach (var stone in allStones)
+        {
+            if (stone != null)
+            {
+                stone.ResetHighlight();
+            }
+        }
+    }
+
     private void UpdateSelectionVisual()
     {
-        if (selectionLineRenderer == null) return;
+        // Disable the line renderer - we'll use stone highlighting instead
+        if (selectionLineRenderer != null)
+        {
+            selectionLineRenderer.positionCount = 0;
+        }
         
-        selectionLineRenderer.positionCount = selectedStones.Count;
-        
+        // Highlight all selected stones
         for (int i = 0; i < selectedStones.Count; i++)
         {
             if (selectedStones[i] != null)
             {
-                Vector3 pos = selectedStones[i].transform.position;
-                pos.z = -1f; 
-                selectionLineRenderer.SetPosition(i, pos);
+                var stone = selectedStones[i].GetComponent<Stone>();
+                if (stone != null)
+                {
+                    stone.Highlight();
+                }
             }
         }
     }

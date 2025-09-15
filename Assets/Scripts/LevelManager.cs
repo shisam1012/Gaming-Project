@@ -112,7 +112,7 @@ public class LevelManager : MonoBehaviour
         currentIndex++;
         if (currentIndex >= levels.Count)
         {
-            currentIndex = 0; // Loop back to first level
+            currentIndex = 0;
         }
         LoadLevel(currentIndex);
     }

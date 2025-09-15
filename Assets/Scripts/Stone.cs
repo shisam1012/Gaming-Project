@@ -127,6 +127,8 @@ public class Stone : MonoBehaviour
         
         isHighlighted = false;
         targetColor = originalColor;
+        // Immediately apply the color change instead of waiting for lerp
+        spriteRenderer.color = originalColor;
     }
 
     public void SetHighlightColor(Color color)
