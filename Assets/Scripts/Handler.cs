@@ -52,7 +52,6 @@ public class Handler : MonoBehaviour
         
         if (touchedObject == null) return;
         
-        // Check if object is on the correct layer
         if (!IsOnDetectionLayer(touchedObject))
         {
             Debug.Log($"[Handler] Object {touchedObject.name} is not on detection layer (layer: {touchedObject.layer})");
@@ -61,7 +60,6 @@ public class Handler : MonoBehaviour
         
         Debug.Log($"[Handler] Object {touchedObject.name} passed layer check");
         
-        // Notify the interaction controller
         var interactionController = FindFirstObjectByType<InteractionController>();
         if (interactionController != null)
         {
@@ -78,10 +76,9 @@ public class Handler : MonoBehaviour
     {
         if (releasedObject == null) return;
         
-        // Remove highlight
+
         UnhighlightObject(releasedObject);
         
-        // Notify the interaction controller
         var interactionController = FindFirstObjectByType<InteractionController>();
         if (interactionController != null)
         {
@@ -93,7 +90,6 @@ public class Handler : MonoBehaviour
     {
         Debug.Log($"[Handler] OnDrag called - Start: {startPos}, Current: {currentPos}");
         
-        // Handle drag interactions
         var interactionController = FindFirstObjectByType<InteractionController>();
         if (interactionController != null)
         {
@@ -110,7 +106,6 @@ public class Handler : MonoBehaviour
     {
         List<GameObject> detectedObjects = new List<GameObject>();
         
-        // Use OverlapCircleAll for more reliable detection
         Collider2D[] colliders = Physics2D.OverlapCircleAll(worldPosition, detectionRadius, detectionLayerMask);
         
         foreach (var collider in colliders)
@@ -143,7 +138,6 @@ public class Handler : MonoBehaviour
         var renderer = obj.GetComponent<SpriteRenderer>();
         if (renderer != null)
         {
-            // Store original color if not already stored
             var highlightComponent = obj.GetComponent<HighlightHelper>();
             if (highlightComponent == null)
             {
@@ -151,7 +145,6 @@ public class Handler : MonoBehaviour
                 highlightComponent.originalColor = renderer.color;
             }
             
-            // Apply highlight
             Color highlightedColor = highlightColor;
             highlightedColor.a = highlightAlpha;
             renderer.color = Color.Lerp(highlightComponent.originalColor, highlightedColor, 0.5f);
@@ -170,10 +163,8 @@ public class Handler : MonoBehaviour
         
         if (renderer != null && highlightComponent != null)
         {
-            // Restore original color
             renderer.color = highlightComponent.originalColor;
             
-            // Clean up
             DestroyImmediate(highlightComponent);
         }
         
@@ -190,13 +181,12 @@ public class Handler : MonoBehaviour
         currentlyHighlighted.Clear();
     }
     
-    // Helper component to store original colors
+
     private class HighlightHelper : MonoBehaviour
     {
         public Color originalColor;
     }
     
-    // Debug visualization
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;

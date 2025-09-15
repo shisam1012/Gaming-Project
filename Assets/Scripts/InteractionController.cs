@@ -21,7 +21,6 @@ public class InteractionController : MonoBehaviour
     private GameObject lastSelectedStone;
     private bool isSelecting = false;
     
-    // Static directions for neighbor checking
     private static readonly Vector2Int[] orthogonalDirections = 
     {
         Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right
@@ -35,12 +34,11 @@ public class InteractionController : MonoBehaviour
     
     private void Start()
     {
-        // Subscribe to input events
         TouchInputController.OnTouchStart += OnTouchStart;
         TouchInputController.OnTouchEnd += OnTouchEnd;
         TouchInputController.OnDrag += OnDrag;
         
-        // Setup line renderer if not assigned
+
         if (selectionLineRenderer == null)
         {
             selectionLineRenderer = GetComponent<LineRenderer>();
@@ -56,7 +54,7 @@ public class InteractionController : MonoBehaviour
     
     private void OnDestroy()
     {
-        // Unsubscribe from events
+
         TouchInputController.OnTouchStart -= OnTouchStart;
         TouchInputController.OnTouchEnd -= OnTouchEnd;
         TouchInputController.OnDrag -= OnDrag;
@@ -76,8 +74,7 @@ public class InteractionController : MonoBehaviour
     private void OnTouchStart(Vector2 screenPosition)
     {
         Debug.Log($"[InteractionController] OnTouchStart called at: {screenPosition}");
-        // Only clear any existing selection, don't start a new one
-        // Let OnObjectSelected handle the actual selection start
+
         if (isSelecting)
         {
             Debug.Log("[InteractionController] Clearing existing selection on new touch");
@@ -265,7 +262,7 @@ public class InteractionController : MonoBehaviour
             return;
         }
         
-        // Send the selection to the board for processing
+
         var gameManager = GameManager.Instance;
         if (gameManager != null && gameManager.Board != null)
         {
@@ -299,7 +296,7 @@ public class InteractionController : MonoBehaviour
             if (selectedStones[i] != null)
             {
                 Vector3 pos = selectedStones[i].transform.position;
-                pos.z = -1f; // Ensure line is visible
+                pos.z = -1f; 
                 selectionLineRenderer.SetPosition(i, pos);
             }
         }
@@ -313,7 +310,6 @@ public class InteractionController : MonoBehaviour
             return handler.DetectObjectAtPosition(worldPosition);
         }
         
-        // Fallback to direct raycast
         Collider2D hit = Physics2D.OverlapPoint(worldPosition);
         if (hit != null && hit.GetComponent<Stone>() != null)
         {
@@ -331,7 +327,6 @@ public class InteractionController : MonoBehaviour
             return touchController.GetWorldPosition(screenPosition);
         }
         
-        // Fallback
         Camera cam = Camera.main;
         if (cam != null)
         {
@@ -342,7 +337,6 @@ public class InteractionController : MonoBehaviour
         return Vector2.zero;
     }
     
-    // Public methods for external access
     public bool IsSelecting => isSelecting;
     public int SelectedCount => selectedStones.Count;
     public List<GameObject> SelectedStones => new List<GameObject>(selectedStones);

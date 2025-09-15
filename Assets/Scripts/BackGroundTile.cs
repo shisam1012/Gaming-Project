@@ -5,8 +5,7 @@ using static Stone;
 public class BackGroundTile : MonoBehaviour
 {
     private SpriteRenderer spriteRenderer;
-    //public SpriteRenderer tileRenderer;  
-    public Sprite[] tileSprites; //sand, empty, fluid
+    public Sprite[] tileSprites; 
 
     public enum BackgroundType
     {
@@ -42,7 +41,6 @@ public class BackGroundTile : MonoBehaviour
             case BackgroundType.Sand: spriteRenderer.color = new Color(0.6f, 0.4f, 0.2f); break;
             case BackgroundType.Empty: spriteRenderer.color = new Color(0.3f, 0.2f, 0.1f); break;
             case BackgroundType.Fluid: spriteRenderer.color = new Color (57f / 255f, 136f / 255f, 247f / 255f); break;
-             
             //change to sprites instead of regular colors
         }
     }
