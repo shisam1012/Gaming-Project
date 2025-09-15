@@ -19,6 +19,9 @@ public class LevelManager : MonoBehaviour
     private float timeLeft;
     private bool running;
 
+    [SerializeField] private GameWinScreen gameWinScreen;
+    public GameWinScreen GameWinScreen => gameWinScreen;
+
     private void Awake()
     {
         if (board == null)
@@ -100,12 +103,13 @@ public class LevelManager : MonoBehaviour
         int totalScore = Mathf.RoundToInt(finalScore * bonus);
         ScoreHandler.instance.SetScore(totalScore);
         Debug.LogWarning("------total score" + totalScore);
-        //GameWinScreen.SetUp();
+        //GameWinScreen.instance.SetUp(totalScore);
+        GameWinScreen.SetUp(totalScore);
         running = false;
-        StartCoroutine(AdvanceAfterDelay(betweenLevelDelay));
+        //StartCoroutine(AdvanceAfterDelay(betweenLevelDelay));
     }
 
-    private IEnumerator AdvanceAfterDelay(float delay)
+    public IEnumerator AdvanceAfterDelay(float delay)
     {
         yield return new WaitForSeconds(delay);
         currentIndex++;
