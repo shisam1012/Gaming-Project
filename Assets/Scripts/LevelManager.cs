@@ -23,7 +23,7 @@ public class LevelManager : MonoBehaviour
     {
         if (board == null)
         {
-            board = FindObjectOfType<Board>();
+            board = FindFirstObjectByType<Board>();
         }
     }
 
@@ -101,6 +101,28 @@ public class LevelManager : MonoBehaviour
         LoadLevel(currentIndex);
     }
     public void JumpToLevel(int index)
+    {
+        if (index < 0 || index >= levels.Count) return;
+        currentIndex = index;
+        LoadLevel(currentIndex);
+    }
+
+    public void AdvanceToNextLevel()
+    {
+        currentIndex++;
+        if (currentIndex >= levels.Count)
+        {
+            currentIndex = 0; // Loop back to first level
+        }
+        LoadLevel(currentIndex);
+    }
+
+    public void RestartCurrentLevel()
+    {
+        LoadLevel(currentIndex);
+    }
+
+    public void LoadLevelPublic(int index)
     {
         if (index < 0 || index >= levels.Count) return;
         currentIndex = index;

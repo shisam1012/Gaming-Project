@@ -1,14 +1,14 @@
 // FILE: Stone.cs
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
+/// <summary>
+/// Stone is now a VIEW-ONLY component that only handles visuals and data representation.
+/// All game logic has been moved to InteractionController and other managers.
+/// </summary>
 [RequireComponent(typeof(SpriteRenderer))]
-[RequireComponent(typeof(BoxCollider2D))]  // make sure raycasts can hit this
-public class Stone : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointerUpHandler
+[RequireComponent(typeof(BoxCollider2D))]
+public class Stone : MonoBehaviour
 {
-    private Board board;
-
     public enum StoneType
     {
         Type1,
@@ -17,177 +17,188 @@ public class Stone : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointerU
         Type4
     }
 
+    [Header("Stone Data")]
     [SerializeField] private StoneType type;
     public StoneType Type => type;
 
+    [Header("Position")]
     [HideInInspector] public int column;
     [HideInInspector] public int row;
 
-    private StoneType activeDragType;
-    private bool hasActiveDragType = false;
-
-    private bool isDragging = false;
-    private readonly List<Vector2Int> draggedStones = new List<Vector2Int>();
-    private readonly List<Stone> draggedStoneObjects = new List<Stone>();
-
-    [HideInInspector] public Color originalColor;
+    [Header("Visual Components")]
     private SpriteRenderer spriteRenderer;
     private BoxCollider2D boxCollider;
+    private Color originalColor;
 
-    private const int MinToDragOver = 3;
-
-    private void Reset()
-    {
-        spriteRenderer = GetComponent<SpriteRenderer>();
-        boxCollider = GetComponent<BoxCollider2D>();
-        if (spriteRenderer && boxCollider)
-        {
-            boxCollider.isTrigger = false;
-            boxCollider.size = spriteRenderer.bounds.size;
-            boxCollider.offset = Vector2.zero;
-        }
-    }
+    [Header("Animation")]
+    [SerializeField] private float highlightMultiplier = 1.5f;
+    [SerializeField] private float animationSpeed = 5f;
+    
+    // Visual state
+    private bool isHighlighted = false;
+    private Color targetColor;
 
     private void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
         boxCollider = GetComponent<BoxCollider2D>();
-        if (spriteRenderer) originalColor = spriteRenderer.color;
-
-        if (spriteRenderer && boxCollider && boxCollider.size.sqrMagnitude < 0.0001f)
+        
+        if (spriteRenderer != null)
         {
-            boxCollider.size = spriteRenderer.bounds.size;
-            boxCollider.offset = Vector2.zero;
+            originalColor = spriteRenderer.color;
+            targetColor = originalColor;
         }
+
+        SetupCollider();
     }
 
     private void Start()
     {
+        // Set initial position based on transform
         column = Mathf.RoundToInt(transform.position.x);
-        row    = Mathf.RoundToInt(transform.position.y);
+        row = Mathf.RoundToInt(transform.position.y);
 
-        // keep z=0 for raycasts
-        var p = transform.position;
-        if (Mathf.Abs(p.z) > 0.0001f)
-            transform.position = new Vector3(p.x, p.y, 0f);
+        // Ensure stone is at z=0 for proper 2D raycasting
+        var position = transform.position;
+        if (Mathf.Abs(position.z) > 0.0001f)
+        {
+            transform.position = new Vector3(position.x, position.y, 0f);
+        }
     }
 
-    public void Init(Board boardRef) => board = boardRef;
-
-    public void OnPointerDown(PointerEventData eventData)
+    private void Update()
     {
-        if (board == null || board.IsBusy) return;
-
-        isDragging = true;
-        hasActiveDragType = false;
-
-        ResetDraggedHighlights();
-        draggedStones.Clear();
-        draggedStoneObjects.Clear();
-
-        AddStoneToPath(column, row);
-
-        if (draggedStoneObjects.Count > 0)
+        // Smooth color transitions
+        if (spriteRenderer != null && spriteRenderer.color != targetColor)
         {
-            activeDragType = draggedStoneObjects[0].Type;
-            hasActiveDragType = true;
+            spriteRenderer.color = Color.Lerp(spriteRenderer.color, targetColor, Time.deltaTime * animationSpeed);
         }
     }
 
-    public void OnDrag(PointerEventData eventData)
+    private void SetupCollider()
     {
-        if (!isDragging || board == null || board.IsBusy) return;
-
-        var cam = Camera.main;
-        if (cam == null) return;
-
-        Vector2 worldPos = cam.ScreenToWorldPoint(eventData.position);
-        int x = Mathf.RoundToInt(worldPos.x);
-        int y = Mathf.RoundToInt(worldPos.y);
-
-        if (x < 0 || x >= board.Width || y < 0 || y >= board.Height) return;
-
-        Vector2Int newPos = new Vector2Int(x, y);
-
-        // Backtrack one step
-        if (draggedStones.Count > 1 && newPos == draggedStones[draggedStones.Count - 2])
+        if (spriteRenderer != null && boxCollider != null)
         {
-            var lastStoneObj = draggedStoneObjects[draggedStoneObjects.Count - 1];
-            if (lastStoneObj) lastStoneObj.ResetHighlight();
-
-            draggedStones.RemoveAt(draggedStones.Count - 1);
-            draggedStoneObjects.RemoveAt(draggedStoneObjects.Count - 1);
-            return;
+            boxCollider.isTrigger = false;
+            
+            // Set collider size to match sprite bounds if not already set
+            if (boxCollider.size.sqrMagnitude < 0.0001f)
+            {
+                boxCollider.size = spriteRenderer.bounds.size;
+                boxCollider.offset = Vector2.zero;
+            }
         }
-
-        if (draggedStones.Contains(newPos)) return;
-
-        if (draggedStones.Count > 0)
-        {
-            Vector2Int lastPos = draggedStones[draggedStones.Count - 1];
-            int dx = Mathf.Abs(lastPos.x - x);
-            int dy = Mathf.Abs(lastPos.y - y);
-            if (dx + dy != 1) return; 
-        }
-        // ----------------------------------
-
-        // TYPE LOCK: only allow tiles of the starting type
-        var currStone = board.GetStone(x, y);
-        if (currStone == null) return;
-        if (hasActiveDragType && currStone.Type != activeDragType) return;
-
-        AddStoneToPath(x, y);
     }
 
-    public void OnPointerUp(PointerEventData eventData)
+    // Called by StoneManager when stone is created/reused
+    public void Initialize()
     {
-        if (!isDragging) return;
-        isDragging = false;
-
-        if (draggedStones.Count >= MinToDragOver && board != null && !board.IsBusy)
+        if (spriteRenderer != null)
         {
-            board.RemoveStones(draggedStones);
+            originalColor = spriteRenderer.color;
+            targetColor = originalColor;
+            isHighlighted = false;
         }
-
-        ResetDraggedHighlights();
-        draggedStones.Clear();
-        draggedStoneObjects.Clear();
-        hasActiveDragType = false;
+        
+        SetupCollider();
     }
 
-    private void AddStoneToPath(int x, int y)
+    // Called by StoneManager when returning stone to pool
+    public void ResetForPool()
     {
-        if (board == null) return;
-
-        var stone = board.GetStone(x, y);
-        if (!stone) return; 
-        if (!hasActiveDragType)
-        {
-            activeDragType = stone.Type;
-            hasActiveDragType = true;
-        }
-
-        stone.Highlight();
-        draggedStoneObjects.Add(stone);
-        draggedStones.Add(new Vector2Int(x, y));
+        ResetHighlight();
+        column = 0;
+        row = 0;
+        isHighlighted = false;
     }
 
-    private void ResetDraggedHighlights()
-    {
-        for (int i = 0; i < draggedStoneObjects.Count; i++)
-        {
-            var s = draggedStoneObjects[i];
-            if (s) s.ResetHighlight();
-        }
-    }
-
+    // Visual feedback methods (called by controllers)
     public void Highlight()
     {
-        if (spriteRenderer) spriteRenderer.color = originalColor * 1.5f;
+        if (spriteRenderer == null) return;
+        
+        isHighlighted = true;
+        targetColor = originalColor * highlightMultiplier;
     }
 
     public void ResetHighlight()
     {
-        if (spriteRenderer) spriteRenderer.color = originalColor;
+        if (spriteRenderer == null) return;
+        
+        isHighlighted = false;
+        targetColor = originalColor;
+    }
+
+    public void SetHighlightColor(Color color)
+    {
+        if (spriteRenderer == null) return;
+        
+        targetColor = color;
+    }
+
+    public void SetOriginalColor(Color color)
+    {
+        originalColor = color;
+        if (!isHighlighted)
+        {
+            targetColor = originalColor;
+        }
+    }
+
+    // Position management (called by Board/StoneManager)
+    public void SetGridPosition(int newColumn, int newRow)
+    {
+        column = newColumn;
+        row = newRow;
+    }
+
+    public void SetWorldPosition(Vector2 worldPosition)
+    {
+        transform.position = new Vector3(worldPosition.x, worldPosition.y, 0f);
+        column = Mathf.RoundToInt(worldPosition.x);
+        row = Mathf.RoundToInt(worldPosition.y);
+    }
+
+    public void SetGridAndWorldPosition(int newColumn, int newRow)
+    {
+        column = newColumn;
+        row = newRow;
+        transform.position = new Vector3(newColumn, newRow, 0f);
+    }
+
+    // Type management (for dynamic stone types)
+    public void SetType(StoneType newType)
+    {
+        type = newType;
+    }
+
+    // Utility properties
+    public Vector2Int GridPosition => new Vector2Int(column, row);
+    public Vector2 WorldPosition => new Vector2(transform.position.x, transform.position.y);
+    public bool IsHighlighted => isHighlighted;
+    public Color OriginalColor => originalColor;
+    public Color CurrentColor => spriteRenderer != null ? spriteRenderer.color : Color.white;
+
+    // Component access
+    public SpriteRenderer SpriteRenderer => spriteRenderer;
+    public BoxCollider2D BoxCollider => boxCollider;
+
+    // Debug visualization
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireCube(transform.position, Vector3.one * 0.9f);
+        
+        // Draw grid position
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(new Vector3(column, row, 0), 0.1f);
+    }
+
+    // Reset method for editor use
+    private void Reset()
+    {
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        boxCollider = GetComponent<BoxCollider2D>();
+        SetupCollider();
     }
 }

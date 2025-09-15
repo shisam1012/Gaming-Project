@@ -15,7 +15,6 @@ public class PlayerInteractionController : MonoBehaviour, IPointerDownHandler, I
         // check the origin eventData  to the target ScreenToWorldPoint - CHECK IF PLAYER TOUCHED THE STONE ON POINTER DOWN?
         // https://docs.unity3d.com/6000.2/Documentation/ScriptReference/Physics2D.Raycast.html
         // var didHit = Physics.Raycast() 
-        RaycastHit hit;
         //var stone = hit.collider.gameObject.GetComponent<Stone>();
         //if (stone != null)
         //{

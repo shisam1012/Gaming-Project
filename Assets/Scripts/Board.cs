@@ -53,6 +53,9 @@ public class Board : MonoBehaviour
 
 
     private LevelConfig activeLevel;
+    
+    // Public getter for GameManager access
+    public LevelConfig ActiveLevel => activeLevel;
 
     // ===== Public API (called by LevelManager) =====
     public void ApplyLevel(LevelConfig level)
@@ -118,6 +121,15 @@ public class Board : MonoBehaviour
     private void Awake()
     {
         EnsureEventSystemAndRaycaster();
+        
+        // Register with GameManager
+        GameManager.Instance.SetBoard(this);
+        
+        // Transfer stone prefabs to StoneManager if they're assigned here
+        if (stonePrefabsRef != null && stonePrefabsRef.Length > 0)
+        {
+            StoneManager.Instance.SetStonePrefabs(stonePrefabsRef);
+        }
     }
 
     // ---------- Clear visuals to avoid duplicates ----------
@@ -140,6 +152,7 @@ public class Board : MonoBehaviour
     {
         if (!Application.isPlaying || isBusy) return;
 
+        // Debug input only - gameplay input is handled by TouchInputController
 #if ENABLE_INPUT_SYSTEM
         // ---- New Input System (Keyboard) ----
         var kb = Keyboard.current;
@@ -218,7 +231,7 @@ public class Board : MonoBehaviour
 
                 var pos = new Vector2(x, y);
 
-
+                // Create background tile
                 var cell = Instantiate(cellPrefab, pos, Quaternion.identity, transform);
                 cell.name = $"({x}_{y})";
                 var bgTile = cell.GetComponent<BackGroundTile>();
@@ -234,13 +247,23 @@ public class Board : MonoBehaviour
                     continue;
                 }
 
+                // Use StoneManager to create stones - select random type
                 int idx = Random.Range(0, stonePrefabsRef.Length);
-                var stone = Instantiate(stonePrefabsRef[idx], pos, Quaternion.identity, transform);
-                stone.Init(this);
-                stone.column = x;
-                stone.row = y;
-                stone.name = $"({x}_{y})_stone";
-                allStones[x, y] = stone;
+                var stoneType = stonePrefabsRef[idx].Type;
+                Debug.Log($"[Board] Creating stone of type {stoneType} at ({x}, {y})");
+                var stone = StoneManager.Instance.CreateStone(stoneType, pos, transform);
+                if (stone != null)
+                {
+                    stone.column = x;
+                    stone.row = y;
+                    stone.name = $"({x}_{y})_stone";
+                    allStones[x, y] = stone;
+                    Debug.Log($"[Board] Successfully created stone: {stone.name}");
+                }
+                else
+                {
+                    Debug.LogError($"[Board] Failed to create stone at ({x}, {y})");
+                }
             }
         }
         if (IsPlayable(fluidSource.x, fluidSource.y) && allTiles[fluidSource.x, fluidSource.y] != null)
@@ -265,7 +288,7 @@ public class Board : MonoBehaviour
             var s = GetStone(pos.x, pos.y);
             if (s == null) continue;
 
-            Destroy(s.gameObject);
+            StoneManager.Instance.DestroyStone(s);
             SetStone(pos.x, pos.y, null);
         }
 
@@ -337,13 +360,17 @@ public class Board : MonoBehaviour
                 if (IsDestinationCell(x, y)) continue;
                 if (GetStone(x, y) != null) continue;
 
+                // Use StoneManager to create stones - select random type
                 int idx = Random.Range(0, stonePrefabsRef.Length);
-                var stone = Instantiate(stonePrefabsRef[idx], new Vector2(x, y), Quaternion.identity, transform);
-                stone.Init(this);
-                stone.column = x;
-                stone.row = y;
-                stone.name = $"({x}_{y})_stone";
-                SetStone(x, y, stone);
+                var stoneType = stonePrefabsRef[idx].Type;
+                var stone = StoneManager.Instance.CreateStone(stoneType, new Vector2(x, y), transform);
+                if (stone != null)
+                {
+                    stone.column = x;
+                    stone.row = y;
+                    stone.name = $"({x}_{y})_stone";
+                    SetStone(x, y, stone);
+                }
             }
         }
     }
