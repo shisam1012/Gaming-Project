@@ -22,6 +22,9 @@ namespace GamingProject
     [SerializeField] private GameObject cellPrefab;
     [SerializeField] private Stone[] stonePrefabsRef;
 
+    [Header("Grid System")]
+    [SerializeField] private Grid grid; // Drag your Grid GameObject here in Inspector
+    
     [Header("Input / UI")]
     [SerializeField] private EventSystem es;
 
@@ -210,6 +213,21 @@ namespace GamingProject
     private bool IsOnBorder(Vector2Int p) => p.x == 0 || p.x == width - 1 || p.y == 0 || p.y == height - 1;
     private bool IsPlayable(int x, int y) => InBounds(x, y) && (playable == null || playable[x, y]);
 
+    // Grid position helpers
+    private Vector3 GetWorldPosition(int x, int y)
+    {
+        Vector3Int cell = new Vector3Int(x, y, 0);
+        if (grid != null)
+        {
+            return grid.GetCellCenterWorld(cell);
+        }
+        else
+        {
+            // fallback: old behavior (world units assumed)
+            return new Vector3(x, y, 0f);
+        }
+    }
+
     public Stone GetStone(int x, int y)
     {
         if (!InBounds(x, y)) return null;
@@ -231,7 +249,7 @@ namespace GamingProject
             {
                 if (!IsPlayable(x, y)) { allTiles[x, y] = null; allStones[x, y] = null; continue; }
 
-                var pos = new Vector2(x, y);
+                var pos = GetWorldPosition(x, y);
 
                 // Create background tile
                 var cell = Instantiate(cellPrefab, pos, Quaternion.identity, transform);
@@ -345,7 +363,7 @@ namespace GamingProject
 
                     s.column = x;
                     s.row = writeY;
-                    s.transform.position = new Vector2(x, writeY);
+                    s.transform.position = GetWorldPosition(x, writeY);
                 }
                 writeY++;
             }
@@ -365,7 +383,7 @@ namespace GamingProject
                 // Use StoneManager to create stones - select random type
                 int idx = Random.Range(0, stonePrefabsRef.Length);
                 var stoneType = stonePrefabsRef[idx].Type;
-                var stone = StoneManager.Instance.CreateStone(stoneType, new Vector2(x, y), transform);
+                var stone = StoneManager.Instance.CreateStone(stoneType, GetWorldPosition(x, y), transform);
                 if (stone != null)
                 {
                     stone.column = x;
@@ -556,7 +574,7 @@ namespace GamingProject
                 var s = list[k++];
                 s.column = x;
                 s.row = y;
-                s.transform.position = new Vector2(x, y);
+                s.transform.position = GetWorldPosition(x, y);
                 SetStone(x, y, s);
             }
         }

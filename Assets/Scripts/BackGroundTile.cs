@@ -1,10 +1,12 @@
 using UnityEngine;
-using static Stone;
+using static GamingProject.Stone;
 
-[RequireComponent(typeof(SpriteRenderer))]
-public class BackGroundTile : MonoBehaviour
+namespace GamingProject
 {
-    private SpriteRenderer spriteRenderer;
+    [RequireComponent(typeof(SpriteRenderer))]
+    public class BackGroundTile : MonoBehaviour
+    {
+        private SpriteRenderer spriteRenderer;
     public Sprite[] tileSprites; 
 
     public enum BackgroundType
@@ -45,5 +47,5 @@ public class BackGroundTile : MonoBehaviour
         }
     }
 
-    
+    }
 }

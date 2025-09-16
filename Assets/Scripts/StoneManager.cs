@@ -1,9 +1,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class StoneManager : MonoBehaviour
+namespace GamingProject
 {
-    private static StoneManager _instance;
+    public class StoneManager : MonoBehaviour
+    {
+        private static StoneManager _instance;
     public static StoneManager Instance
     {
         get
@@ -305,4 +307,5 @@ public class StoneManager : MonoBehaviour
             _instance = null;
         }
     }
+}
 }

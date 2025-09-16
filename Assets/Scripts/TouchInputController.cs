@@ -7,7 +7,9 @@ using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 #endif
 
-public class TouchInputController : MonoBehaviour
+namespace GamingProject
+{
+    public class TouchInputController : MonoBehaviour
 {
     [Header("Input Settings")]
     [SerializeField] private LayerMask interactableLayerMask = -1;
@@ -212,4 +214,5 @@ public class TouchInputController : MonoBehaviour
     public Vector2 StartTouchPosition => startTouchPosition;
     public Vector2 CurrentTouchPosition => currentTouchPosition;
     public GameObject TouchedObject => touchedObject;
+    }
 }

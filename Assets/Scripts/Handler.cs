@@ -1,13 +1,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>
-/// Handler manages detection and interaction with game objects.
-/// Place this in the scene to handle all object interactions with Layer Mask filtering.
-/// Replaces the old PointProbe functionality with clearer responsibilities.
-/// </summary>
-public class Handler : MonoBehaviour
+namespace GamingProject
 {
+    /// <summary>
+    /// Handler manages detection and interaction with game objects.
+    /// Place this in the scene to handle all object interactions with Layer Mask filtering.
+    /// Replaces the old PointProbe functionality with clearer responsibilities.
+    /// </summary>
+    public class Handler : MonoBehaviour
+    {
     [Header("Detection Settings")]
     [SerializeField] private LayerMask detectionLayerMask = -1;
     [SerializeField] private float detectionRadius = 0.5f;
@@ -191,5 +193,6 @@ public class Handler : MonoBehaviour
     {
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, detectionRadius);
+    }
     }
 }

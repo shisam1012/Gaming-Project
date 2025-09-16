@@ -1,13 +1,15 @@
 // FILE: Stone.cs
 using UnityEngine;
 
-/// <summary>
-/// Stone is now a VIEW-ONLY component that only handles visuals and data representation.
-/// All game logic has been moved to InteractionController and other managers.
-/// </summary>
-[RequireComponent(typeof(SpriteRenderer))]
-[RequireComponent(typeof(BoxCollider2D))]
-public class Stone : MonoBehaviour
+namespace GamingProject
+{
+    /// <summary>
+    /// Stone is now a VIEW-ONLY component that only handles visuals and data representation.
+    /// All game logic has been moved to InteractionController and other managers.
+    /// </summary>
+    [RequireComponent(typeof(SpriteRenderer))]
+    [RequireComponent(typeof(BoxCollider2D))]
+    public class Stone : MonoBehaviour
 {
     public enum StoneType
     {
@@ -201,5 +203,6 @@ public class Stone : MonoBehaviour
         spriteRenderer = GetComponent<SpriteRenderer>();
         boxCollider = GetComponent<BoxCollider2D>();
         SetupCollider();
+    }
     }
 }

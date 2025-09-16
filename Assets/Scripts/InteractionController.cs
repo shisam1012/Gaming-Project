@@ -1,15 +1,17 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>
-/// InteractionController handles all player → board interactions.
-/// Coordinates between input, stones, and board logic.
-/// This is where the game rules and interaction logic live.
-/// </summary>
-public class InteractionController : MonoBehaviour
+namespace GamingProject
 {
-    [Header("Selection Settings")]
-    [SerializeField] private int minimumSelectionSize = 3;
+    /// <summary>
+    /// InteractionController handles all player → board interactions.
+    /// Coordinates between input, stones, and board logic.
+    /// This is where the game rules and interaction logic live.
+    /// </summary>
+    public class InteractionController : MonoBehaviour
+    {
+        [Header("Selection Settings")]
+        [SerializeField] private int minimumSelectionSize = 3;
     [SerializeField] private bool allowDiagonalSelection = false;
     
     [Header("Visual Feedback")]
@@ -408,4 +410,5 @@ public class InteractionController : MonoBehaviour
     public int SelectedCount => selectedStones.Count;
     public List<GameObject> SelectedStones => new List<GameObject>(selectedStones);
     public List<Vector2Int> SelectedPositions => new List<Vector2Int>(selectedPositions);
+    }
 }

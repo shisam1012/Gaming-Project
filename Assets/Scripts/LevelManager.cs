@@ -3,14 +3,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class LevelManager : MonoBehaviour
+namespace GamingProject
 {
-    [Header("Levels Order (will advance in this order)")]
-    public List<LevelConfig> levels = new List<LevelConfig>();
-    [SerializeField] private int currentIndex = 0;
+    public class LevelManager : MonoBehaviour
+    {
+        [Header("Levels Order (will advance in this order)")]
+        public List<LevelConfig> levels = new List<LevelConfig>();
+        [SerializeField] private int currentIndex = 0;
 
-    [Header("References")]
-    public Board board;
+        [Header("References")]
+        public Board board;
     public UnityEvent onTimeUp;
     public UnityEvent<float> onTimerStart; 
     public UnityEvent onTimerEnd;
@@ -62,11 +64,19 @@ public class LevelManager : MonoBehaviour
     {
         if (!running) return;
         timeLeft -= Time.deltaTime;
+        
+        // Debug logging to help troubleshoot
+        if (timeLeft <= 5f && timeLeft > 4.9f)
+        {
+            Debug.Log($"[LevelManager] Timer warning: {timeLeft:F2} seconds left");
+        }
+        
         if (timeLeft <= 0f)
         {
             running = false;
             timeLeft = 0f; 
-            Debug.LogWarning("[LevelManager] Time up!");
+            Debug.LogWarning($"[LevelManager] Time up! Final time: {timeLeft}");
+            Debug.Log($"[LevelManager] Invoking onTimerEnd and onTimeUp events");
             onTimerEnd?.Invoke();
             onTimeUp?.Invoke();
         }
@@ -190,5 +200,6 @@ public class LevelManager : MonoBehaviour
     public int GetTotalLevels()
     {
         return levels != null ? levels.Count : 0;
+    }
     }
 }

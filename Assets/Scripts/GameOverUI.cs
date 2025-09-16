@@ -30,8 +30,11 @@ namespace GamingProject
     
     private void Awake()
     {
+        Debug.Log("[GameOverUI] Awake called - initializing GameOverUI");
+        
         // Get references
         levelManager = FindFirstObjectByType<LevelManager>();
+        Debug.Log($"[GameOverUI] LevelManager found: {levelManager != null}");
         
         // Setup canvas group for fading
         if (canvasGroup == null)
@@ -47,6 +50,12 @@ namespace GamingProject
         if (tryAgainButton != null)
         {
             tryAgainButton.onClick.AddListener(OnTryAgain);
+            // Use the tryAgainText field to set button text
+            var buttonText = tryAgainButton.GetComponentInChildren<TextMeshProUGUI>();
+            if (buttonText != null)
+            {
+                buttonText.text = tryAgainText;
+            }
         }
         
         if (quitButton != null)
@@ -60,10 +69,17 @@ namespace GamingProject
     
     private void Start()
     {
+        Debug.Log("[GameOverUI] Start called - subscribing to events");
+        
         // Subscribe to level manager events
         if (levelManager != null)
         {
             levelManager.onTimeUp.AddListener(OnTimeUp);
+            Debug.Log("[GameOverUI] Successfully subscribed to onTimeUp event");
+        }
+        else
+        {
+            Debug.LogError("[GameOverUI] LevelManager is null! Cannot subscribe to events.");
         }
     }
     
@@ -89,12 +105,19 @@ namespace GamingProject
     
     public void OnTimeUp()
     {
+        Debug.Log("[GameOverUI] OnTimeUp called - showing game over screen");
         ShowGameOver();
     }
     
     public void ShowGameOver()
     {
-        if (isShowing) return;
+        Debug.Log($"[GameOverUI] ShowGameOver called - isShowing: {isShowing}");
+        
+        if (isShowing) 
+        {
+            Debug.LogWarning("[GameOverUI] Already showing, skipping");
+            return;
+        }
         
         isShowing = true;
         
@@ -105,6 +128,11 @@ namespace GamingProject
         if (gameOverPanel != null)
         {
             gameOverPanel.SetActive(true);
+            Debug.Log("[GameOverUI] Game over panel activated");
+        }
+        else
+        {
+            Debug.LogError("[GameOverUI] Game over panel is null!");
         }
         
         // Fade in animation

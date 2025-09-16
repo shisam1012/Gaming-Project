@@ -2,10 +2,12 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-public class TimerUI_Slider : MonoBehaviour
+namespace GamingProject
 {
-    [Header("Refs")]
-    [SerializeField] private LevelManager levelManager;
+    public class TimerUI_Slider : MonoBehaviour
+    {
+        [Header("Refs")]
+        [SerializeField] private LevelManager levelManager;
     [SerializeField] private Slider slider;
     [SerializeField] private TextMeshProUGUI timeLabel;
 
@@ -70,6 +72,123 @@ public class TimerUI_Slider : MonoBehaviour
     public void HandleTimeUp()
     {
         ticking = false;
-        if (slider) slider.value = 0f;
+        if (slider) 
+        {
+            slider.value = 0f;
+        }
+        
+        // Show Game Over panel
+        ShowGameOverPanel();
+    }
+    
+    private void ShowGameOverPanel()
+    {
+        GameObject gameOverPanel = null;
+        
+        // First, try to find nested GameOverPanel inside GameOverCanvas
+        GameObject gameOverCanvas = GameObject.Find("GameOverCanvas");
+        if (gameOverCanvas != null)
+        {
+            Transform panelTransform = gameOverCanvas.transform.Find("GameOverPanel");
+            if (panelTransform != null)
+            {
+                gameOverPanel = panelTransform.gameObject;
+            }
+        }
+        
+        // If not found, try other canvas names with nested panels
+        if (gameOverPanel == null)
+        {
+            string[] canvasNames = { "GameOverCanvas", "UI_Canvas", "Canvas", "GameOver_Canvas" };
+            string[] panelNames = { "GameOverPanel", "GameOver", "Panel_GameOver", "GameOverUI" };
+            
+            foreach (string canvasName in canvasNames)
+            {
+                GameObject canvas = GameObject.Find(canvasName);
+                if (canvas != null)
+                {
+                    foreach (string panelName in panelNames)
+                    {
+                        Transform panelTransform = canvas.transform.Find(panelName);
+                        if (panelTransform != null)
+                        {
+                            gameOverPanel = panelTransform.gameObject;
+                            break;
+                        }
+                    }
+                    if (gameOverPanel != null) break;
+                }
+            }
+        }
+        
+        // Fallback: Try direct GameObject.Find (for top-level objects)
+        if (gameOverPanel == null)
+        {
+            string[] possibleNames = { "GameOverPanel", "GameOver", "Game Over Panel", "GameOverUI", "Game Over UI", "Panel_GameOver" };
+            
+            foreach (string name in possibleNames)
+            {
+                gameOverPanel = GameObject.Find(name);
+                if (gameOverPanel != null)
+                {
+                    break;
+                }
+            }
+        }
+        
+        // Final fallback: Try to find any GameOverUI component
+        if (gameOverPanel == null)
+        {
+            GameOverUI gameOverUI = FindFirstObjectByType<GameOverUI>();
+            if (gameOverUI != null)
+            {
+                gameOverPanel = gameOverUI.gameObject;
+            }
+        }
+        
+        if (gameOverPanel != null)
+        {
+            // Try to get CanvasGroup and set alpha
+            CanvasGroup canvasGroup = gameOverPanel.GetComponent<CanvasGroup>();
+            if (canvasGroup != null)
+            {
+                canvasGroup.alpha = 1f;
+                canvasGroup.interactable = true;
+                canvasGroup.blocksRaycasts = true;
+            }
+            else
+            {
+                // If no CanvasGroup, just activate the GameObject
+                gameOverPanel.SetActive(true);
+            }
+            
+            // Try to trigger GameOverUI component if it exists
+            GameOverUI gameOverUIComponent = gameOverPanel.GetComponent<GameOverUI>();
+            if (gameOverUIComponent != null)
+            {
+                // Call OnTimeUp directly if the event system isn't working
+                gameOverUIComponent.OnTimeUp();
+            }
+            
+            // Update any text elements in the panel
+            UpdateGameOverText(gameOverPanel);
+        }
+        else
+        {
+            Debug.LogError("[TimerUI_Slider] Game Over panel not found! Check that GameOverCanvas/GameOverPanel exists in the scene.");
+        }
+    }    private void UpdateGameOverText(GameObject gameOverPanel)
+    {
+        // Find and update common text elements
+        var timeUpText = gameOverPanel.transform.Find("TimeUpText");
+        if (timeUpText != null)
+        {
+            var textComponent = timeUpText.GetComponent<TMPro.TextMeshProUGUI>();
+            if (textComponent != null)
+                textComponent.text = "TIME'S UP!";
+        }
+        
+        // You can add more text updates here if needed
+    }
     }
 }

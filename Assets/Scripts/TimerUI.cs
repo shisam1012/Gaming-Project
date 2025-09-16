@@ -2,10 +2,12 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-public class TimerUI : MonoBehaviour
+namespace GamingProject
 {
-    [Header("UI References")]
-    [SerializeField] private TextMeshProUGUI timerText;
+    public class TimerUI : MonoBehaviour
+    {
+        [Header("UI References")]
+        [SerializeField] private TextMeshProUGUI timerText;
     [SerializeField] private Image timerFillImage;
     [SerializeField] private GameObject timerPanel;
     
@@ -141,4 +143,5 @@ public class TimerUI : MonoBehaviour
             timerPanel.SetActive(active);
         }
     }
+}
 }
