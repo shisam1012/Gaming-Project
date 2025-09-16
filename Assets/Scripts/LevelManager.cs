@@ -12,6 +12,8 @@ public class LevelManager : MonoBehaviour
     [Header("References")]
     public Board board;
     public UnityEvent onTimeUp;
+    public UnityEvent<float> onTimerStart; 
+    public UnityEvent onTimerEnd;
 
     [Header("Timing")]
     [SerializeField] private float betweenLevelDelay = 0.75f;
@@ -63,7 +65,9 @@ public class LevelManager : MonoBehaviour
         if (timeLeft <= 0f)
         {
             running = false;
+            timeLeft = 0f; 
             Debug.LogWarning("[LevelManager] Time up!");
+            onTimerEnd?.Invoke();
             onTimeUp?.Invoke();
         }
     }
@@ -75,12 +79,16 @@ public class LevelManager : MonoBehaviour
         timeLeft = Mathf.Max(1f, cfg.timeLimitSeconds);
         board.ApplyLevel(cfg);
         running = true;
-        Debug.Log($"[LevelManager] Loaded level {index+1}/{levels.Count}: {cfg.name}");
+        
+        onTimerStart?.Invoke(timeLeft);
+        
+        Debug.Log($"[LevelManager] Loaded level {index+1}/{levels.Count}: {cfg.name} (Time: {timeLeft}s)");
     }
 
     private void OnBoardWin()
     {
         running = false;
+        onTimerEnd?.Invoke();
         StartCoroutine(AdvanceAfterDelay(betweenLevelDelay));
     }
 
@@ -130,4 +138,40 @@ public class LevelManager : MonoBehaviour
     }
 
     public float TimeLeft => Mathf.Max(0f, timeLeft);
+    
+    public float GetCurrentLevelTimeLimit()
+    {
+        if (currentIndex >= 0 && currentIndex < levels.Count)
+        {
+            return levels[currentIndex].timeLimitSeconds;
+        }
+        return 60f;
+    }
+    
+    public bool IsTimerRunning => running;
+    
+    public float GetTimeProgress()
+    {
+        float totalTime = GetCurrentLevelTimeLimit();
+        return totalTime > 0 ? (totalTime - timeLeft) / totalTime : 0f;
+    }
+    
+    public void PauseTimer()
+    {
+        running = false;
+    }
+    
+    public void ResumeTimer()
+    {
+        if (timeLeft > 0)
+        {
+            running = true;
+        }
+    }
+    
+    public void AddTime(float seconds)
+    {
+        timeLeft += seconds;
+        Debug.Log($"[LevelManager] Added {seconds} seconds. New time: {timeLeft}");
+    }
 }
