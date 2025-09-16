@@ -2,24 +2,33 @@
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace game.ui
+namespace Assets.UI_Toolkit.UI_scripts
 {
     public class InGamePresenter
     {
+        //private Button _btnPause;
+        //private VisualElement _uiBar, _gameArea;
+        //public Action PauseAction { set => _btnPause.clicked += value; }
 
-        private Button _btnPause;
-        public Action PauseAction { set => _btnPause.clicked += value; }
+        //public InGamePresenter(VisualElement root)
+        //{
+        //    _btnPause = root.Q<Button>("btnPause");
+        //    _gameArea = root.Q("gameArea");
+        //    _uiBar = root.Q("uiBar");
+        //    //_gameArea.pickingMode = PickingMode.Ignore;
 
-        public InGamePresenter(VisualElement root)
+        //    AddLogstoButtons();
+        //}
+
+        //private void AddLogstoButtons()
+        //{
+        //    _btnPause.clicked += () => Debug.Log("Pressed Pause");
+        //}
+        private GameObject _view;
+        public InGamePresenter(GameObject view)
         {
-            _btnPause = root.Q<Button>("btnPause");
-            AddLogstoButtons();
+            _view = view;
+            _view.SetActive(false);
         }
-
-        private void AddLogstoButtons()
-        {
-            _btnPause.clicked += () => Debug.Log("Pressed Pause");
-        }
-
-    }
+}
 }
