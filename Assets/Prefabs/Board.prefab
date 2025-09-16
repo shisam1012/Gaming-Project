@@ -1,0 +1,61 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &3243591419419194238
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 492114146211804032}
+  - component: {fileID: 6358363236044607062}
+  m_Layer: 0
+  m_Name: Board
+  m_TagString: Untagged
+  m_Icon: {fileID: -964228994112308473, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &492114146211804032
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3243591419419194238}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6358363236044607062
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3243591419419194238}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 74cda539b2ace664faf1fb22257ca79f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  width: 7
+  height: 10
+  cellPrefab: {fileID: 5507944404235456927, guid: 01153e6387cd3c240b6a41bbb4b7be38, type: 3}
+  stonePrefabsRef:
+  - {fileID: -2949798157984707379, guid: fc3a378ebfe72e040af03da4aad943f9, type: 3}
+  - {fileID: 6099646008171434998, guid: 3c6cd59163f186845853788b64e959ac, type: 3}
+  - {fileID: 3491868228263366608, guid: 102c4ad3db10eb447ace2d30f4576f9d, type: 3}
+  - {fileID: -658407287396442835, guid: e1cc66d37f535f14c97d9e165a41c0ec, type: 3}
+  es: {fileID: 0}
+  fluidSource: {x: 3, y: 3}
+  destination: {x: 3, y: 0}
+  randomizeEndpointsOnStart: 1
+  onWin:
+    m_PersistentCalls:
+      m_Calls: []

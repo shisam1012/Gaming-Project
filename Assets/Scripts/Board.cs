@@ -11,6 +11,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.UI;
 #endif
 
+
 [DefaultExecutionOrder(-100)]
 public class Board : MonoBehaviour
 {
@@ -270,6 +271,7 @@ public class Board : MonoBehaviour
         }
 
         FlipBackgroundTiles(stonePositions);
+        
 
         var flooded = FloodFillFluid();
 

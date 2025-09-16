@@ -4,9 +4,9 @@
     <ui:Template name="SettingsVisualTree" src="project://database/Assets/UI%20Toolkit/SettingsVisualTree.uxml?fileID=9197481963319205126&amp;guid=d23e4fa883276a84a9068f57a4f7493c&amp;type=3#SettingsVisualTree" />
     <ui:Template name="InGameVisualTree" src="project://database/Assets/UI%20Toolkit/InGameVisualTree.uxml?fileID=9197481963319205126&amp;guid=31bab2a14687d784689e547a4dc9ea31&amp;type=3#InGameVisualTree" />
     <ui:VisualElement name="Base" style="flex-grow: 1;">
-        <ui:Instance template="MainMenuVisualTree" name="MainMenuView" style="flex-grow: 1; flex-shrink: 0;" />
+        <ui:Instance template="MainMenuVisualTree" name="MainMenuView" style="flex-grow: 1; flex-shrink: 0; display: flex;" />
         <ui:Instance template="PauseVisualTree" name="PauseView" style="flex-shrink: 0; flex-grow: 1; display: none;" />
         <ui:Instance template="SettingsVisualTree" name="SettingsView" style="display: none; flex-grow: 1; flex-shrink: 0;" />
-        <ui:Instance template="InGameVisualTree" name="InGameView" style="display: none;" />
+        <ui:Instance template="InGameVisualTree" name="InGameView" style="display: none; height: 845px;" />
     </ui:VisualElement>
 </ui:UXML>
