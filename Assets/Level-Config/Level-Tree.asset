@@ -10,15 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c4e38bff984a31b47a15c349ca2c3851, type: 3}
-  m_Name: Level-Heart
+  m_Name: Level-Tree
   m_EditorClassIdentifier: 
   width: 7
-  height: 7
-  shape: {fileID: 11400000, guid: f4e31d199bc034bc3b3e7fd782568d81, type: 2}
-  timeLimitSeconds: 60
+  height: 10
+  shape: {fileID: 11400000, guid: 4fef1e55a53c26844a03d8715f550a6e, type: 2}
+  timeLimitSeconds: 150
   pauseSeconds: 2
   allowPowerUps: 1
   powerUps: []
-  startInside: {x: 5, y: 5}
+  startInside: {x: 3, y: 5}
   destinationOnBorder: {x: 3, y: 0}
   description: 
