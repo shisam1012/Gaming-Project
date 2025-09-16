@@ -1,10 +1,8 @@
 using UnityEngine;
 
-/// <summary>
-/// GameManager keeps references to key systems and provides centralized access.
-/// Other systems can access the board and other managers through this central hub.
-/// </summary>
-public class GameManager : MonoBehaviour
+namespace GamingProject
+{
+    public class GameManager : MonoBehaviour
 {
     private static GameManager _instance;
     public static GameManager Instance

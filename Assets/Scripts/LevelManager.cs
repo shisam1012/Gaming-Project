@@ -174,4 +174,21 @@ public class LevelManager : MonoBehaviour
         timeLeft += seconds;
         Debug.Log($"[LevelManager] Added {seconds} seconds. New time: {timeLeft}");
     }
+    
+    public void ResetToFirstLevel()
+    {
+        currentIndex = 0;
+        LoadLevel(currentIndex);
+        Debug.Log("[LevelManager] Reset to first level");
+    }
+    
+    public int GetCurrentLevelNumber()
+    {
+        return currentIndex + 1; // Return 1-based level number for display
+    }
+    
+    public int GetTotalLevels()
+    {
+        return levels != null ? levels.Count : 0;
+    }
 }

@@ -11,8 +11,10 @@ using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.UI;
 #endif
 
-[DefaultExecutionOrder(-100)]
-public class Board : MonoBehaviour
+namespace GamingProject
+{
+    [DefaultExecutionOrder(-100)]
+    public class Board : MonoBehaviour
 {
     [Header("Board Size & Prefabs")]
     [SerializeField] private int width = 7;   // default 7x10
@@ -638,4 +640,5 @@ public class Board : MonoBehaviour
 #endif
         }
     }
+}
 }
