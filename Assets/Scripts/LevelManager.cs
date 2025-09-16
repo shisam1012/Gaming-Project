@@ -19,8 +19,8 @@ public class LevelManager : MonoBehaviour
     private float timeLeft;
     private bool running;
 
-    [SerializeField] private GameWinScreen gameWinScreen;
-    public GameWinScreen GameWinScreen => gameWinScreen;
+    [SerializeField] private ResultScreen resultScreen;
+    public ResultScreen ResultScreen => resultScreen;
 
     private void Awake()
     {
@@ -67,7 +67,9 @@ public class LevelManager : MonoBehaviour
         {
             running = false;
             Debug.LogWarning("[LevelManager] Time up!");
-            onTimeUp?.Invoke();
+            //onTimeUp?.Invoke();
+            int totalScore = ScoreHandler.instance.GetCurrentScore();
+            ResultScreen.SetUpTimeOut(totalScore);
         }
     }
 
@@ -82,31 +84,28 @@ public class LevelManager : MonoBehaviour
     }
 
 
-    private void OnBoardWin(int finalScore)
+    private void OnBoardWin()
     {
         float timeRatio = timeLeft / levels[currentIndex].timeLimitSeconds;
-        float bonus = 1;
+        int totalScore = ScoreHandler.instance.CalculateTimeBonus(timeRatio);
 
-        if (timeRatio >= 0.75f)
-        {
-            bonus = 1.75f;
-        }
-        else if (timeRatio >= 0.5f)
-        {
-            bonus = 1.5f;
-        }
-        else if (timeRatio >= 0.25f)
-        {
-            bonus = 1.1f;
-        }
+        Debug.LogWarning("------total score " + totalScore);
 
-        int totalScore = Mathf.RoundToInt(finalScore * bonus);
-        ScoreHandler.instance.SetScore(totalScore);
-        Debug.LogWarning("------total score" + totalScore);
-        //GameWinScreen.instance.SetUp(totalScore);
-        GameWinScreen.SetUp(totalScore);
+        StartCoroutine(ShowWinAfterDelay(totalScore));
         running = false;
-        //StartCoroutine(AdvanceAfterDelay(betweenLevelDelay));
+    }
+
+    private IEnumerator ShowWinAfterDelay(int totalScore)
+    {
+        yield return new WaitForSeconds(betweenLevelDelay);
+        ResultScreen.SetUp(totalScore, "You Won!");
+    }
+
+
+    public IEnumerator RepeatAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        LoadLevel(currentIndex);
     }
 
     public IEnumerator AdvanceAfterDelay(float delay)
@@ -125,6 +124,7 @@ public class LevelManager : MonoBehaviour
         yield return new WaitForSeconds(delay);
         LoadLevel(currentIndex);
     }
+
     public void JumpToLevel(int index)
     {
         if (index < 0 || index >= levels.Count) return;

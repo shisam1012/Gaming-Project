@@ -49,7 +49,7 @@ public class Board : MonoBehaviour
     [SerializeField] private bool randomizeEndpointsOnStart = false; 
 
     [Header("Win Event")]
-    public UnityEvent<int> onWin;
+    public UnityEvent onWin;
 
 
     private LevelConfig activeLevel;
@@ -278,7 +278,7 @@ public class Board : MonoBehaviour
         if (flooded.Contains(destination))
         {
             Debug.LogWarning("[WIN] Fluid reached destination! 🎉");
-            onWin?.Invoke(ScoreHandler.instance.GetCurrentScore());
+            onWin?.Invoke();
         }
         else
         {
