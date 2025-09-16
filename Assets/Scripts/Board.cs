@@ -11,6 +11,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.UI;
 #endif
 
+
 [DefaultExecutionOrder(-100)]
 public class Board : MonoBehaviour
 {
@@ -24,7 +25,7 @@ public class Board : MonoBehaviour
     [SerializeField] private EventSystem es;
 
     [Header("Runtime Grids (debug viewable)")]
-    [SerializeField] private Stone[,] allStones;
+    private Stone[,] allStones;
     private BackGroundTile[,] allTiles;
     private bool[,] playable;
 
@@ -272,6 +273,7 @@ public class Board : MonoBehaviour
         }
 
         FlipBackgroundTiles(stonePositions);
+        
 
         var flooded = FloodFillFluid();
 
