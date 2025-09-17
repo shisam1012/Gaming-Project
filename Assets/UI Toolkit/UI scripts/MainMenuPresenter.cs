@@ -10,8 +10,22 @@ namespace Assets.UI_Toolkit.UI_scripts
         public Action OpenSettings { set => _btnSettings.clicked += value; }
         public Action StartGame { set => _btnStart.clicked += value; }
         public MainMenuPresenter(VisualElement root) {
+            Debug.Log("[MainMenuPresenter] Creating MainMenuPresenter");
             _btnStart = root.Q<Button>("btnStart");
             _btnSettings = root.Q<Button>("btnSettings");
+            
+            if (_btnStart == null) {
+                Debug.LogError("[MainMenuPresenter] btnStart not found!");
+            } else {
+                Debug.Log("[MainMenuPresenter] btnStart found successfully");
+            }
+            
+            if (_btnSettings == null) {
+                Debug.LogError("[MainMenuPresenter] btnSettings not found!");
+            } else {
+                Debug.Log("[MainMenuPresenter] btnSettings found successfully");
+            }
+            
             AddLogstoButtons();
         }
 

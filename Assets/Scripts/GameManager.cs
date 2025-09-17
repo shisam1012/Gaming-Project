@@ -176,9 +176,15 @@ namespace GamingProject
     
     public void LoadLevel(int levelIndex)
     {
+        Debug.Log($"[GameManager] LoadLevel({levelIndex}) called");
         if (levelManager != null)
         {
+            Debug.Log("[GameManager] LevelManager found, calling LoadLevelPublic");
             levelManager.LoadLevelPublic(levelIndex);
+        }
+        else
+        {
+            Debug.LogError("[GameManager] LevelManager is null! Cannot load level.");
         }
     }
     

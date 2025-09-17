@@ -2,6 +2,7 @@ using System;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
+using UnityEngine.SceneManagement;
 
 namespace Assets.UI_Toolkit.UI_scripts
 {
@@ -62,10 +63,31 @@ namespace Assets.UI_Toolkit.UI_scripts
 
         private void SetMainMenuPresenter()
         {
+            Debug.Log("[UIViewPresenter] Setting up MainMenuPresenter");
             MainMenuPresenter mainMenuPresenter = new(_mainMenuView)
             {
-                StartGame = () => ToggleView(ViewState.InGame),
-                OpenSettings = () => ToggleView(ViewState.Settings)
+                StartGame = () => {
+                    Debug.Log("[UIViewPresenter] StartGame action triggered!");
+                    Debug.Log("[UIViewPresenter] Hiding main menu and starting game...");
+                    
+                    // Hide the UI like the old version did
+                    ToggleView(ViewState.InGame);
+                    
+                    // Start the game through GameManager like before
+                    if (GamingProject.GameManager.Instance != null) 
+                    {
+                        GamingProject.GameManager.Instance.StartGame();
+                        Debug.Log("[UIViewPresenter] Game started through GameManager");
+                    }
+                    else
+                    {
+                        Debug.LogError("[UIViewPresenter] GameManager instance not found!");
+                    }
+                },
+                OpenSettings = () => {
+                    Debug.Log("[UIViewPresenter] Settings button clicked");
+                    ToggleView(ViewState.Settings);
+                }
             };
         }
 
@@ -90,7 +112,8 @@ namespace Assets.UI_Toolkit.UI_scripts
         {
             if (_currentViewState == ViewState.InGame)
             {
-                _view.SetActive(false);
+                if (_view != null)
+                    _view.SetActive(false);
             }
             _mainMenuView.Display(_currentViewState == ViewState.MainMenu);
             _settingsView.Display(_currentViewState == ViewState.Settings);

@@ -294,7 +294,19 @@ namespace GamingProject
     public void RemoveStones(List<Vector2Int> stonePositions)
     {
         if (isBusy) return;
-        ScoreHandler.instance.UpadteScore(stonePositions.Count);
+        
+        // Update score using GameObject.Find to avoid compilation issues
+        var scoreHandlerObj = GameObject.Find("ScoreHandler");
+        if (scoreHandlerObj != null)
+        {
+            var scoreHandler = scoreHandlerObj.GetComponent<MonoBehaviour>();
+            var method = scoreHandler.GetType().GetMethod("UpadteScore");
+            if (method != null)
+            {
+                method.Invoke(scoreHandler, new object[] { stonePositions.Count });
+            }
+        }
+        
         StartCoroutine(RemoveStonesRoutine(stonePositions));
         
     }
