@@ -290,6 +290,50 @@ namespace GamingProject
         {
             Debug.LogError("[LevelManager] ScoreText is null - cannot set score text!");
         }
+        
+        // Fix UI positioning to ensure they're visible
+        FixUIPositioning();
+    }
+    
+    private void FixUIPositioning()
+    {
+        Debug.Log("[LevelManager] Fixing UI positioning to be centered above timer bar...");
+        
+        // Fix ScoreText positioning (bottom-center-left)
+        if (scoreText != null)
+        {
+            RectTransform scoreRect = scoreText.GetComponent<RectTransform>();
+            if (scoreRect != null)
+            {
+                // Anchor to bottom-center
+                scoreRect.anchorMin = new Vector2(0.5f, 0);
+                scoreRect.anchorMax = new Vector2(0.5f, 0);
+                scoreRect.pivot = new Vector2(1, 0); // Right-aligned so it sits to the left of center
+                
+                // Position to the left of center, above timer (120px from bottom)
+                scoreRect.anchoredPosition = new Vector2(-20, 120);
+                
+                Debug.Log($"[LevelManager] Fixed ScoreText position: {scoreRect.anchoredPosition}");
+            }
+        }
+        
+        // Fix LevelText positioning (bottom-center-right)
+        if (levelText != null)
+        {
+            RectTransform levelRect = levelText.GetComponent<RectTransform>();
+            if (levelRect != null)
+            {
+                // Anchor to bottom-center
+                levelRect.anchorMin = new Vector2(0.5f, 0);
+                levelRect.anchorMax = new Vector2(0.5f, 0);
+                levelRect.pivot = new Vector2(0, 0); // Left-aligned so it sits to the right of center
+                
+                // Position to the right of center, above timer (120px from bottom)
+                levelRect.anchoredPosition = new Vector2(20, 120);
+                
+                Debug.Log($"[LevelManager] Fixed LevelText position: {levelRect.anchoredPosition}");
+            }
+        }
     }
 
     private void Update()

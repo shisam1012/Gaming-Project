@@ -42,6 +42,9 @@ namespace GamingProject
 
     private void Awake()
     {
+        // Clean up any extra colliders - we only need BoxCollider2D
+        CleanupExtraColliders();
+        
         spriteRenderer = GetComponent<SpriteRenderer>();
         boxCollider = GetComponent<BoxCollider2D>();
         
@@ -52,6 +55,27 @@ namespace GamingProject
         }
 
         SetupCollider();
+    }
+    
+    private void CleanupExtraColliders()
+    {
+        // Remove any CircleCollider2D components as we only need BoxCollider2D
+        CircleCollider2D[] circleColliders = GetComponents<CircleCollider2D>();
+        if (circleColliders.Length > 0)
+        {
+            Debug.Log($"[Stone] Removing {circleColliders.Length} extra CircleCollider2D components from {name}");
+            for (int i = 0; i < circleColliders.Length; i++)
+            {
+                if (Application.isPlaying)
+                {
+                    Destroy(circleColliders[i]);
+                }
+                else
+                {
+                    DestroyImmediate(circleColliders[i]);
+                }
+            }
+        }
     }
 
     private void Start()
