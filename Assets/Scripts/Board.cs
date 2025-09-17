@@ -15,7 +15,7 @@ namespace GamingProject
 {
     [DefaultExecutionOrder(-100)]
     public class Board : MonoBehaviour
-{
+    {
     [Header("Board Size & Prefabs")]
     [SerializeField] private int width = 7;   // default 7x10
     [SerializeField] private int height = 10;
@@ -294,7 +294,9 @@ namespace GamingProject
     public void RemoveStones(List<Vector2Int> stonePositions)
     {
         if (isBusy) return;
+        ScoreHandler.instance.UpadteScore(stonePositions.Count);
         StartCoroutine(RemoveStonesRoutine(stonePositions));
+        
     }
 
     private IEnumerator RemoveStonesRoutine(List<Vector2Int> stonePositions)
@@ -313,6 +315,7 @@ namespace GamingProject
         }
 
         FlipBackgroundTiles(stonePositions);
+        
 
         var flooded = FloodFillFluid();
 

@@ -23,6 +23,9 @@ namespace GamingProject
     private float timeLeft;
     private bool running;
 
+    [SerializeField] private ResultScreen resultScreen;
+    public ResultScreen ResultScreen => resultScreen;
+
     private void Awake()
     {
         if (board == null)
@@ -98,6 +101,12 @@ namespace GamingProject
             running = false;
             timeLeft = 0f; 
             Debug.LogWarning($"[LevelManager] Time up! Final time: {timeLeft}");
+            
+            // Get current score for time-out screen (from main branch)
+            int totalScore = ScoreHandler.instance.GetCurrentScore();
+            ResultScreen.SetUpTimeOut(totalScore);
+            
+            // Timer events for UI updates (from feat/timer branch)
             Debug.Log($"[LevelManager] Invoking onTimerEnd and onTimeUp events");
             onTimerEnd?.Invoke();
             onTimeUp?.Invoke();
@@ -117,14 +126,35 @@ namespace GamingProject
         Debug.Log($"[LevelManager] Loaded level {index+1}/{levels.Count}: {cfg.name} (Time: {timeLeft}s)");
     }
 
+
     private void OnBoardWin()
     {
+        float timeRatio = timeLeft / levels[currentIndex].timeLimitSeconds;
+        int totalScore = ScoreHandler.instance.CalculateTimeBonus(timeRatio);
+
+        Debug.LogWarning("------total score " + totalScore);
+
+        StartCoroutine(ShowWinAfterDelay(totalScore));
         running = false;
+        // Keep timer events for UI consistency
         onTimerEnd?.Invoke();
         StartCoroutine(AdvanceAfterDelay(betweenLevelDelay));
     }
 
-    private IEnumerator AdvanceAfterDelay(float delay)
+    private IEnumerator ShowWinAfterDelay(int totalScore)
+    {
+        yield return new WaitForSeconds(betweenLevelDelay);
+        ResultScreen.SetUp(totalScore, "You Won!");
+    }
+
+
+    public IEnumerator RepeatAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        LoadLevel(currentIndex);
+    }
+
+    public IEnumerator AdvanceAfterDelay(float delay)
     {
         yield return new WaitForSeconds(delay);
         currentIndex++;
@@ -140,6 +170,7 @@ namespace GamingProject
         yield return new WaitForSeconds(delay);
         LoadLevel(currentIndex);
     }
+
     public void JumpToLevel(int index)
     {
         if (index < 0 || index >= levels.Count) return;

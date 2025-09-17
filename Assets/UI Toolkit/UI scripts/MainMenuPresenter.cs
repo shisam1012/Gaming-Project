@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace game.ui
+namespace Assets.UI_Toolkit.UI_scripts
 {
     public class MainMenuPresenter
     {

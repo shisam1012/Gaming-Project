@@ -5,7 +5,7 @@
             <ui:Label text="FlowGarden" name="headerTitle" display-tooltip-when-elided="false" triple-click-selects-line="false" selectable="false" class="title text-auto-size text-auto-size-max-200" />
         </ui:VisualElement>
         <ui:VisualElement name="container" class="container  menu-items text-auto-size">
-            <ui:Button text="Start" name="btnStart" class="text-auto-size unity-button menu-item" />
+            <ui:Button text="Start" name="btnStart" class="text-auto-size unity-button menu-item" style="-unity-slice-left: 18; -unity-slice-top: 18; -unity-slice-right: 18; -unity-slice-bottom: 18;" />
         </ui:VisualElement>
         <ui:VisualElement name="footerPanel" class="footer dark-pink-bg stick-corner">
             <ui:Instance template="btnSettings" name="btnSettings" />
