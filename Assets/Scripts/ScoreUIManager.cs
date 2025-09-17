@@ -107,38 +107,125 @@ public class ScoreUIManager : MonoBehaviour
     
     private void ConnectToExistingUI()
     {
-        // Find existing ScoreLevelCanvas
+        // Try to find existing ScoreLevelCanvas first
         GameObject scoreLevelCanvas = GameObject.Find("ScoreLevelCanvas");
         if (scoreLevelCanvas == null)
         {
-            Debug.LogError("[ScoreUIManager] ScoreLevelCanvas not found! Please make sure you have a Canvas named 'ScoreLevelCanvas' in your scene.");
-            return;
+            Debug.LogWarning("[ScoreUIManager] ScoreLevelCanvas not found! Trying to find any Canvas...");
+            
+            // Fallback: find any Canvas to attach our UI to
+            Canvas anyCanvas = FindFirstObjectByType<Canvas>();
+            if (anyCanvas != null)
+            {
+                Debug.Log("[ScoreUIManager] Found Canvas: " + anyCanvas.name + ", creating ScoreText and LevelText on it");
+                CreateUIElementsOnCanvas(anyCanvas);
+                return;
+            }
+            else
+            {
+                Debug.LogError("[ScoreUIManager] No Canvas found at all! Creating a new Canvas...");
+                CreateNewCanvasWithUI();
+                return;
+            }
         }
         
-        // Find existing ScoreText
+        // Try to find existing ScoreText
         GameObject scoreTextObj = GameObject.Find("ScoreText");
         if (scoreTextObj == null)
         {
-            Debug.LogError("[ScoreUIManager] ScoreText not found! Please make sure you have a Text component named 'ScoreText' in your ScoreLevelCanvas.");
+            Debug.LogWarning("[ScoreUIManager] ScoreText not found! Creating it on ScoreLevelCanvas...");
+            Canvas canvas = scoreLevelCanvas.GetComponent<Canvas>();
+            if (canvas == null)
+            {
+                Debug.LogError("[ScoreUIManager] ScoreLevelCanvas does not have a Canvas component!");
+                return;
+            }
+            CreateUIElementsOnCanvas(canvas);
             return;
         }
         
-        // Find existing LevelText
+        // Try to find existing LevelText
         GameObject levelTextObj = GameObject.Find("LevelText");
         if (levelTextObj == null)
         {
-            Debug.LogError("[ScoreUIManager] LevelText not found! Please make sure you have a Text component named 'LevelText' in your ScoreLevelCanvas.");
+            Debug.LogWarning("[ScoreUIManager] LevelText not found! Creating it on ScoreLevelCanvas...");
+            Canvas canvas = scoreLevelCanvas.GetComponent<Canvas>();
+            if (canvas == null)
+            {
+                Debug.LogError("[ScoreUIManager] ScoreLevelCanvas does not have a Canvas component!");
+                return;
+            }
+            CreateUIElementsOnCanvas(canvas);
             return;
         }
         
-        // Connect ScoreHandler to existing ScoreText
+        // Connect to existing UI elements
+        ConnectToFoundUIElements(scoreTextObj, levelTextObj);
+    }
+    
+    private void CreateNewCanvasWithUI()
+    {
+        // Create new Canvas
+        GameObject canvasObj = new GameObject("ScoreLevelCanvas");
+        Canvas canvas = canvasObj.AddComponent<Canvas>();
+        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+        canvasObj.AddComponent<CanvasScaler>();
+        canvasObj.AddComponent<GraphicRaycaster>();
+        Debug.Log("[ScoreUIManager] Created new ScoreLevelCanvas");
+        
+        CreateUIElementsOnCanvas(canvas);
+    }
+    
+    private void CreateUIElementsOnCanvas(Canvas canvas)
+    {
+        // Create ScoreText
+        GameObject scoreTextObj = new GameObject("ScoreText");
+        scoreTextObj.transform.SetParent(canvas.transform, false);
+        TMP_Text scoreTextComponent = scoreTextObj.AddComponent<TextMeshProUGUI>();
+        scoreTextComponent.text = "0";
+        scoreTextComponent.fontSize = 36;
+        scoreTextComponent.color = Color.yellow;
+        scoreTextComponent.alignment = TextAlignmentOptions.Center;
+        
+        // Position ScoreText at top left
+        RectTransform scoreRect = scoreTextObj.GetComponent<RectTransform>();
+        scoreRect.anchorMin = new Vector2(0f, 1f);
+        scoreRect.anchorMax = new Vector2(0f, 1f);
+        scoreRect.anchoredPosition = new Vector2(100, -50);
+        scoreRect.sizeDelta = new Vector2(200, 50);
+        
+        // Create LevelText
+        GameObject levelTextObj = new GameObject("LevelText");
+        levelTextObj.transform.SetParent(canvas.transform, false);
+        TMP_Text levelTextComponent = levelTextObj.AddComponent<TextMeshProUGUI>();
+        levelTextComponent.text = "1";
+        levelTextComponent.fontSize = 36;
+        levelTextComponent.color = Color.cyan;
+        levelTextComponent.alignment = TextAlignmentOptions.Center;
+        
+        // Position LevelText at top right
+        RectTransform levelRect = levelTextObj.GetComponent<RectTransform>();
+        levelRect.anchorMin = new Vector2(1f, 1f);
+        levelRect.anchorMax = new Vector2(1f, 1f);
+        levelRect.anchoredPosition = new Vector2(-100, -50);
+        levelRect.sizeDelta = new Vector2(200, 50);
+        
+        Debug.Log("[ScoreUIManager] Created ScoreText and LevelText on Canvas: " + canvas.name);
+        
+        // Connect to the newly created elements
+        ConnectToFoundUIElements(scoreTextObj, levelTextObj);
+    }
+    
+    private void ConnectToFoundUIElements(GameObject scoreTextObj, GameObject levelTextObj)
+    {
+        // Connect ScoreHandler to ScoreText
         if (scoreHandler != null)
         {
             TMP_Text scoreTextComponent = scoreTextObj.GetComponent<TMP_Text>();
             if (scoreTextComponent != null)
             {
                 scoreHandler.SetScoreText(scoreTextComponent);
-                Debug.Log("[ScoreUIManager] Connected ScoreHandler to existing ScoreText");
+                Debug.Log("[ScoreUIManager] Connected ScoreHandler to ScoreText: " + scoreTextObj.name);
             }
             else
             {
@@ -146,7 +233,7 @@ public class ScoreUIManager : MonoBehaviour
             }
         }
         
-        // Connect LevelDisplayManager to existing LevelText
+        // Connect LevelDisplayManager to LevelText
         TMP_Text levelTextComponent = levelTextObj.GetComponent<TMP_Text>();
         if (levelTextComponent != null)
         {
@@ -158,7 +245,7 @@ public class ScoreUIManager : MonoBehaviour
                 levelDisplayManager = levelManagerObj.AddComponent<LevelDisplayManager>();
             }
             levelDisplayManager.SetLevelText(levelTextComponent);
-            Debug.Log("[ScoreUIManager] Connected LevelDisplayManager to existing LevelText");
+            Debug.Log("[ScoreUIManager] Connected LevelDisplayManager to LevelText: " + levelTextObj.name);
         }
         else
         {

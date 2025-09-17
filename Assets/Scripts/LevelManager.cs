@@ -46,9 +46,6 @@ namespace GamingProject
         // Ensure ScoreUIManager exists to create our UI elements
         EnsureScoreUIManagerExists();
         
-        // Make the Score UI persistent across levels!
-        MakeScoreUIPersistent();
-        
         // Ensure Result UI exists
         if (FindFirstObjectByType<ResultUIManager>() == null)
         {
@@ -219,6 +216,9 @@ namespace GamingProject
             int currentScore = ScoreHandler.instance.GetCurrentScore();
             scoreText.text = currentScore.ToString(); // Just the number
             Debug.Log("[LevelManager] ✓ Successfully connected ScoreHandler to UI. Current score: " + currentScore);
+            
+            // Now that we have the UI elements connected, make them persistent
+            MakeScoreUIPersistent();
         }
         else if (ScoreHandler.instance != null && scoreText == null)
         {
@@ -238,6 +238,27 @@ namespace GamingProject
     
     private void InitializeUI()
     {
+        // Try to find UI elements if they're not assigned
+        if (scoreText == null)
+        {
+            GameObject scoreTextObj = GameObject.Find("ScoreText");
+            if (scoreTextObj != null)
+            {
+                scoreText = scoreTextObj.GetComponent<TMP_Text>();
+                Debug.Log("[LevelManager] Found ScoreText during initialization: " + scoreTextObj.name);
+            }
+        }
+        
+        if (levelText == null)
+        {
+            GameObject levelTextObj = GameObject.Find("LevelText");
+            if (levelTextObj != null)
+            {
+                levelText = levelTextObj.GetComponent<TMP_Text>();
+                Debug.Log("[LevelManager] Found LevelText during initialization: " + levelTextObj.name);
+            }
+        }
+        
         // Set initial values for UI elements
         if (levelText != null)
         {
@@ -247,7 +268,7 @@ namespace GamingProject
         }
         else
         {
-            Debug.LogError("[LevelManager] levelText is not assigned! Drag LevelText from hierarchy to LevelManager inspector.");
+            Debug.LogError("[LevelManager] levelText is not assigned and could not be found! Make sure you have a LevelText in your ScoreLevelCanvas.");
         }
         
         if (scoreText != null)
@@ -258,7 +279,7 @@ namespace GamingProject
         }
         else
         {
-            Debug.LogError("[LevelManager] scoreText is not assigned! Drag ScoreText from hierarchy to LevelManager inspector.");
+            Debug.LogError("[LevelManager] scoreText is not assigned and could not be found! Make sure you have a ScoreText in your ScoreLevelCanvas.");
         }
     }
 
