@@ -43,6 +43,9 @@ namespace GamingProject
             board = FindFirstObjectByType<Board>();
         }
         
+        // Ensure ScoreUIManager exists to create our UI elements
+        EnsureScoreUIManagerExists();
+        
         // Make the Score UI persistent across levels!
         MakeScoreUIPersistent();
         
@@ -53,6 +56,27 @@ namespace GamingProject
             resultUIManagerObj.AddComponent<ResultUIManager>();
             Debug.Log("[LevelManager] Created ResultUIManager to ensure result UI exists");
         }
+    }
+    
+    private void EnsureScoreUIManagerExists()
+    {
+        // Check if ScoreUIManager exists in scene
+        ScoreUIManager scoreUIManager = FindFirstObjectByType<ScoreUIManager>();
+        if (scoreUIManager == null)
+        {
+            Debug.Log("[LevelManager] No ScoreUIManager found, creating one...");
+            GameObject scoreUIManagerObj = new GameObject("ScoreUIManager");
+            scoreUIManager = scoreUIManagerObj.AddComponent<ScoreUIManager>();
+            scoreUIManager.autoCreateUI = true;
+            Debug.Log("[LevelManager] Created ScoreUIManager with autoCreateUI enabled");
+        }
+        else
+        {
+            Debug.Log("[LevelManager] ScoreUIManager found in scene");
+        }
+        
+        // Trigger UI creation
+        scoreUIManager.CreateUIOnGameStart();
     }
     
     private void MakeScoreUIPersistent()
@@ -146,30 +170,43 @@ namespace GamingProject
             }
             else
             {
-                Debug.LogError("[LevelManager] No ScoreHandler found in scene! Did you create the ScoreHandler GameObject?");
+                Debug.LogError("[LevelManager] No ScoreHandler found in scene! ScoreUIManager should have created it...");
+                // Try to trigger ScoreUIManager creation again
+                EnsureScoreUIManagerExists();
                 return;
             }
         }
         
-        // If scoreText is null, try to find it (it might be in a persistent Canvas now)
+        // If scoreText is null, try to find it (ScoreUIManager should have created it)
         if (scoreText == null)
         {
-            Debug.Log("[LevelManager] scoreText is null, searching for persistent ScoreText...");
-            GameObject scoreTextObj = GameObject.Find("ScoreText");
-            if (scoreTextObj == null)
-            {
-                scoreTextObj = GameObject.Find("Score Text");
-            }
-            
+            Debug.Log("[LevelManager] scoreText is null, searching for UI elements created by ScoreUIManager...");
+            GameObject scoreTextObj = GameObject.Find("Score Text");
             if (scoreTextObj != null)
             {
                 scoreText = scoreTextObj.GetComponent<TMP_Text>();
-                Debug.Log("[LevelManager] Found and reconnected to persistent ScoreText: " + scoreTextObj.name);
+                Debug.Log("[LevelManager] Found and assigned Score Text: " + scoreTextObj.name);
             }
             else
             {
-                Debug.LogError("[LevelManager] Could not find ScoreText in scene!");
+                Debug.LogError("[LevelManager] Could not find Score Text! ScoreUIManager should have created it.");
                 return;
+            }
+        }
+        
+        // If levelText is null, try to find it
+        if (levelText == null)
+        {
+            Debug.Log("[LevelManager] levelText is null, searching for Level Text...");
+            GameObject levelTextObj = GameObject.Find("Level Text");
+            if (levelTextObj != null)
+            {
+                levelText = levelTextObj.GetComponent<TMP_Text>();
+                Debug.Log("[LevelManager] Found and assigned Level Text: " + levelTextObj.name);
+            }
+            else
+            {
+                Debug.LogWarning("[LevelManager] Could not find Level Text!");
             }
         }
         
@@ -181,17 +218,17 @@ namespace GamingProject
             // Update display with current score
             int currentScore = ScoreHandler.instance.GetCurrentScore();
             scoreText.text = "Score: " + currentScore.ToString();
-            Debug.Log("[LevelManager] ✓ Successfully connected ScoreHandler to persistent UI. Current score: " + currentScore);
+            Debug.Log("[LevelManager] ✓ Successfully connected ScoreHandler to UI. Current score: " + currentScore);
         }
         else if (ScoreHandler.instance != null && scoreText == null)
         {
-            Debug.LogError("[LevelManager] ScoreHandler exists but scoreText is null! Could not find ScoreText in scene.");
+            Debug.LogError("[LevelManager] ScoreHandler exists but scoreText is null! Could not find Score Text in scene.");
             // Try to force ScoreHandler to find the UI
             ScoreHandler.instance.ForceReconnectUI();
         }
         else if (ScoreHandler.instance == null)
         {
-            Debug.LogError("[LevelManager] ScoreHandler.instance is NULL! Make sure you created a ScoreHandler GameObject in the scene.");
+            Debug.LogError("[LevelManager] ScoreHandler.instance is NULL! Make sure ScoreUIManager created it properly.");
         }
         else
         {
