@@ -190,11 +190,11 @@ public class ScoreUIManager : MonoBehaviour
         Image backgroundPanel = scoreContainer.AddComponent<Image>();
         backgroundPanel.color = new Color(0, 0, 0, 0.8f); // More opaque background
         
-        // Container positioning (top area, above everything else)
+        // Container positioning (above timer - timer is at y: 67 from bottom, so place score at y: 200)
         RectTransform containerRect = scoreContainer.GetComponent<RectTransform>();
-        containerRect.anchorMin = new Vector2(0.5f, 1f);  // Top center anchor
-        containerRect.anchorMax = new Vector2(0.5f, 1f);  // Top center anchor
-        containerRect.anchoredPosition = new Vector2(0, -120);  // 120 pixels down from top
+        containerRect.anchorMin = new Vector2(0.5f, 0f);  // Bottom center anchor (same as timer)
+        containerRect.anchorMax = new Vector2(0.5f, 0f);  // Bottom center anchor (same as timer)
+        containerRect.anchoredPosition = new Vector2(0, 200);  // 200 pixels up from bottom (above timer at 67)
         containerRect.sizeDelta = new Vector2(800, 200);  // Even bigger: 800x200
         
         // Set sorting order to be on top
