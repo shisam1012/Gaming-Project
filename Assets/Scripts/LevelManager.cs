@@ -103,7 +103,32 @@ namespace GamingProject
         }
         else
         {
-            Debug.LogWarning("[LevelManager] scoreText is null - cannot make Score UI persistent yet");
+            // Try to find ScoreLevelCanvas directly if scoreText is null
+            GameObject scoreLevelCanvas = GameObject.Find("ScoreLevelCanvas");
+            if (scoreLevelCanvas != null)
+            {
+                Canvas canvas = scoreLevelCanvas.GetComponent<Canvas>();
+                if (canvas != null)
+                {
+                    if (canvas.gameObject.scene.name != "DontDestroyOnLoad")
+                    {
+                        DontDestroyOnLoad(canvas.gameObject);
+                        Debug.Log("[LevelManager] Made ScoreLevelCanvas persistent directly: " + canvas.name);
+                    }
+                    else
+                    {
+                        Debug.Log("[LevelManager] ScoreLevelCanvas is already persistent: " + canvas.name);
+                    }
+                }
+                else
+                {
+                    Debug.LogWarning("[LevelManager] ScoreLevelCanvas found but has no Canvas component!");
+                }
+            }
+            else
+            {
+                Debug.LogWarning("[LevelManager] scoreText is null and ScoreLevelCanvas not found - cannot make Score UI persistent yet");
+            }
         }
     }
 
@@ -225,6 +250,15 @@ namespace GamingProject
             Debug.LogError("[LevelManager] ScoreHandler exists but scoreText is null! Could not find ScoreText in scene.");
             // Try to force ScoreHandler to find the UI
             ScoreHandler.instance.ForceReconnectUI();
+            
+            // Try once more to connect after ScoreHandler finds the UI
+            if (ScoreHandler.instance.ScoreText != null)
+            {
+                scoreText = ScoreHandler.instance.ScoreText; // Assign the found UI to our field
+                Debug.Log("[LevelManager] Assigned scoreText from ScoreHandler: " + scoreText.name);
+                // Now we can make it persistent
+                MakeScoreUIPersistent();
+            }
         }
         else if (ScoreHandler.instance == null)
         {
@@ -245,7 +279,7 @@ namespace GamingProject
             if (scoreTextObj != null)
             {
                 scoreText = scoreTextObj.GetComponent<TMP_Text>();
-                Debug.Log("[LevelManager] Found ScoreText during initialization: " + scoreTextObj.name);
+                Debug.Log("[LevelManager] Found and assigned ScoreText during initialization: " + scoreTextObj.name);
             }
         }
         
@@ -255,7 +289,7 @@ namespace GamingProject
             if (levelTextObj != null)
             {
                 levelText = levelTextObj.GetComponent<TMP_Text>();
-                Debug.Log("[LevelManager] Found LevelText during initialization: " + levelTextObj.name);
+                Debug.Log("[LevelManager] Found and assigned LevelText during initialization: " + levelTextObj.name);
             }
         }
         
@@ -280,6 +314,12 @@ namespace GamingProject
         else
         {
             Debug.LogError("[LevelManager] scoreText is not assigned and could not be found! Make sure you have a ScoreText in your ScoreLevelCanvas.");
+        }
+        
+        // Try to make ScoreLevelCanvas persistent after finding elements
+        if (scoreText != null)
+        {
+            MakeScoreUIPersistent();
         }
     }
 
