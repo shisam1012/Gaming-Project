@@ -4,7 +4,9 @@ using TMPro;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-public class ResultScreen : MonoBehaviour
+namespace GamingProject
+{
+    public class ResultScreen : MonoBehaviour
 {
     [SerializeField] private GameObject mainMenuUI;
     [SerializeField] private LevelManager levelManager;
@@ -71,4 +73,5 @@ public class ResultScreen : MonoBehaviour
         levelButton.OnDeselect(null);
         EventSystem.current.SetSelectedGameObject(null);
     }
+}
 }

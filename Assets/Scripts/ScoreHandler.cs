@@ -1,7 +1,9 @@
 using UnityEngine;
 using TMPro;
 
-public class ScoreHandler : MonoBehaviour
+namespace GamingProject
+{
+    public class ScoreHandler : MonoBehaviour
 {
     [SerializeField] private TMP_Text scoreText;
 
@@ -68,4 +70,5 @@ public class ScoreHandler : MonoBehaviour
         scoreText.gameObject.SetActive(active);
     }
 
+}
 }
