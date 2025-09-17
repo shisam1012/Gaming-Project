@@ -1,56 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
-<<<<<<< HEAD
---- !u!28 &-3100978536206624409
-Texture2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: Pixuf Atlas
-  m_ImageContentsHash:
-    serializedVersion: 2
-    Hash: 00000000000000000000000000000000
-  m_IsAlphaChannelOptional: 0
-  serializedVersion: 3
-  m_Width: 1
-  m_Height: 1
-  m_CompleteImageSize: 1
-  m_MipsStripped: 0
-  m_TextureFormat: 1
-  m_MipCount: 1
-  m_IsReadable: 1
-  m_IsPreProcessed: 0
-  m_IgnoreMipmapLimit: 1
-  m_MipmapLimitGroupName: 
-  m_StreamingMipmaps: 0
-  m_StreamingMipmapsPriority: 0
-  m_VTOnly: 0
-  m_AlphaIsTransparency: 0
-  m_ImageCount: 1
-  m_TextureDimension: 2
-  m_TextureSettings:
-    serializedVersion: 2
-    m_FilterMode: 1
-    m_Aniso: 1
-    m_MipBias: 0
-    m_WrapU: 0
-    m_WrapV: 0
-    m_WrapW: 0
-  m_LightmapFormat: 0
-  m_ColorSpace: 1
-  m_PlatformBlob: 
-  image data: 1
-  _typelessdata: 00
-  m_StreamData:
-    serializedVersion: 2
-    offset: 0
-    size: 0
-    path: 
---- !u!21 &-2892171253902085009
-=======
 --- !u!21 &-2806208457891930616
->>>>>>> origin/main
 Material:
   serializedVersion: 8
   m_ObjectHideFlags: 0
@@ -86,11 +36,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-<<<<<<< HEAD
-        m_Texture: {fileID: -3100978536206624409}
-=======
         m_Texture: {fileID: 4334792381706018919}
->>>>>>> origin/main
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _OutlineTex:
@@ -198,11 +144,7 @@ MonoBehaviour:
     m_StrikethroughOffset: 22.8
     m_StrikethroughThickness: 0
     m_TabWidth: 23
-<<<<<<< HEAD
-  m_Material: {fileID: -2892171253902085009}
-=======
   m_Material: {fileID: -2806208457891930616}
->>>>>>> origin/main
   m_SourceFontFileGUID: d98362dccd0b78840a04ae67cbb9005b
   m_CreationSettings:
     sourceFontFileName: 
@@ -227,12 +169,6 @@ MonoBehaviour:
   m_SourceFontFilePath: 
   m_AtlasPopulationMode: 1
   InternalDynamicOS: 0
-<<<<<<< HEAD
-  m_GlyphTable: []
-  m_CharacterTable: []
-  m_AtlasTextures:
-  - {fileID: -3100978536206624409}
-=======
   m_GlyphTable:
   - m_Index: 2
     m_Metrics:
@@ -959,7 +895,6 @@ MonoBehaviour:
     m_Scale: 1
   m_AtlasTextures:
   - {fileID: 4334792381706018919}
->>>>>>> origin/main
   m_AtlasTextureIndex: 0
   m_IsMultiAtlasTexturesEnabled: 0
   m_GetFontFeatures: 1
@@ -968,13 +903,6 @@ MonoBehaviour:
   m_AtlasHeight: 1024
   m_AtlasPadding: 9
   m_AtlasRenderMode: 4165
-<<<<<<< HEAD
-  m_UsedGlyphRects: []
-  m_FreeGlyphRects:
-  - m_X: 0
-    m_Y: 0
-    m_Width: 1023
-=======
   m_UsedGlyphRects:
   - m_X: 0
     m_Y: 0
@@ -1200,7 +1128,6 @@ MonoBehaviour:
   - m_X: 661
     m_Y: 0
     m_Width: 362
->>>>>>> origin/main
     m_Height: 1023
   m_FontFeatureTable:
     m_MultipleSubstitutionRecords: []
@@ -1265,8 +1192,6 @@ MonoBehaviour:
     kerningPairs: []
   fallbackFontAssets: []
   atlas: {fileID: 0}
-<<<<<<< HEAD
-=======
 --- !u!28 &4334792381706018919
 Texture2D:
   m_ObjectHideFlags: 0
@@ -1313,4 +1238,3 @@ Texture2D:
     offset: 0
     size: 0
     path: 
->>>>>>> origin/main
