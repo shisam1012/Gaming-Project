@@ -32,7 +32,6 @@ namespace GamingProject
     {
         Debug.Log("[GameOverUI] Awake called - initializing GameOverUI");
         
-        // Get references
         levelManager = FindFirstObjectByType<LevelManager>();
         Debug.Log($"[GameOverUI] LevelManager found: {levelManager != null}");
         
@@ -46,11 +45,11 @@ namespace GamingProject
             }
         }
         
-        // Setup buttons
+        Debug.Log("[GameOverUI] GameOverUI initialized successfully");
+
         if (tryAgainButton != null)
         {
             tryAgainButton.onClick.AddListener(OnTryAgain);
-            // Use the tryAgainText field to set button text
             var buttonText = tryAgainButton.GetComponentInChildren<TextMeshProUGUI>();
             if (buttonText != null)
             {
@@ -63,7 +62,6 @@ namespace GamingProject
             quitButton.onClick.AddListener(OnQuit);
         }
         
-        // Hide panel initially
         HideGameOver();
     }
     
@@ -85,7 +83,6 @@ namespace GamingProject
     
     private void OnDestroy()
     {
-        // Unsubscribe from events
         if (levelManager != null)
         {
             levelManager.onTimeUp.RemoveListener(OnTimeUp);
@@ -120,6 +117,9 @@ namespace GamingProject
         }
         
         isShowing = true;
+        
+        // Play game over sound
+        PlayGameOverSound();
         
         // Update UI text
         UpdateGameOverText();
@@ -260,5 +260,11 @@ namespace GamingProject
     }
     
     public bool IsShowing => isShowing;
+    
+    private void PlayGameOverSound()
+    {
+        Debug.Log("[GameOverUI] Game Over sound disabled - add back later if needed");
+        // Sound effects removed for now
+    }
     }
 }
