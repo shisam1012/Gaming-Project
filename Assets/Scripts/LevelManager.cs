@@ -177,36 +177,36 @@ namespace GamingProject
             }
         }
         
-        // If scoreText is null, try to find it (ScoreUIManager should have created it)
+        // If scoreText is null, try to find your existing UI elements
         if (scoreText == null)
         {
-            Debug.Log("[LevelManager] scoreText is null, searching for UI elements created by ScoreUIManager...");
-            GameObject scoreTextObj = GameObject.Find("Score Text");
+            Debug.Log("[LevelManager] scoreText is null, searching for existing ScoreText in ScoreLevelCanvas...");
+            GameObject scoreTextObj = GameObject.Find("ScoreText");
             if (scoreTextObj != null)
             {
                 scoreText = scoreTextObj.GetComponent<TMP_Text>();
-                Debug.Log("[LevelManager] Found and assigned Score Text: " + scoreTextObj.name);
+                Debug.Log("[LevelManager] Found and assigned ScoreText: " + scoreTextObj.name);
             }
             else
             {
-                Debug.LogError("[LevelManager] Could not find Score Text! ScoreUIManager should have created it.");
+                Debug.LogError("[LevelManager] Could not find ScoreText! Please make sure you have a ScoreText in your ScoreLevelCanvas.");
                 return;
             }
         }
         
-        // If levelText is null, try to find it
+        // If levelText is null, try to find your existing LevelText
         if (levelText == null)
         {
-            Debug.Log("[LevelManager] levelText is null, searching for Level Text...");
-            GameObject levelTextObj = GameObject.Find("Level Text");
+            Debug.Log("[LevelManager] levelText is null, searching for existing LevelText in ScoreLevelCanvas...");
+            GameObject levelTextObj = GameObject.Find("LevelText");
             if (levelTextObj != null)
             {
                 levelText = levelTextObj.GetComponent<TMP_Text>();
-                Debug.Log("[LevelManager] Found and assigned Level Text: " + levelTextObj.name);
+                Debug.Log("[LevelManager] Found and assigned LevelText: " + levelTextObj.name);
             }
             else
             {
-                Debug.LogWarning("[LevelManager] Could not find Level Text!");
+                Debug.LogWarning("[LevelManager] Could not find LevelText!");
             }
         }
         
@@ -217,12 +217,12 @@ namespace GamingProject
             ScoreHandler.instance.SetScoreText(scoreText);
             // Update display with current score
             int currentScore = ScoreHandler.instance.GetCurrentScore();
-            scoreText.text = "Score: " + currentScore.ToString();
+            scoreText.text = currentScore.ToString(); // Just the number
             Debug.Log("[LevelManager] ✓ Successfully connected ScoreHandler to UI. Current score: " + currentScore);
         }
         else if (ScoreHandler.instance != null && scoreText == null)
         {
-            Debug.LogError("[LevelManager] ScoreHandler exists but scoreText is null! Could not find Score Text in scene.");
+            Debug.LogError("[LevelManager] ScoreHandler exists but scoreText is null! Could not find ScoreText in scene.");
             // Try to force ScoreHandler to find the UI
             ScoreHandler.instance.ForceReconnectUI();
         }
@@ -241,7 +241,7 @@ namespace GamingProject
         // Set initial values for UI elements
         if (levelText != null)
         {
-            levelText.text = "Level " + (currentIndex + 1).ToString();
+            levelText.text = (currentIndex + 1).ToString(); // Just the number
             levelText.gameObject.SetActive(true); // Make sure it's active
             Debug.Log("[LevelManager] Initialized level text: " + levelText.text);
         }
@@ -252,7 +252,7 @@ namespace GamingProject
         
         if (scoreText != null)
         {
-            scoreText.text = "Score: 0";
+            scoreText.text = "0"; // Just the number
             scoreText.gameObject.SetActive(true); // Make sure it's active
             Debug.Log("[LevelManager] Initialized score text: " + scoreText.text);
         }
@@ -371,8 +371,8 @@ namespace GamingProject
         // Update level text
         if (levelText != null)
         {
-            levelText.text = "Level " + (currentIndex + 1).ToString();
-            Debug.Log("[LevelManager] Updated level text to: Level " + (currentIndex + 1));
+            levelText.text = (currentIndex + 1).ToString(); // Just the number
+            Debug.Log("[LevelManager] Updated level text to: " + (currentIndex + 1));
         }
         
         // Update score text and connect ScoreHandler
@@ -381,13 +381,13 @@ namespace GamingProject
             if (ScoreHandler.instance != null)
             {
                 ScoreHandler.instance.SetScoreText(scoreText);
-                scoreText.text = "Score: " + ScoreHandler.instance.GetCurrentScore().ToString();
+                scoreText.text = ScoreHandler.instance.GetCurrentScore().ToString(); // Just the number
                 Debug.Log("[LevelManager] Connected ScoreHandler to scoreText, current score: " + ScoreHandler.instance.GetCurrentScore());
             }
             else
             {
-                scoreText.text = "Score: 0";
-                Debug.Log("[LevelManager] ScoreHandler not found, setting score to Score: 0");
+                scoreText.text = "0"; // Just the number
+                Debug.Log("[LevelManager] ScoreHandler not found, setting score to 0");
             }
         }
         else

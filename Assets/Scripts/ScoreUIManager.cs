@@ -37,34 +37,9 @@ public class ScoreUIManager : MonoBehaviour
     // Public method to trigger UI creation when game starts
     public void CreateUIOnGameStart()
     {
-        // ALWAYS check if UI actually exists in the scene, regardless of flags
-        GameObject existingContainer = GameObject.Find("Score Container");
-        
-        if (existingContainer == null && autoCreateUI)
-        {
-            // No UI exists, create it
-            Debug.Log("[ScoreUIManager] No Score Container found, creating UI");
-            EnsureScoreUIExists();
-        }
-        else if (existingContainer != null)
-        {
-            Debug.Log("[ScoreUIManager] Score Container exists, ensuring ScoreHandler is connected");
-            // UI exists, make sure ScoreHandler is connected
-            GameObject scoreTextObj = GameObject.Find("Score Text");
-            if (scoreTextObj != null && ScoreHandler.instance != null)
-            {
-                var scoreTextComponent = scoreTextObj.GetComponent<TMP_Text>();
-                if (scoreTextComponent != null)
-                {
-                    ScoreHandler.instance.SetScoreText(scoreTextComponent);
-                    Debug.Log("[ScoreUIManager] Reconnected ScoreHandler to existing UI");
-                }
-            }
-        }
-        else
-        {
-            Debug.LogWarning("[ScoreUIManager] autoCreateUI is false, no UI will be created");
-        }
+        // ALWAYS find existing UI elements instead of creating new ones
+        Debug.Log("[ScoreUIManager] Looking for existing ScoreLevelCanvas and UI elements...");
+        EnsureScoreUIExists();
     }
     
     private void ReconnectExistingUI()
@@ -96,18 +71,12 @@ public class ScoreUIManager : MonoBehaviour
     
     private void EnsureScoreUIExists()
     {
-        // Check if ScoreHandler GameObject exists
+        // Look for existing ScoreHandler or create one if needed
         scoreHandlerObj = GameObject.Find("ScoreHandler");
         
         if (scoreHandlerObj == null)
         {
-            Debug.Log("[ScoreUIManager] ScoreHandler not found, creating complete UI system...");
-            CreateScoreUI();
-        }
-        else
-        {
-            Debug.Log("[ScoreUIManager] ScoreHandler found, using existing persistent ScoreHandler");
-            scoreHandler = scoreHandlerObj.GetComponent<ScoreHandler>();
+            Debug.Log("[ScoreUIManager] ScoreHandler not found, creating one...");
             
             // Use existing persistent ScoreHandler if available
             if (ScoreHandler.instance != null)
@@ -116,174 +85,84 @@ public class ScoreUIManager : MonoBehaviour
                 scoreHandlerObj = scoreHandler.gameObject;
                 Debug.Log("[ScoreUIManager] Using existing persistent ScoreHandler");
             }
-            
-            // Create fresh UI and connect it to the persistent ScoreHandler
-            CreateScoreTextOnly();
-        }
-        
-        Debug.Log("[ScoreUIManager] Score UI setup complete");
-    }
-    
-    private void CreateScoreUI()
-    {
-        // Find or create Canvas
-        gameCanvas = FindFirstObjectByType<Canvas>();
-        if (gameCanvas == null)
-        {
-            GameObject canvasObj = new GameObject("Game Canvas");
-            gameCanvas = canvasObj.AddComponent<Canvas>();
-            gameCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
-            canvasObj.AddComponent<CanvasScaler>();
-            canvasObj.AddComponent<GraphicRaycaster>();
-            Debug.Log("[ScoreUIManager] Created Game Canvas");
-        }
-        
-        // Check if ScoreHandler instance already exists (persistent)
-        if (ScoreHandler.instance != null)
-        {
-            scoreHandler = ScoreHandler.instance;
-            scoreHandlerObj = scoreHandler.gameObject;
-            Debug.Log("[ScoreUIManager] Using existing persistent ScoreHandler");
+            else
+            {
+                // Create new ScoreHandler GameObject
+                scoreHandlerObj = new GameObject("ScoreHandler");
+                scoreHandler = scoreHandlerObj.AddComponent<ScoreHandler>();
+                Debug.Log("[ScoreUIManager] Created new ScoreHandler");
+            }
         }
         else
         {
-            // Create new ScoreHandler GameObject
-            scoreHandlerObj = new GameObject("ScoreHandler");
-            scoreHandler = scoreHandlerObj.AddComponent<ScoreHandler>();
-            Debug.Log("[ScoreUIManager] Created new ScoreHandler");
+            Debug.Log("[ScoreUIManager] Found existing ScoreHandler, using it");
+            scoreHandler = scoreHandlerObj.GetComponent<ScoreHandler>();
         }
         
-        // Create Score Text UI
-        CreateScoreTextUI();
+        // Find existing UI elements instead of creating new ones
+        ConnectToExistingUI();
         
-        Debug.Log("[ScoreUIManager] Created complete ScoreHandler UI system");
+        Debug.Log("[ScoreUIManager] Connected to existing UI elements");
     }
     
-    private void CreateScoreTextOnly()
+    private void ConnectToExistingUI()
     {
-        // Find canvas for existing ScoreHandler
-        gameCanvas = FindFirstObjectByType<Canvas>();
-        if (gameCanvas == null)
+        // Find existing ScoreLevelCanvas
+        GameObject scoreLevelCanvas = GameObject.Find("ScoreLevelCanvas");
+        if (scoreLevelCanvas == null)
         {
-            Debug.LogError("[ScoreUIManager] No Canvas found to attach score text!");
+            Debug.LogError("[ScoreUIManager] ScoreLevelCanvas not found! Please make sure you have a Canvas named 'ScoreLevelCanvas' in your scene.");
             return;
         }
         
-        // Use existing persistent ScoreHandler if available
-        if (ScoreHandler.instance != null)
+        // Find existing ScoreText
+        GameObject scoreTextObj = GameObject.Find("ScoreText");
+        if (scoreTextObj == null)
         {
-            scoreHandler = ScoreHandler.instance;
-            scoreHandlerObj = scoreHandler.gameObject;
-            Debug.Log("[ScoreUIManager] Using existing persistent ScoreHandler");
+            Debug.LogError("[ScoreUIManager] ScoreText not found! Please make sure you have a Text component named 'ScoreText' in your ScoreLevelCanvas.");
+            return;
         }
         
-        CreateScoreTextUI();
-    }
-    
-    private void CreateScoreTextUI()
-    {
-        // Create container for score and level info - positioned above timer area
-        GameObject scoreContainer = new GameObject("Score Container");
-        scoreContainer.transform.SetParent(gameCanvas.transform, false);
+        // Find existing LevelText
+        GameObject levelTextObj = GameObject.Find("LevelText");
+        if (levelTextObj == null)
+        {
+            Debug.LogError("[ScoreUIManager] LevelText not found! Please make sure you have a Text component named 'LevelText' in your ScoreLevelCanvas.");
+            return;
+        }
         
-        // Add a subtle background panel
-        Image backgroundPanel = scoreContainer.AddComponent<Image>();
-        backgroundPanel.color = new Color(0, 0, 0, 0.8f); // More opaque background
-        
-        // Container positioning (above timer - timer is at y: 67 from bottom, so place score at y: 200)
-        RectTransform containerRect = scoreContainer.GetComponent<RectTransform>();
-        containerRect.anchorMin = new Vector2(0.5f, 0f);  // Bottom center anchor (same as timer)
-        containerRect.anchorMax = new Vector2(0.5f, 0f);  // Bottom center anchor (same as timer)
-        containerRect.anchoredPosition = new Vector2(0, 200);  // 200 pixels up from bottom (above timer at 67)
-        containerRect.sizeDelta = new Vector2(800, 200);  // Even bigger: 800x200
-        
-        // Set sorting order to be on top
-        Canvas scoreCanvas = scoreContainer.AddComponent<Canvas>();
-        scoreCanvas.overrideSorting = true;
-        scoreCanvas.sortingOrder = 1000;  // High sort order to appear on top
-        
-        // Create Score Text GameObject
-        GameObject scoreTextObj = new GameObject("Score Text");
-        scoreTextObj.transform.SetParent(scoreContainer.transform, false);
-        
-        // Add TextMeshPro component for score - just the number
-        TMP_Text scoreText = scoreTextObj.AddComponent<TextMeshProUGUI>();
-        scoreText.text = "0";  // Just show the number
-        scoreText.fontSize = 48;  // Big readable size
-        scoreText.color = Color.yellow;
-        scoreText.alignment = TextAlignmentOptions.Center;
-        scoreText.fontStyle = FontStyles.Bold;
-        
-        // Position score text at top of container
-        RectTransform scoreRect = scoreTextObj.GetComponent<RectTransform>();
-        scoreRect.anchorMin = new Vector2(0, 0.5f);
-        scoreRect.anchorMax = new Vector2(0.5f, 1f);  // Left half, top half
-        scoreRect.offsetMin = Vector2.zero;
-        scoreRect.offsetMax = Vector2.zero;
-        
-        // Create Level Text GameObject  
-        GameObject levelTextObj = new GameObject("Level Text");
-        levelTextObj.transform.SetParent(scoreContainer.transform, false);
-        
-        // Add TextMeshPro component for level - just the number
-        TMP_Text levelText = levelTextObj.AddComponent<TextMeshProUGUI>();
-        levelText.text = "1";  // Just show the number
-        levelText.fontSize = 48;  // Big readable size
-        levelText.color = Color.cyan;
-        levelText.alignment = TextAlignmentOptions.Center;
-        levelText.fontStyle = FontStyles.Bold;
-        
-        // Position level text next to score
-        RectTransform levelRect = levelTextObj.GetComponent<RectTransform>();
-        levelRect.anchorMin = new Vector2(0.5f, 0.5f);
-        levelRect.anchorMax = new Vector2(1f, 1f);  // Right half, top half
-        levelRect.offsetMin = Vector2.zero;
-        levelRect.offsetMax = Vector2.zero;
-        
-        // Create labels for the numbers - these will show "Score" and "Level"
-        GameObject scoreLabel = new GameObject("Score Label");
-        scoreLabel.transform.SetParent(scoreContainer.transform, false);
-        
-        TMP_Text scoreLabelText = scoreLabel.AddComponent<TextMeshProUGUI>();
-        scoreLabelText.text = "Score";
-        scoreLabelText.fontSize = 32;  // Bigger labels: 32 instead of 18
-        scoreLabelText.color = Color.white;
-        scoreLabelText.alignment = TextAlignmentOptions.Center;
-        
-        RectTransform scoreLabelRect = scoreLabel.GetComponent<RectTransform>();
-        scoreLabelRect.anchorMin = new Vector2(0, 0f);
-        scoreLabelRect.anchorMax = new Vector2(0.5f, 0.5f);  // Left half, bottom half
-        scoreLabelRect.offsetMin = Vector2.zero;
-        scoreLabelRect.offsetMax = Vector2.zero;
-        
-        GameObject levelLabel = new GameObject("Level Label");
-        levelLabel.transform.SetParent(scoreContainer.transform, false);
-        
-        TMP_Text levelLabelText = levelLabel.AddComponent<TextMeshProUGUI>();
-        levelLabelText.text = "Level";
-        levelLabelText.fontSize = 32;  // Bigger labels: 32 instead of 18
-        levelLabelText.color = Color.white;
-        levelLabelText.alignment = TextAlignmentOptions.Center;
-        
-        RectTransform levelLabelRect = levelLabel.GetComponent<RectTransform>();
-        levelLabelRect.anchorMin = new Vector2(0.5f, 0f);
-        levelLabelRect.anchorMax = new Vector2(1f, 0.5f);  // Right half, bottom half
-        levelLabelRect.offsetMin = Vector2.zero;
-        levelLabelRect.offsetMax = Vector2.zero;
-        
-        // DIRECT assignment - no reflection nonsense
+        // Connect ScoreHandler to existing ScoreText
         if (scoreHandler != null)
         {
-            // Direct assignment to make sure it works
-            scoreHandler.SetScoreText(scoreText);
-            Debug.Log("[ScoreUIManager] Directly assigned score text to ScoreHandler");
+            TMP_Text scoreTextComponent = scoreTextObj.GetComponent<TMP_Text>();
+            if (scoreTextComponent != null)
+            {
+                scoreHandler.SetScoreText(scoreTextComponent);
+                Debug.Log("[ScoreUIManager] Connected ScoreHandler to existing ScoreText");
+            }
+            else
+            {
+                Debug.LogError("[ScoreUIManager] ScoreText does not have a TMP_Text component!");
+            }
         }
         
-        // Create and assign level display manager
-        GameObject levelManagerObj = new GameObject("LevelDisplayManager");
-        LevelDisplayManager levelDisplayManager = levelManagerObj.AddComponent<LevelDisplayManager>();
-        levelDisplayManager.SetLevelText(levelText);
-        
-        Debug.Log("[ScoreUIManager] Created score UI at top of screen with high sorting order");
+        // Connect LevelDisplayManager to existing LevelText
+        TMP_Text levelTextComponent = levelTextObj.GetComponent<TMP_Text>();
+        if (levelTextComponent != null)
+        {
+            // Find or create LevelDisplayManager
+            LevelDisplayManager levelDisplayManager = FindFirstObjectByType<LevelDisplayManager>();
+            if (levelDisplayManager == null)
+            {
+                GameObject levelManagerObj = new GameObject("LevelDisplayManager");
+                levelDisplayManager = levelManagerObj.AddComponent<LevelDisplayManager>();
+            }
+            levelDisplayManager.SetLevelText(levelTextComponent);
+            Debug.Log("[ScoreUIManager] Connected LevelDisplayManager to existing LevelText");
+        }
+        else
+        {
+            Debug.LogError("[ScoreUIManager] LevelText does not have a TMP_Text component!");
+        }
     }
 }

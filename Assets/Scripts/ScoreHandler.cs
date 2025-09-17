@@ -35,7 +35,7 @@ public class ScoreHandler : MonoBehaviour
         {
             Debug.LogWarning("[ScoreHandler] scoreText is NULL! Score updates won't be visible. Looking for ScoreText in scene...");
             
-            // Try to find ScoreText in the scene first (our new naming convention)
+            // Try to find ScoreText in the scene (your existing UI naming convention)
             GameObject scoreTextObj = GameObject.Find("ScoreText");
             if (scoreTextObj != null)
             {
@@ -61,8 +61,8 @@ public class ScoreHandler : MonoBehaviour
         
         if (scoreText != null)
         {
-            scoreText.text = "Score: " + currentScore.ToString();
-            Debug.Log("[ScoreHandler] Score text updated to: Score: " + currentScore);
+            scoreText.text = currentScore.ToString(); // Just show the number, no "Score:" prefix
+            Debug.Log("[ScoreHandler] Score text updated to: " + currentScore);
         }
     }
 
