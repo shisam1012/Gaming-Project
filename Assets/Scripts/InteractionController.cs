@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using static UnityEngine.Rendering.DebugUI.Table;
 
 namespace GamingProject
 {
@@ -19,8 +20,9 @@ namespace GamingProject
         [SerializeField] private Color selectionColor = Color.green;
         [SerializeField] private LineRenderer selectionLineRenderer;
 
-        private List<GameObject> selectedStones = new List<GameObject>();
-        private List<Vector2Int> selectedPositions = new List<Vector2Int>();
+        private HashSet<GameObject> selectedStones = new HashSet<GameObject>();
+        private HashSet<Vector2Int> selectedPositions = new HashSet<Vector2Int>();
+
         private GameObject lastSelectedStone;
         private bool isSelecting = false;
         private PointerProbe _pointerHandler;
@@ -43,64 +45,19 @@ namespace GamingProject
                 throw new UnityException("pointer probe is not found on InteractionController, please add it to the TimeCanvas or delete it forever");
             _pointerHandler.OnSelect += OnTouchSelected;
             _pointerHandler.OnMove += OnTouchMoved;
-            TouchInputController.OnTouchStart += OnTouchStart;
-            TouchInputController.OnTouchEnd += OnTouchEnd;
-            TouchInputController.OnDrag += OnDrag;
-
-
-            if (selectionLineRenderer == null)
-            {
-                selectionLineRenderer = GetComponent<LineRenderer>();
-                if (selectionLineRenderer == null)
-                {
-                    var lineObj = new GameObject("SelectionLine");
-                    lineObj.transform.SetParent(transform);
-                    selectionLineRenderer = lineObj.AddComponent<LineRenderer>();
-                    SetupLineRenderer();
-                }
-            }
+            _pointerHandler.OnRelease += OnTouchReleased;
         }
 
         private void OnDestroy()
         {
-
-            TouchInputController.OnTouchStart -= OnTouchStart;
-            TouchInputController.OnTouchEnd -= OnTouchEnd;
-            TouchInputController.OnDrag -= OnDrag;
-        }
-
-        private void SetupLineRenderer()
-        {
-            selectionLineRenderer.material = new Material(Shader.Find("Sprites/Default"));
-            selectionLineRenderer.material.color = selectionColor;
-            selectionLineRenderer.startWidth = 0.1f;
-            selectionLineRenderer.endWidth = 0.1f;
-            selectionLineRenderer.positionCount = 0;
-            selectionLineRenderer.sortingOrder = 10;
-            selectionLineRenderer.useWorldSpace = true;
-        }
-
-        private void OnTouchStart(Vector2 screenPosition)
-        {
-            Debug.Log($"[InteractionController] OnTouchStart called at: {screenPosition}");
-
-            if (isSelecting)
-            {
-                Debug.Log("[InteractionController] Clearing existing selection on new touch");
-                ClearSelection();
-            }
+            _pointerHandler.OnSelect -= OnTouchSelected;
+            _pointerHandler.OnMove -= OnTouchMoved;
+            _pointerHandler.OnRelease -= OnTouchReleased;
         }
 
         private void OnTouchSelected(PointerEventData e)
         {
-            Debug.Log("OnSelected is called");
-
-            Vector3 worldPos = Camera.main.ScreenToWorldPoint(e.position);
-            worldPos.z = 0f; // match 2D plane
-
-            RaycastHit2D hit = Physics2D.Raycast(worldPos, -Vector2.up);
-
-            Debug.Log("hit +" + hit.collider.gameObject);
+            // Do what related to on pointer down logic
         }
 
         private void OnTouchMoved(PointerEventData e)
@@ -113,14 +70,15 @@ namespace GamingProject
             RaycastHit2D hit = Physics2D.Raycast(worldPos, -Vector2.up);
 
             Debug.Log("MOVE hit +" + hit.collider.gameObject);
+
+            if (hit.collider.gameObject.GetComponent<Stone>() != null)
+            {
+                //TODO add stone to the hashmap...
+            }
         }
 
-
-
-        private void OnTouchEnd(Vector2 screenPosition)
+        private void OnTouchReleased(PointerEventData e)
         {
-            Debug.Log($"[InteractionController] OnTouchEnd called at: {screenPosition}");
-
             if (isSelecting)
             {
                 Debug.Log($"[InteractionController] Touch ended while selecting {selectedStones.Count} stones");
@@ -421,23 +379,6 @@ namespace GamingProject
             return null;
         }
 
-        private Vector2 GetWorldPosition(Vector2 screenPosition)
-        {
-            var touchController = FindFirstObjectByType<TouchInputController>();
-            if (touchController != null)
-            {
-                return touchController.GetWorldPosition(screenPosition);
-            }
-
-            Camera cam = Camera.main;
-            if (cam != null)
-            {
-                Vector3 worldPos = cam.ScreenToWorldPoint(screenPosition);
-                return new Vector2(worldPos.x, worldPos.y);
-            }
-
-            return Vector2.zero;
-        }
 
         public bool IsSelecting => isSelecting;
         public int SelectedCount => selectedStones.Count;
