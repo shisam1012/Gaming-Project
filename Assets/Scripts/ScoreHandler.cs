@@ -61,8 +61,8 @@ public class ScoreHandler : MonoBehaviour
         
         if (scoreText != null)
         {
-            scoreText.text = currentScore.ToString(); // Just show the number, no "Score:" prefix
-            Debug.Log("[ScoreHandler] Score text updated to: " + currentScore);
+            scoreText.text = "Score: " + currentScore.ToString(); // Score: X format
+            Debug.Log("[ScoreHandler] Score text updated to: " + scoreText.text);
         }
     }
 

@@ -26,7 +26,17 @@ public class ResultScreen : MonoBehaviour
     public void SetUp(int score, string message)
     {
         gameObject.SetActive(true);
-        ScoreHandler.instance.ShowScore(false);
+        
+        // Check if ScoreHandler exists before calling ShowScore
+        if (ScoreHandler.instance != null)
+        {
+            ScoreHandler.instance.ShowScore(false);
+        }
+        else
+        {
+            Debug.LogWarning("[ResultScreen] ScoreHandler.instance is null, cannot hide score");
+        }
+        
         ScoreText.text = "Your score: " + score;
         MessageText.text = message;
          ButtonText.text = "next level";
@@ -37,7 +47,17 @@ public class ResultScreen : MonoBehaviour
     public void SetUpTimeOut(int score)
     {
         gameObject.SetActive(true);
-        ScoreHandler.instance.ShowScore(false);
+        
+        // Check if ScoreHandler exists before calling ShowScore
+        if (ScoreHandler.instance != null)
+        {
+            ScoreHandler.instance.ShowScore(false);
+        }
+        else
+        {
+            Debug.LogWarning("[ResultScreen] ScoreHandler.instance is null, cannot hide score");
+        }
+        
         ScoreText.text = "Your score: " + score;
         MessageText.text = "Time's out!";
         ButtonText.text = "try again";

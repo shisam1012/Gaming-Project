@@ -45,13 +45,13 @@ public class LevelDisplayManager : MonoBehaviour
         
         int currentLevel = levelManager.GetCurrentLevelNumber();
         
-        // Just show the current level number, no fractions
-        levelText.text = currentLevel.ToString();
+        // Show "Level: X" format instead of just the number
+        levelText.text = "Level: " + currentLevel.ToString();
         
         // Add some debug logging to understand what's happening
         if (Time.frameCount % 300 == 0) // Log every 5 seconds
         {
-            Debug.Log($"[LevelDisplayManager] Displaying level: {currentLevel}");
+            Debug.Log($"[LevelDisplayManager] Displaying level: Level: {currentLevel}");
         }
     }
 }

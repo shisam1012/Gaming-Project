@@ -295,16 +295,29 @@ namespace GamingProject
     {
         if (isBusy) return;
         
+        Debug.Log($"[Board] RemoveStones called with {stonePositions.Count} stones to remove");
+        
         // Update score using GameObject.Find to avoid compilation issues
         var scoreHandlerObj = GameObject.Find("ScoreHandler");
         if (scoreHandlerObj != null)
         {
+            Debug.Log("[Board] Found ScoreHandler GameObject, attempting to update score...");
             var scoreHandler = scoreHandlerObj.GetComponent<MonoBehaviour>();
             var method = scoreHandler.GetType().GetMethod("UpadteScore");
             if (method != null)
             {
+                Debug.Log($"[Board] Calling UpadteScore with {stonePositions.Count} stones");
                 method.Invoke(scoreHandler, new object[] { stonePositions.Count });
+                Debug.Log("[Board] ✓ Score update method called successfully");
             }
+            else
+            {
+                Debug.LogError("[Board] UpadteScore method not found on ScoreHandler!");
+            }
+        }
+        else
+        {
+            Debug.LogError("[Board] ScoreHandler GameObject not found! Score will not update.");
         }
         
         StartCoroutine(RemoveStonesRoutine(stonePositions));
