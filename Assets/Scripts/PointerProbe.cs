@@ -1,9 +1,26 @@
+using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
 public class PointerProbe : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointerUpHandler
 {
-    public void OnPointerDown(PointerEventData e) { Debug.Log("DOWN " + e.position); }
-    public void OnDrag(PointerEventData e)       { Debug.Log("DRAG " + e.position); }
-    public void OnPointerUp(PointerEventData e)  { Debug.Log("UP " + e.position); }
+    public Action<PointerEventData> OnSelect;
+    public Action<PointerEventData> OnMove;
+    public Action<PointerEventData> OnRelease;
+
+    public void OnPointerDown(PointerEventData e)
+    {
+        Debug.Log("pointer is down");
+        OnSelect?.Invoke(e);
+    }
+
+    public void OnDrag(PointerEventData e)
+    {
+        OnMove?.Invoke(e);
+    }
+
+    public void OnPointerUp(PointerEventData e)
+    {
+        OnRelease?.Invoke(e);
+    }
 }
