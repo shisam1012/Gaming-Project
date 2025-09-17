@@ -321,7 +321,7 @@ namespace GamingProject
             running = false;
             timeLeft = 0f; 
             Debug.LogWarning($"[LevelManager] Time up! Final time: {timeLeft}");
-            
+            SoundManager.Instance.PlaySound(SoundManager.Instance.TimeoutSound);
             // Get current score for time-out screen using GameObject.Find (working approach)
             var scoreHandlerObj = GameObject.Find("ScoreHandler");
             if (scoreHandlerObj != null)
