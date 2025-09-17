@@ -15,7 +15,7 @@ MonoBehaviour:
   width: 7
   height: 10
   shape: {fileID: 11400000, guid: e66911543af7aa8428444f497cdc2fb3, type: 2}
-  timeLimitSeconds: 60
+  timeLimitSeconds: 2
   pauseSeconds: 2
   allowPowerUps: 1
   powerUps: []

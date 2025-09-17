@@ -197,10 +197,32 @@ namespace GamingProject
         }
     }
 
-    // Placeholder method for score - will be connected to actual score logic later
+    // Get current score from ScoreHandler
     private int GetCurrentScore()
     {
-        // TODO: Connect to actual scoring system when implemented
+        // First try to get score from ScoreHandler.instance
+        if (ScoreHandler.instance != null)
+        {
+            int score = ScoreHandler.instance.GetCurrentScore();
+            Debug.Log($"[GameOverUI] Got score from ScoreHandler.instance: {score}");
+            return score;
+        }
+        
+        // Fallback: Try to find ScoreHandler GameObject (same approach as Board.cs)
+        var scoreHandlerObj = GameObject.Find("ScoreHandler");
+        if (scoreHandlerObj != null)
+        {
+            var scoreHandler = scoreHandlerObj.GetComponent<MonoBehaviour>();
+            var method = scoreHandler.GetType().GetMethod("GetCurrentScore");
+            if (method != null)
+            {
+                int score = (int)method.Invoke(scoreHandler, null);
+                Debug.Log($"[GameOverUI] Got score from ScoreHandler GameObject: {score}");
+                return score;
+            }
+        }
+        
+        Debug.LogWarning("[GameOverUI] Could not find ScoreHandler to get current score, returning 0");
         return 0;
     }
     
