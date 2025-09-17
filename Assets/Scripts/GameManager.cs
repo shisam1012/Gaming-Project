@@ -182,6 +182,13 @@ namespace GamingProject
         }
     }
     
+    // Method for UI start button to begin the game
+    public void StartGame()
+    {
+        Debug.Log("[GameManager] StartGame called - starting first level");
+        LoadLevel(0); // Start with level 0 (first level)
+    }
+    
     public Stone GetStoneAt(int x, int y)
     {
         return board != null ? board.GetStone(x, y) : null;

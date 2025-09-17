@@ -77,10 +77,13 @@ namespace GamingProject
             slider.value = 0f;
         }
         
-        // Show Game Over panel
-        ShowGameOverPanel();
+        // Don't show Game Over panel here! GameOverUI handles that
+        // ShowGameOverPanel(); // REMOVED - GameOverUI.cs handles game over logic
     }
     
+    // COMMENTED OUT: This method was causing conflicts with GameOverUI.cs
+    // GameOverUI.cs now handles all game over logic to prevent duplication
+    /*
     private void ShowGameOverPanel()
     {
         GameObject gameOverPanel = null;
@@ -177,8 +180,14 @@ namespace GamingProject
         {
             Debug.LogError("[TimerUI_Slider] Game Over panel not found! Check that GameOverCanvas/GameOverPanel exists in the scene.");
         }
-    }    private void UpdateGameOverText(GameObject gameOverPanel)
+    }
+    */ // End of commented ShowGameOverPanel method
+    
+    private void UpdateGameOverText(GameObject gameOverPanel)
     {
+        // This method was interfering with GameOverUI.cs
+        // All game over functionality is now centralized in GameOverUI.cs
+        /*
         // Find and update common text elements
         var timeUpText = gameOverPanel.transform.Find("TimeUpText");
         if (timeUpText != null)
@@ -189,6 +198,7 @@ namespace GamingProject
         }
         
         // You can add more text updates here if needed
+        */
     }
     }
 }

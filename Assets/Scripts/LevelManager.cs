@@ -57,16 +57,38 @@ namespace GamingProject
         }
 
         currentIndex = Mathf.Clamp(currentIndex, 0, levels.Count - 1);
-        LoadLevel(currentIndex);
+        
+        // Initialize timer to prevent immediate timeout
+        running = false;
+        timeLeft = 30f; // Default time if level config is missing
+        
+        // Don't auto-load the level! Wait for explicit start from UI
+        // LoadLevel(currentIndex); // REMOVED - this was causing premature timer start
+        
+        Debug.Log($"[LevelManager] LevelManager initialized with {levels.Count} levels, current index: {currentIndex}");
+        Debug.Log($"[LevelManager] Ready to start. Call LoadLevelPublic() to begin the game.");
     }
 
     private void Update()
     {
-        if (!running) return;
+        if (!running) 
+        {
+            // Debug when timer is not running
+            if (Time.frameCount % 120 == 0) // Log every 2 seconds
+            {
+                Debug.Log("[LevelManager] Timer not running, waiting for game start");
+            }
+            return;
+        }
+        
         timeLeft -= Time.deltaTime;
         
         // Debug logging to help troubleshoot
-        if (timeLeft <= 5f && timeLeft > 4.9f)
+        if (timeLeft <= 10f && timeLeft > 9.9f)
+        {
+            Debug.Log($"[LevelManager] Timer countdown: {timeLeft:F2} seconds left");
+        }
+        else if (timeLeft <= 5f && timeLeft > 4.9f)
         {
             Debug.Log($"[LevelManager] Timer warning: {timeLeft:F2} seconds left");
         }

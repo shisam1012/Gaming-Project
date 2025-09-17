@@ -32,6 +32,18 @@ namespace GamingProject
     {
         Debug.Log("[GameOverUI] Awake called - initializing GameOverUI");
         
+        // FIRST: Explicitly hide the Game Over panel immediately
+        if (gameOverPanel != null)
+        {
+            Debug.Log($"[GameOverUI] Found gameOverPanel, hiding it immediately. Current state: {gameOverPanel.activeInHierarchy}");
+            gameOverPanel.SetActive(false);
+            Debug.Log($"[GameOverUI] gameOverPanel hidden. New state: {gameOverPanel.activeInHierarchy}");
+        }
+        else
+        {
+            Debug.LogError("[GameOverUI] gameOverPanel is NULL! Please assign it in the Inspector!");
+        }
+        
         levelManager = FindFirstObjectByType<LevelManager>();
         Debug.Log($"[GameOverUI] LevelManager found: {levelManager != null}");
         

@@ -68,9 +68,21 @@ public class UIViewPresenter : MonoBehaviour
 
     private void HandleStartClicked()
     {
+        Debug.Log("[UIViewPresenter] Start button clicked");
         Time.timeScale = 1f;
 
         HideStartView();
+        
+        // Start the game through GameManager
+        if (GamingProject.GameManager.Instance != null)
+        {
+            GamingProject.GameManager.Instance.StartGame();
+            Debug.Log("[UIViewPresenter] Game started through GameManager");
+        }
+        else
+        {
+            Debug.LogError("[UIViewPresenter] GameManager instance not found!");
+        }
 
         onStartPressed?.Invoke();
     }
