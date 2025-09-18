@@ -296,9 +296,11 @@ namespace GamingProject
         if (isBusy) return;
         
         Debug.Log($"[Board] RemoveStones called with {stonePositions.Count} stones to remove");
-        
+            // SoundManager.Instance.PlaySound(SoundManager.Instance.MatchSound1);
+            //SoundManager.Instance.PlayRandomMatchSound();
+        SoundManager.Instance.PlayMatchSound(stonePositions.Count);
         // Update score using GameObject.Find to avoid compilation issues
-        var scoreHandlerObj = GameObject.Find("ScoreHandler");
+            var scoreHandlerObj = GameObject.Find("ScoreHandler");
         if (scoreHandlerObj != null)
         {
             Debug.Log("[Board] Found ScoreHandler GameObject, attempting to update score...");
