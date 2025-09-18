@@ -2170,11 +2170,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   effectsSource: {fileID: 1145304311}
+  matchSound1: {fileID: 8300000, guid: 4ef5736fa31474bfc88ba5eb70e05a3b, type: 3}
+  matchSound2: {fileID: 8300000, guid: c1d2d738e49454f219a34b4d59122780, type: 3}
   timeoutSound: {fileID: 8300000, guid: 87357aac3bd42426b97336a3bf2783ee, type: 3}
   levelUpSound: {fileID: 8300000, guid: 7a4b99555875f465b8c95f2a170c5631, type: 3}
-  matchSounds:
-  - {fileID: 8300000, guid: c1d2d738e49454f219a34b4d59122780, type: 3}
-  - {fileID: 8300000, guid: 4ef5736fa31474bfc88ba5eb70e05a3b, type: 3}
 --- !u!82 &1145304311
 AudioSource:
   m_ObjectHideFlags: 0
