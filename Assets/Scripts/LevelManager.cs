@@ -376,7 +376,7 @@ namespace GamingProject
                 {
                     int totalScore = (int)method.Invoke(scoreHandler, null);
                     
-                    var resultScreenObj = GameObject.Find("ResultScreen");
+                   /* var resultScreenObj = GameObject.Find("ResultScreen");
                     if (resultScreenObj != null)
                     {
                         var resultScreen = resultScreenObj.GetComponent<MonoBehaviour>();
@@ -385,6 +385,15 @@ namespace GamingProject
                         {
                             setUpMethod.Invoke(resultScreen, new object[] { totalScore });
                         }
+                    }*/
+                     var endScreen = FindObjectOfType<EndScreenUI>();
+                    if (endScreen != null)
+                    {
+                        endScreen.ShowGameOver();
+                    }
+                    else
+                    {
+                        Debug.LogError("[LevelManager] EndScreenUI not found in scene.");
                     }
                 }
             }
@@ -494,10 +503,28 @@ namespace GamingProject
         running = false;
         // Keep timer events for UI consistency
         onTimerEnd?.Invoke();
-        StartCoroutine(AdvanceAfterDelay(betweenLevelDelay));
+       // StartCoroutine(AdvanceAfterDelay(betweenLevelDelay));
     }
 
+
+
     private IEnumerator ShowWinAfterDelay(int totalScore)
+    {
+        yield return new WaitForSeconds(betweenLevelDelay);
+
+        var endScreen = FindObjectOfType<EndScreenUI>();
+        if (endScreen != null)
+        {
+            SoundManager.Instance.PlaySound(SoundManager.Instance.LevelUpSound);
+            endScreen.ShowVictory();
+        }
+        else
+        {
+            Debug.LogError("[LevelManager] EndScreenUI not found in scene.");
+        }
+    }
+
+    private IEnumerator ShowWinAfterDelay2(int totalScore)
     {
         yield return new WaitForSeconds(betweenLevelDelay);
         

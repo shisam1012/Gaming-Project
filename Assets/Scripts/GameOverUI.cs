@@ -77,7 +77,7 @@ namespace GamingProject
         HideGameOver();
     }
     
-    private void Start()
+   /* private void Start()
     {
         Debug.Log("[GameOverUI] Start called - subscribing to events");
         
@@ -91,7 +91,7 @@ namespace GamingProject
         {
             Debug.LogError("[GameOverUI] LevelManager is null! Cannot subscribe to events.");
         }
-    }
+    }*/
     
     private void OnDestroy()
     {

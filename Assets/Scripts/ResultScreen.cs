@@ -39,7 +39,7 @@ public class ResultScreen : MonoBehaviour
         
         ScoreText.text = "Your score: " + score;
         MessageText.text = message;
-         ButtonText.text = "next level";
+        ButtonText.text = "next level";
         LevelButton.onClick.RemoveAllListeners();
         LevelButton.onClick.AddListener(NextLevel);
     }

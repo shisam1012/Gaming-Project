@@ -17,7 +17,7 @@ public class SoundManager : MonoBehaviour
     [SerializeField] private AudioClip timeoutSound;
     public AudioClip TimeoutSound => timeoutSound;
     [SerializeField] private AudioClip levelUpSound;
-  //  public AudioClip LevelUpSound => levelUpSound;
+    public AudioClip LevelUpSound => levelUpSound;
    // [SerializeField] private AudioClip[] matchSounds; 
     void Awake()
     {
