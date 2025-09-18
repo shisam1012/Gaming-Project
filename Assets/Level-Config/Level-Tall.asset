@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Level-Tall
   m_EditorClassIdentifier: 
   width: 7
-  height: 12
+  height: 11
   shape: {fileID: 11400000, guid: e66911543af7aa8428444f497cdc2fb3, type: 2}
   timeLimitSeconds: 60
   pauseSeconds: 2
