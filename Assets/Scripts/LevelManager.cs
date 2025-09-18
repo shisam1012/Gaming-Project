@@ -389,7 +389,7 @@ namespace GamingProject
                             setUpMethod.Invoke(resultScreen, new object[] { totalScore });
                         }
                     }*/
-                     var endScreen = FindObjectOfType<EndScreenUI>();
+                     var endScreen = FindFirstObjectByType<EndScreenUI>();
                     if (endScreen != null)
                     {
                         endScreen.ShowGameOver();
@@ -515,7 +515,7 @@ namespace GamingProject
     {
         yield return new WaitForSeconds(betweenLevelDelay);
 
-        var endScreen = FindObjectOfType<EndScreenUI>();
+        var endScreen = FindFirstObjectByType<EndScreenUI>();
         if (endScreen != null)
         {
             SoundManager.Instance.PlaySound(SoundManager.Instance.LevelUpSound);
