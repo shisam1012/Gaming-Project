@@ -48,21 +48,16 @@ namespace GamingProject
                 case BackgroundType.Sand: 
                     spriteRenderer.color = color;
                     SetTileSprite((int)BackgroundType.Sand);
-                    //animator.enabled = false;
                     break;
                 case BackgroundType.Empty:
-                    //spriteRenderer.material = SpriteSortPoint[]
                     spriteRenderer.color = color;
                     SetTileSprite((int)BackgroundType.Empty);
-                    //animator.enabled = false;
                     break;
                 case BackgroundType.Fluid:
-                    //spriteRenderer.color = new Color(57f / 255f, 136f / 255f, 247f / 255f);
                     spriteRenderer.color = Color.white;
                     SetTileSprite((int)BackgroundType.Empty); // background the same
                     animator.enabled = true;
                     break;
-                    //change to sprites instead of regular colors
             }
         }
 
