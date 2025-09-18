@@ -23,6 +23,7 @@ namespace GamingProject
 
         private SpriteRenderer _spriteRenderer;
         private Animator animator;
+        private Board _board;
 
         void Awake()
         {
@@ -35,7 +36,10 @@ namespace GamingProject
         public void SetBoard(Board board)
         {
             int flowertype = Random.Range(1, flowers.Length);
-            board.onWin.AddListener(()=> StartAnimation((FlowerType)flowertype));
+            board.onWin.AddListener(() => StartAnimation((FlowerType)flowertype));
+            _board = board;
+            
+            
         }
         
 
@@ -53,6 +57,7 @@ namespace GamingProject
 
             animator.enabled = false;
             SetFlowerSprite((int)flowerType);
+            _board.onWin.RemoveAllListeners();
         }
         
         private void SetFlowerSprite(int spriteIndex)
