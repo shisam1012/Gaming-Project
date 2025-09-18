@@ -20,7 +20,6 @@ namespace GamingProject
         [SerializeField] private TextMeshProUGUI scoreText;
         [SerializeField] private Button actionButton;
         [SerializeField] private Button quitButton;
-        //[SerializeField] private LevelManager levelManager;
         
         [Header("UI Text Settings")]
         [SerializeField] private string gameOverMessage = "TIME'S UP!";
@@ -37,6 +36,8 @@ namespace GamingProject
 
         private LevelManager levelManager;
         private bool isShowing = false;
+       // private LevelDisplayManager levelDisplayManager;
+
         private EndScreenType currentScreenType = EndScreenType.GameOver;
         
         private float betweenLevelDelay = 0.3f;
@@ -51,7 +52,7 @@ namespace GamingProject
             {
                 Debug.LogError("[EndScreenUI] endScreenPanel is NULL!");
             }
-
+            //levelDisplayManager = FindFirstObjectByType<LevelDisplayManager>();
             levelManager = FindFirstObjectByType<LevelManager>();
 
             // Setup canvas group
@@ -95,7 +96,13 @@ namespace GamingProject
             currentScreenType = isLevelComplete ? EndScreenType.LevelComplete : EndScreenType.GameOver;
 
             UpdateEndScreenText();
-
+            
+            // Hide level text when game over occurs
+            var levelDisplayManager = FindFirstObjectByType<LevelDisplayManager>();
+        
+            if (levelDisplayManager!=null){
+                levelDisplayManager.OnGameOver();
+            }
             if (endScreenPanel != null)
             {
                 endScreenPanel.SetActive(true);
@@ -115,6 +122,13 @@ namespace GamingProject
 
             if (canvasGroup != null)
                 canvasGroup.alpha = 0f;
+
+            // Show level text again when game over is hidden
+            var levelDisplayManager = FindFirstObjectByType<LevelDisplayManager>();
+            if (levelDisplayManager != null)
+            {
+                levelDisplayManager.OnGameRestart();
+            }
 
             Time.timeScale = 1f;
         }

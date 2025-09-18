@@ -74,8 +74,21 @@ namespace GamingProject
         // Ensure StoneManager exists
         var stoneManager = StoneManager.Instance;
         
+        // Initialize SoundEffectManager with explicit debug
+        Debug.Log("[GameManager] About to initialize SoundEffectManager...");
+        var soundManager = SoundEffectManager.Instance;
+        if (soundManager != null)
+        {
+            Debug.Log("[GameManager] SoundEffectManager successfully initialized!");
+            Debug.Log($"[GameManager] SoundEffectManager GameObject name: {soundManager.gameObject.name}");
+        }
+        else
+        {
+            Debug.LogError("[GameManager] Failed to initialize SoundEffectManager!");
+        }
+        
         // Initialize other systems if needed
-        Debug.Log("[GameManager] Initialized");
+        Debug.Log("[GameManager] All managers initialized");
     }
     
     private void FindAndCacheReferences()
@@ -237,6 +250,30 @@ namespace GamingProject
     public void SetLevelManager(LevelManager newLevelManager)
     {
         levelManager = newLevelManager;
+    }
+    
+    // Test method to force SoundEffectManager creation
+    [ContextMenu("Test SoundEffectManager")]
+    public void TestSoundEffectManager()
+    {
+        Debug.Log("[GameManager] Testing SoundEffectManager...");
+        var soundManager = SoundEffectManager.Instance;
+        if (soundManager != null)
+        {
+            Debug.Log($"[GameManager] SoundEffectManager found: {soundManager.gameObject.name}");
+            soundManager.DebugAudioStatus();
+            
+            // Try to play a test sound if any are loaded
+            Debug.Log("[GameManager] Attempting to play test sounds...");
+            soundManager.PlaySoundEffect("click"); // Try common sound names
+            soundManager.PlaySoundEffect("pop");
+            soundManager.PlaySoundEffect("match");
+            soundManager.PlaySoundEffect("test");
+        }
+        else
+        {
+            Debug.LogError("[GameManager] SoundEffectManager is null!");
+        }
     }
     
     private void OnDestroy()

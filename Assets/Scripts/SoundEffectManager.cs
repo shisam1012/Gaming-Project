@@ -52,6 +52,11 @@ namespace GamingProject
         [Range(0f, 1f)]
         [SerializeField] private float musicVolume = 1f;
         
+        [Header("Test Audio (Click these buttons in Inspector)")]
+        [SerializeField] private bool testBeep = false;
+        [SerializeField] private bool testAudioFile = false;
+        [SerializeField] private bool debugStatus = false;
+        
         private List<AudioSource> audioSourcePool;
         private Dictionary<string, SoundEffect> soundEffectDict;
 
@@ -68,6 +73,28 @@ namespace GamingProject
             
             InitializeAudioSources();
             InitializeSoundEffectDictionary();
+        }
+
+        private void Update()
+        {
+            // Check for button presses in inspector
+            if (testBeep)
+            {
+                testBeep = false;
+                TestSimpleBeep();
+            }
+            
+            if (testAudioFile)
+            {
+                testAudioFile = false;
+                TestAudioFile();
+            }
+            
+            if (debugStatus)
+            {
+                debugStatus = false;
+                DebugAudioStatus();
+            }
         }
 
         private void InitializeAudioSources()
@@ -342,6 +369,130 @@ namespace GamingProject
             
             soundEffectDict[name] = newSoundEffect;
             Debug.Log($"[SoundEffectManager] Added sound effect: {name}");
+        }
+
+        // Debug method to check audio status
+        [ContextMenu("Debug Audio Status")]
+        public void DebugAudioStatus()
+        {
+            Debug.Log($"[SoundEffectManager] Master Volume: {masterVolume}");
+            Debug.Log($"[SoundEffectManager] SFX Volume: {sfxVolume}");
+            Debug.Log($"[SoundEffectManager] Music Volume: {musicVolume}");
+            Debug.Log($"[SoundEffectManager] AudioListener.pause: {AudioListener.pause}");
+            Debug.Log($"[SoundEffectManager] AudioListener.volume: {AudioListener.volume}");
+            Debug.Log($"[SoundEffectManager] Time.timeScale: {Time.timeScale}");
+            
+            // Check Unity's global audio settings
+            Debug.Log($"[SoundEffectManager] Unity Master Volume: {AudioListener.volume}");
+            Debug.Log($"[SoundEffectManager] Application Focus: {Application.isFocused}");
+            
+            if (musicAudioSource != null)
+            {
+                Debug.Log($"[SoundEffectManager] Music AudioSource - Volume: {musicAudioSource.volume}, Mute: {musicAudioSource.mute}, Playing: {musicAudioSource.isPlaying}");
+            }
+
+            foreach (var audioSource in audioSourcePool)
+            {
+                if (audioSource.isPlaying)
+                {
+                    Debug.Log($"[SoundEffectManager] Playing SFX - Volume: {audioSource.volume}, Mute: {audioSource.mute}");
+                }
+                else
+                {
+                    Debug.Log($"[SoundEffectManager] SFX AudioSource {audioSource.name} - Volume: {audioSource.volume}, Mute: {audioSource.mute}, Ready: {!audioSource.isPlaying}");
+                }
+            }
+            
+            // Check if there's another SoundManager interfering
+            var otherSoundManager = FindFirstObjectByType<SoundManager>();
+            if (otherSoundManager != null)
+            {
+                Debug.LogWarning($"[SoundEffectManager] Found another SoundManager: {otherSoundManager.name} - this might be conflicting!");
+            }
+        }
+        
+        // Test method to play a simple beep sound
+        [ContextMenu("Test Simple Beep")]
+        public void TestSimpleBeep()
+        {
+            Debug.Log("[SoundEffectManager] Playing test beep...");
+            
+            // Create a simple tone programmatically
+            var audioSource = GetAvailableAudioSource();
+            if (audioSource != null)
+            {
+                // Generate a simple beep tone
+                var sampleRate = 44100;
+                var frequency = 440f; // A note
+                var duration = 0.2f;
+                var samples = Mathf.FloorToInt(sampleRate * duration);
+                
+                var clip = AudioClip.Create("TestBeep", samples, 1, sampleRate, false);
+                var data = new float[samples];
+                
+                for (int i = 0; i < samples; i++)
+                {
+                    data[i] = Mathf.Sin(2 * Mathf.PI * frequency * i / sampleRate) * 0.3f;
+                }
+                
+                clip.SetData(data, 0);
+                audioSource.clip = clip;
+                audioSource.volume = masterVolume * sfxVolume;
+                audioSource.Play();
+                
+                Debug.Log("[SoundEffectManager] Test beep should be playing now!");
+            }
+        }
+
+        // Test method to load and play an audio file
+        [ContextMenu("Test Audio File")]
+        public void TestAudioFile()
+        {
+            Debug.Log("[SoundEffectManager] Testing audio file from Resources...");
+            
+            // Try to load an audio file from the project
+            AudioClip testClip = Resources.Load<AudioClip>("Audio/timeout") ?? 
+                                 Resources.Load<AudioClip>("timeout") ??
+                                 Resources.Load<AudioClip>("Audio/level-complete") ??
+                                 Resources.Load<AudioClip>("level-complete");
+            
+            if (testClip == null)
+            {
+                Debug.LogWarning("[SoundEffectManager] Could not load any test audio clip from Resources!");
+                Debug.Log("[SoundEffectManager] Trying to find audio clips in the project...");
+                
+                // Try to find any AudioClip in the project
+                var allClips = Resources.FindObjectsOfTypeAll<AudioClip>();
+                Debug.Log($"[SoundEffectManager] Found {allClips.Length} audio clips in project");
+                
+                foreach (var clip in allClips)
+                {
+                    Debug.Log($"[SoundEffectManager] Available clip: {clip.name}");
+                }
+                
+                if (allClips.Length > 0)
+                {
+                    testClip = allClips[0];
+                    Debug.Log($"[SoundEffectManager] Using first available clip: {testClip.name}");
+                }
+            }
+            
+            if (testClip != null)
+            {
+                var audioSource = GetAvailableAudioSource();
+                if (audioSource != null)
+                {
+                    audioSource.clip = testClip;
+                    audioSource.volume = masterVolume * sfxVolume;
+                    audioSource.Play();
+                    
+                    Debug.Log($"[SoundEffectManager] Playing audio file: {testClip.name}");
+                }
+            }
+            else
+            {
+                Debug.LogError("[SoundEffectManager] No audio clips found to test with!");
+            }
         }
     }
 }
