@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.SceneManagement;
+using System.Collections;
 
 namespace GamingProject
 {
@@ -425,96 +426,33 @@ namespace GamingProject
     
     private void ShowTimer()
     {
-        Debug.Log("[GameOverUI] === SHOWING TIMER UI ===");
+        Debug.Log("[GameOverUI] Showing timer UI");
         
-        // Find TimerUI_Slider components
-        var timerUISliders = FindObjectsByType<TimerUI_Slider>(FindObjectsSortMode.None);
-        Debug.Log($"[GameOverUI] Found {timerUISliders.Length} TimerUI_Slider components");
-        
-        foreach (var timerUISlider in timerUISliders)
+        // Find and show TimerUI_Slider
+        var timerUISlider = FindFirstObjectByType<TimerUI_Slider>();
+        if (timerUISlider != null)
         {
-            Debug.Log($"[GameOverUI] TimerUI_Slider '{timerUISlider.name}' - Active: {timerUISlider.gameObject.activeSelf}");
             timerUISlider.gameObject.SetActive(true);
-            Debug.Log($"[GameOverUI] TimerUI_Slider '{timerUISlider.name}' - Now Active: {timerUISlider.gameObject.activeSelf}");
-            
-            // Make sure parent is also active
-            Transform parent = timerUISlider.transform.parent;
-            while (parent != null)
-            {
-                if (!parent.gameObject.activeSelf)
-                {
-                    Debug.Log($"[GameOverUI] Activating parent: {parent.name}");
-                    parent.gameObject.SetActive(true);
-                }
-                parent = parent.parent;
-            }
+            Debug.Log("[GameOverUI] TimerUI_Slider shown");
         }
-        
-        // Find regular TimerUI components
-        var timerUIs = FindObjectsByType<TimerUI>(FindObjectsSortMode.None);
-        Debug.Log($"[GameOverUI] Found {timerUIs.Length} TimerUI components");
-        
-        foreach (var timerUI in timerUIs)
+        else
         {
-            Debug.Log($"[GameOverUI] TimerUI '{timerUI.name}' - Active: {timerUI.gameObject.activeSelf}");
-            timerUI.gameObject.SetActive(true);
-            Debug.Log($"[GameOverUI] TimerUI '{timerUI.name}' - Now Active: {timerUI.gameObject.activeSelf}");
+            Debug.LogWarning("[GameOverUI] No TimerUI_Slider found to show");
         }
         
-        // Force timer refresh after a short delay
-        Debug.Log("[GameOverUI] Scheduling timer refresh...");
-        Invoke(nameof(ForceTimerRefresh), 0.2f);
-        
-        Debug.Log("[GameOverUI] === TIMER SHOW COMPLETE ===");
+        // Find and show regular TimerUI if it exists
+        var timerUI = FindFirstObjectByType<TimerUI>();
+        if (timerUI != null)
+        {
+            timerUI.gameObject.SetActive(true);
+            Debug.Log("[GameOverUI] TimerUI shown");
+        }
     }
     
     private void ForceTimerRefresh()
     {
-        Debug.Log("[GameOverUI] === FORCE TIMER REFRESH ===");
-        
-        if (levelManager == null)
-        {
-            levelManager = FindFirstObjectByType<LevelManager>();
-            Debug.Log($"[GameOverUI] LevelManager found: {levelManager != null}");
-        }
-        
-        if (levelManager != null)
-        {
-            float currentTimeLeft = levelManager.TimeLeft;
-            Debug.Log($"[GameOverUI] Current time left: {currentTimeLeft}");
-            
-            if (currentTimeLeft > 0)
-            {
-                Debug.Log($"[GameOverUI] Re-triggering onTimerStart with {currentTimeLeft}s");
-                levelManager.onTimerStart?.Invoke(currentTimeLeft);
-                
-                // Double-check timer components are still active
-                var timerUISlider = FindFirstObjectByType<TimerUI_Slider>();
-                if (timerUISlider != null)
-                {
-                    Debug.Log($"[GameOverUI] After refresh - TimerUI_Slider active: {timerUISlider.gameObject.activeSelf}");
-                    if (!timerUISlider.gameObject.activeSelf)
-                    {
-                        timerUISlider.gameObject.SetActive(true);
-                        Debug.Log("[GameOverUI] Re-activated TimerUI_Slider");
-                    }
-                }
-                else
-                {
-                    Debug.LogError("[GameOverUI] No TimerUI_Slider found during refresh!");
-                }
-            }
-            else
-            {
-                Debug.LogWarning("[GameOverUI] No time left to refresh timer with");
-            }
-        }
-        else
-        {
-            Debug.LogError("[GameOverUI] LevelManager is null during timer refresh!");
-        }
-        
-        Debug.Log("[GameOverUI] === TIMER REFRESH COMPLETE ===");
+        // Removed - timer should work automatically after restart
+        Debug.Log("[GameOverUI] ForceTimerRefresh - doing nothing, timer should work automatically");
     }
     }
 }

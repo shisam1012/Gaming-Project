@@ -614,10 +614,19 @@ namespace GamingProject
     
     public void ResetToFirstLevel()
     {
+        Debug.Log("[LevelManager] Resetting to first level");
+        
+        // Stop the current timer
+        running = false;
+        
+        // Reset progression counters
         currentIndex = 0;
-        totalLevelProgression = 1; // Reset progression counter when truly restarting
+        totalLevelProgression = 1;
+        
+        // Load the first level (this will restart the timer properly)
         LoadLevel(currentIndex);
-        Debug.Log("[LevelManager] Reset to first level, progression reset to 1");
+        
+        Debug.Log($"[LevelManager] Reset complete - Level: {totalLevelProgression}");
     }
     
     public int GetCurrentLevelNumber()
