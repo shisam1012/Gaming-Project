@@ -137,6 +137,9 @@ namespace GamingProject
             levelDisplayManager.OnGameOver();
         }
         
+        // Hide timer when game over occurs
+        HideTimer();
+        
         // Play game over sound
         PlayGameOverSound();
         
@@ -165,27 +168,46 @@ namespace GamingProject
     
     public void HideGameOver()
     {
+        Debug.Log("[GameOverUI] === HIDING GAME OVER ===");
         isShowing = false;
         
         // Show level text again when game over is hidden
         var levelDisplayManager = FindFirstObjectByType<LevelDisplayManager>();
         if (levelDisplayManager != null)
         {
+            Debug.Log("[GameOverUI] Calling levelDisplayManager.OnGameRestart()");
             levelDisplayManager.OnGameRestart();
         }
+        else
+        {
+            Debug.LogWarning("[GameOverUI] No LevelDisplayManager found");
+        }
+        
+        // Show timer again when game restarts
+        Debug.Log("[GameOverUI] Calling ShowTimer()...");
+        ShowTimer();
         
         if (gameOverPanel != null)
         {
+            Debug.Log("[GameOverUI] Deactivating game over panel");
             gameOverPanel.SetActive(false);
+        }
+        else
+        {
+            Debug.LogWarning("[GameOverUI] gameOverPanel is null");
         }
         
         if (canvasGroup != null)
         {
+            Debug.Log("[GameOverUI] Setting canvas group alpha to 0");
             canvasGroup.alpha = 0f;
         }
         
         // Resume the game
+        Debug.Log("[GameOverUI] Resuming game (Time.timeScale = 1f)");
         Time.timeScale = 1f;
+        
+        Debug.Log("[GameOverUI] === GAME OVER HIDDEN ===");
     }
     
     private void UpdateGameOverText()
@@ -261,13 +283,17 @@ namespace GamingProject
     
     public void OnTryAgain()
     {
-        Debug.Log("[GameOverUI] Try Again button pressed");
+        Debug.Log("[GameOverUI] === TRY AGAIN BUTTON PRESSED ===");
 
-        // Hide the game over screen
-        HideGameOver();
-
-        // Reset everything to level 1
+        // First reset the game (this will reload the level and start the timer)
+        Debug.Log("[GameOverUI] Step 1: Restarting game...");
         RestartGame();
+        
+        // Then hide the game over screen (this calls ShowTimer)
+        Debug.Log("[GameOverUI] Step 2: Hiding game over screen...");
+        HideGameOver();
+        
+        Debug.Log("[GameOverUI] === TRY AGAIN COMPLETE ===");
     }
     
     public void OnQuit()
@@ -302,6 +328,11 @@ namespace GamingProject
         if (levelManager != null)
         {
             levelManager.ResetToFirstLevel();
+            Debug.Log("[GameOverUI] Level manager reset to first level");
+        }
+        else
+        {
+            Debug.LogError("[GameOverUI] LevelManager is null, cannot reset!");
         }
         
         // Alternative: Reload the entire scene (more thorough reset)
@@ -322,10 +353,168 @@ namespace GamingProject
     
     public bool IsShowing => isShowing;
     
+    // Public methods to control timer visibility
+    public void SetTimerVisible(bool visible)
+    {
+        if (visible)
+        {
+            ShowTimer();
+        }
+        else
+        {
+            HideTimer();
+        }
+    }
+    
+    // Manual test method - you can call this from Inspector or other scripts
+    [ContextMenu("Force Show Timer (Test)")]
+    public void ForceShowTimerTest()
+    {
+        Debug.Log("[GameOverUI] === MANUAL TIMER TEST ===");
+        ShowTimer();
+        
+        // Also try to manually find and activate any hidden timer objects
+        GameObject[] allObjects = FindObjectsByType<GameObject>(FindObjectsSortMode.None);
+        foreach (GameObject obj in allObjects)
+        {
+            if (obj.name.ToLower().Contains("timer"))
+            {
+                Debug.Log($"[GameOverUI] Found timer object: {obj.name} - Active: {obj.activeSelf}");
+                if (!obj.activeSelf)
+                {
+                    obj.SetActive(true);
+                    Debug.Log($"[GameOverUI] Activated timer object: {obj.name}");
+                }
+            }
+        }
+    }
+    
     private void PlayGameOverSound()
     {
         Debug.Log("[GameOverUI] Game Over sound disabled - add back later if needed");
         // Sound effects removed for now
+    }
+    
+    private void HideTimer()
+    {
+        Debug.Log("[GameOverUI] Hiding timer UI");
+        
+        // Store reference to timer components for easier restoration later
+        var timerUISlider = FindFirstObjectByType<TimerUI_Slider>();
+        if (timerUISlider != null)
+        {
+            // Just hide the TimerUI_Slider component itself, not its parent
+            timerUISlider.gameObject.SetActive(false);
+            Debug.Log($"[GameOverUI] TimerUI_Slider hidden: {timerUISlider.name}");
+        }
+        else
+        {
+            Debug.LogWarning("[GameOverUI] No TimerUI_Slider found to hide");
+        }
+        
+        // Hide regular TimerUI if it exists
+        var timerUI = FindFirstObjectByType<TimerUI>();
+        if (timerUI != null)
+        {
+            timerUI.gameObject.SetActive(false);
+            Debug.Log($"[GameOverUI] TimerUI hidden: {timerUI.name}");
+        }
+        
+        Debug.Log("[GameOverUI] Timer hiding complete");
+    }
+    
+    private void ShowTimer()
+    {
+        Debug.Log("[GameOverUI] === SHOWING TIMER UI ===");
+        
+        // Find TimerUI_Slider components
+        var timerUISliders = FindObjectsByType<TimerUI_Slider>(FindObjectsSortMode.None);
+        Debug.Log($"[GameOverUI] Found {timerUISliders.Length} TimerUI_Slider components");
+        
+        foreach (var timerUISlider in timerUISliders)
+        {
+            Debug.Log($"[GameOverUI] TimerUI_Slider '{timerUISlider.name}' - Active: {timerUISlider.gameObject.activeSelf}");
+            timerUISlider.gameObject.SetActive(true);
+            Debug.Log($"[GameOverUI] TimerUI_Slider '{timerUISlider.name}' - Now Active: {timerUISlider.gameObject.activeSelf}");
+            
+            // Make sure parent is also active
+            Transform parent = timerUISlider.transform.parent;
+            while (parent != null)
+            {
+                if (!parent.gameObject.activeSelf)
+                {
+                    Debug.Log($"[GameOverUI] Activating parent: {parent.name}");
+                    parent.gameObject.SetActive(true);
+                }
+                parent = parent.parent;
+            }
+        }
+        
+        // Find regular TimerUI components
+        var timerUIs = FindObjectsByType<TimerUI>(FindObjectsSortMode.None);
+        Debug.Log($"[GameOverUI] Found {timerUIs.Length} TimerUI components");
+        
+        foreach (var timerUI in timerUIs)
+        {
+            Debug.Log($"[GameOverUI] TimerUI '{timerUI.name}' - Active: {timerUI.gameObject.activeSelf}");
+            timerUI.gameObject.SetActive(true);
+            Debug.Log($"[GameOverUI] TimerUI '{timerUI.name}' - Now Active: {timerUI.gameObject.activeSelf}");
+        }
+        
+        // Force timer refresh after a short delay
+        Debug.Log("[GameOverUI] Scheduling timer refresh...");
+        Invoke(nameof(ForceTimerRefresh), 0.2f);
+        
+        Debug.Log("[GameOverUI] === TIMER SHOW COMPLETE ===");
+    }
+    
+    private void ForceTimerRefresh()
+    {
+        Debug.Log("[GameOverUI] === FORCE TIMER REFRESH ===");
+        
+        if (levelManager == null)
+        {
+            levelManager = FindFirstObjectByType<LevelManager>();
+            Debug.Log($"[GameOverUI] LevelManager found: {levelManager != null}");
+        }
+        
+        if (levelManager != null)
+        {
+            float currentTimeLeft = levelManager.TimeLeft;
+            Debug.Log($"[GameOverUI] Current time left: {currentTimeLeft}");
+            
+            if (currentTimeLeft > 0)
+            {
+                Debug.Log($"[GameOverUI] Re-triggering onTimerStart with {currentTimeLeft}s");
+                levelManager.onTimerStart?.Invoke(currentTimeLeft);
+                
+                // Double-check timer components are still active
+                var timerUISlider = FindFirstObjectByType<TimerUI_Slider>();
+                if (timerUISlider != null)
+                {
+                    Debug.Log($"[GameOverUI] After refresh - TimerUI_Slider active: {timerUISlider.gameObject.activeSelf}");
+                    if (!timerUISlider.gameObject.activeSelf)
+                    {
+                        timerUISlider.gameObject.SetActive(true);
+                        Debug.Log("[GameOverUI] Re-activated TimerUI_Slider");
+                    }
+                }
+                else
+                {
+                    Debug.LogError("[GameOverUI] No TimerUI_Slider found during refresh!");
+                }
+            }
+            else
+            {
+                Debug.LogWarning("[GameOverUI] No time left to refresh timer with");
+            }
+        }
+        else
+        {
+            Debug.LogError("[GameOverUI] LevelManager is null during timer refresh!");
+        }
+        
+        Debug.Log("[GameOverUI] === TIMER REFRESH COMPLETE ===");
     }
     }
 }
