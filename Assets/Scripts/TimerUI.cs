@@ -33,28 +33,6 @@ namespace GamingProject
         }
         
         SetupUI();
-        
-        // Disabled automatic timer bar creation - user wants only the brown bottom timer
-        // if (timerFillImage == null)
-        // {
-        //     Debug.LogWarning("[TimerUI] Timer fill image still null after setup, applying force fix...");
-        //     ApplyForceFix();
-        // }
-    }
-    
-    private void ApplyForceFix()
-    {
-        // Add the ForceTimerBarFix component if it doesn't exist
-        ForceTimerBarFix forceFix = GetComponent<ForceTimerBarFix>();
-        if (forceFix == null)
-        {
-            forceFix = gameObject.AddComponent<ForceTimerBarFix>();
-        }
-        
-        // Create the timer bar
-        forceFix.CreateVisibleTimerBar();
-        
-        Debug.Log("[TimerUI] Applied force timer bar fix");
     }
     
     private void Update()
@@ -82,8 +60,7 @@ namespace GamingProject
         
         if (timerFillImage == null)
         {
-            Debug.LogWarning("[TimerUI] Timer fill image not assigned! Creating one...");
-            CreateTimerFillImage();
+            Debug.LogWarning("[TimerUI] Timer fill image not assigned! Please assign it in the inspector.");
         }
         
         // Check screen resolution and canvas scaling

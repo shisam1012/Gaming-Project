@@ -3689,7 +3689,11 @@ MonoBehaviour:
   autoStart: 1
   position: {x: 0, y: -200}
   size: {x: 400, y: 30}
-  barColor: {r: 0, g: 1, b: 0, a: 1}
+  barColor:
+    r: 0.38431373
+    g: 0.16862746
+    b: 0.14901961
+    a: 1
 --- !u!4 &2007545799
 Transform:
   m_ObjectHideFlags: 0
