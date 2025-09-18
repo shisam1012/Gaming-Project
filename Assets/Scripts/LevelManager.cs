@@ -27,7 +27,7 @@ namespace GamingProject
     public UnityEvent onTimeUp;
     public UnityEvent<float> onTimerStart; 
     public UnityEvent onTimerEnd;    [Header("Timing")]
-    [SerializeField] private float betweenLevelDelay = 0.75f;
+    [SerializeField] private float betweenLevelDelay = 5f;
 
     private float timeLeft;
     private bool running;
