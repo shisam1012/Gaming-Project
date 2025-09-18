@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 7181372325008217437}
   - component: {fileID: 8241841059845080060}
   - component: {fileID: 2373946690555587331}
+  - component: {fileID: 8148479031936763578}
   m_Layer: 0
   m_Name: Cell
   m_TagString: Untagged
@@ -100,6 +101,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e67808d5647300458c8a28ed587cdf3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tileRenderer: {fileID: 8241841059845080060}
+  type: 0
   tileSprites:
   - {fileID: 21300000, guid: 857b05722a6ff534398a7e37451cd9f6, type: 3}
+--- !u!95 &8148479031936763578
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5507944404235456927}
+  m_Enabled: 0
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 46e8333c259ddd741b6fa572ef36d58f, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
