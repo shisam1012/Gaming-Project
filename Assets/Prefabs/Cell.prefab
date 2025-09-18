@@ -104,6 +104,8 @@ MonoBehaviour:
   type: 0
   tileSprites:
   - {fileID: 21300000, guid: 857b05722a6ff534398a7e37451cd9f6, type: 3}
+  - {fileID: 5634026908348037240, guid: a864d0d6ecd41624d976fe9f8c49e2d7, type: 3}
+  - {fileID: 636853396, guid: b776578d4016bf5498267c0569680b76, type: 3}
 --- !u!95 &8148479031936763578
 Animator:
   serializedVersion: 7
@@ -112,7 +114,7 @@ Animator:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5507944404235456927}
-  m_Enabled: 0
+  m_Enabled: 1
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: 46e8333c259ddd741b6fa572ef36d58f, type: 2}
   m_CullingMode: 0
