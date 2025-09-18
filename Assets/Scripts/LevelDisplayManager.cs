@@ -4,7 +4,8 @@ using GamingProject;
 
 public class LevelDisplayManager : MonoBehaviour
 {
-    private TMP_Text levelText;
+    [SerializeField] private TMP_Text levelText;
+    [SerializeField] private TMP_Text scoreText;
     private LevelManager levelManager;
     private GameOverUI gameOverUI;
     private bool isGameOver = false;
@@ -33,13 +34,46 @@ public class LevelDisplayManager : MonoBehaviour
         Debug.Log("[LevelDisplayManager] Level display manager initialized");
     }
     
+    void Awake()
+    {
+        if (scoreText == null)
+        {
+            GameObject scoreObj = GameObject.Find("ScoreText");
+            if (scoreObj != null)
+            {
+                scoreText = scoreObj.GetComponent<TMP_Text>();
+                Debug.Log("[LevelDisplayManager] Auto-found ScoreText");
+            }
+            else
+            {
+                Debug.LogWarning("[LevelDisplayManager] Could not find ScoreText");
+            }
+        }
+
+        if (levelText == null)
+        {
+            GameObject levelObj = GameObject.Find("LevelText");
+            if (levelObj != null)
+            {
+                levelText = levelObj.GetComponent<TMP_Text>();
+                Debug.Log("[LevelDisplayManager] Auto-found LevelText");
+            }
+            else
+            {
+                Debug.LogWarning("[LevelDisplayManager] Could not find LevelText");
+            }
+        }
+    }
+
+
+
     void Update()
     {
         // Check if game is over
         CheckGameOverState();
         
         // Update level display periodically only if game is not over
-        if (levelManager != null && levelText != null && !isGameOver)
+        if (levelManager != null && levelText != null && scoreText != null && !isGameOver)
         {
             UpdateLevelDisplay();
         }
@@ -57,6 +91,7 @@ public class LevelDisplayManager : MonoBehaviour
                 // Game just became over - hide level text
                 isGameOver = true;
                 HideLevelText();
+                HideScoreText();
                 Debug.Log("[LevelDisplayManager] Game over detected - hiding level text");
             }
             else if (!gameOverActive && isGameOver)
@@ -64,6 +99,7 @@ public class LevelDisplayManager : MonoBehaviour
                 // Game over ended - show level text again
                 isGameOver = false;
                 ShowLevelText();
+                ShowScoreText();
                 Debug.Log("[LevelDisplayManager] Game over ended - showing level text");
             }
         }
@@ -74,6 +110,12 @@ public class LevelDisplayManager : MonoBehaviour
         levelText = text;
         Debug.Log("[LevelDisplayManager] Level text component assigned");
     }
+
+    public void SetScoreText(TMP_Text text)
+    {
+        scoreText = text;
+        Debug.Log("[LevelDisplayManager] Score text component assigned");
+    }
     
     private void HideLevelText()
     {
@@ -81,6 +123,14 @@ public class LevelDisplayManager : MonoBehaviour
         {
             levelText.gameObject.SetActive(false);
             Debug.Log("[LevelDisplayManager] Level text hidden");
+        }
+    }
+    private void HideScoreText()
+    {
+        if (scoreText != null)
+        {
+            scoreText.gameObject.SetActive(false);
+            Debug.Log("[LevelDisplayManager] score text hidden");
         }
     }
     
@@ -92,12 +142,22 @@ public class LevelDisplayManager : MonoBehaviour
             Debug.Log("[LevelDisplayManager] Level text shown");
         }
     }
+
+    private void ShowScoreText()
+    {
+        if (scoreText != null)
+        {
+            scoreText.gameObject.SetActive(true);
+            Debug.Log("[LevelDisplayManager] Score text shown");
+        }
+    }
     
     // Public methods that can be called externally
     public void OnGameOver()
     {
         isGameOver = true;
         HideLevelText();
+        HideScoreText();
         Debug.Log("[LevelDisplayManager] OnGameOver called - level text hidden");
     }
     
@@ -105,6 +165,7 @@ public class LevelDisplayManager : MonoBehaviour
     {
         isGameOver = false;
         ShowLevelText();
+        ShowScoreText();
         Debug.Log("[LevelDisplayManager] OnGameRestart called - level text shown");
     }
     
