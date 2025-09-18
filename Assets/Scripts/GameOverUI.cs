@@ -130,6 +130,13 @@ namespace GamingProject
         
         isShowing = true;
         
+        // Hide level text when game over occurs
+        var levelDisplayManager = FindFirstObjectByType<LevelDisplayManager>();
+        if (levelDisplayManager != null)
+        {
+            levelDisplayManager.OnGameOver();
+        }
+        
         // Play game over sound
         PlayGameOverSound();
         
@@ -159,6 +166,13 @@ namespace GamingProject
     public void HideGameOver()
     {
         isShowing = false;
+        
+        // Show level text again when game over is hidden
+        var levelDisplayManager = FindFirstObjectByType<LevelDisplayManager>();
+        if (levelDisplayManager != null)
+        {
+            levelDisplayManager.OnGameRestart();
+        }
         
         if (gameOverPanel != null)
         {
