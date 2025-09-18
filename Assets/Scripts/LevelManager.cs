@@ -12,6 +12,9 @@ namespace GamingProject
         [Header("Levels Order (will advance in this order)")]
         public List<LevelConfig> levels = new List<LevelConfig>();
         [SerializeField] private int currentIndex = 0;
+        
+        [Header("Level Progression")]
+        [SerializeField] private int totalLevelProgression = 1; // Tracks absolute level number (1, 2, 3, 4, 5, 6, 7, 8...)
 
     [Header("References")]
     public Board board;
@@ -525,9 +528,11 @@ namespace GamingProject
     {
         yield return new WaitForSeconds(delay);
         currentIndex++;
+        totalLevelProgression++; // Increment absolute level progression
         if (currentIndex >= levels.Count)
         {
-            currentIndex = 0;
+            currentIndex = 0; // Loop back to first level config
+            Debug.Log($"[LevelManager] Looped back to level config 0, but showing Level: {totalLevelProgression}");
         }
         LoadLevel(currentIndex);
     }
@@ -548,9 +553,11 @@ namespace GamingProject
     public void AdvanceToNextLevel()
     {
         currentIndex++;
+        totalLevelProgression++; // Increment absolute level progression
         if (currentIndex >= levels.Count)
         {
-            currentIndex = 0;
+            currentIndex = 0; // Loop back to first level config
+            Debug.Log($"[LevelManager] Looped back to level config 0, but showing Level: {totalLevelProgression}");
         }
         LoadLevel(currentIndex);
     }
@@ -608,13 +615,14 @@ namespace GamingProject
     public void ResetToFirstLevel()
     {
         currentIndex = 0;
+        totalLevelProgression = 1; // Reset progression counter when truly restarting
         LoadLevel(currentIndex);
-        Debug.Log("[LevelManager] Reset to first level");
+        Debug.Log("[LevelManager] Reset to first level, progression reset to 1");
     }
     
     public int GetCurrentLevelNumber()
     {
-        return currentIndex + 1; // Return 1-based level number for display
+        return totalLevelProgression; // Return the absolute level progression (1, 2, 3, 4, 5, 6, 7, 8...)
     }
     
     public int GetTotalLevels()
