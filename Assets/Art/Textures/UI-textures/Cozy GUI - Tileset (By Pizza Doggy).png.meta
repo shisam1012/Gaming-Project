@@ -1141,7 +1141,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -1155,7 +1155,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 16
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -1179,7 +1179,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -3879,7 +3879,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Cozy GUI - Tileset (By Pizza Doggy)_121
+      name: left-arrow3
       rect:
         serializedVersion: 2
         x: 100
@@ -4121,7 +4121,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Cozy GUI - Tileset (By Pizza Doggy)_132
+      name: switch1
       rect:
         serializedVersion: 2
         x: 441
@@ -4209,7 +4209,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Cozy GUI - Tileset (By Pizza Doggy)_136
+      name: side-slide1
       rect:
         serializedVersion: 2
         x: 581
@@ -4341,7 +4341,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Cozy GUI - Tileset (By Pizza Doggy)_142
+      name: left-arrow3-active
       rect:
         serializedVersion: 2
         x: 100
@@ -4583,7 +4583,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Cozy GUI - Tileset (By Pizza Doggy)_153
+      name: switch1-active
       rect:
         serializedVersion: 2
         x: 440
@@ -4627,7 +4627,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Cozy GUI - Tileset (By Pizza Doggy)_155
+      name: side-slide1-active
       rect:
         serializedVersion: 2
         x: 581
@@ -7003,7 +7003,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Cozy GUI - Tileset (By Pizza Doggy)_263
+      name: left-arrow2
       rect:
         serializedVersion: 2
         x: 3
@@ -7091,7 +7091,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Cozy GUI - Tileset (By Pizza Doggy)_267
+      name: left-arrow4
       rect:
         serializedVersion: 2
         x: 99
@@ -7267,7 +7267,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Cozy GUI - Tileset (By Pizza Doggy)_275
+      name: button-wide
       rect:
         serializedVersion: 2
         x: 295
@@ -7333,7 +7333,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Cozy GUI - Tileset (By Pizza Doggy)_278
+      name: switch2
       rect:
         serializedVersion: 2
         x: 439
@@ -7421,7 +7421,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Cozy GUI - Tileset (By Pizza Doggy)_282
+      name: side-slide2
       rect:
         serializedVersion: 2
         x: 581
@@ -7465,7 +7465,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Cozy GUI - Tileset (By Pizza Doggy)_284
+      name: left-arrow2-active
       rect:
         serializedVersion: 2
         x: 3
@@ -7729,7 +7729,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Cozy GUI - Tileset (By Pizza Doggy)_296
+      name: button-wide-active
       rect:
         serializedVersion: 2
         x: 295
@@ -7795,7 +7795,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Cozy GUI - Tileset (By Pizza Doggy)_299
+      name: switch2-active
       rect:
         serializedVersion: 2
         x: 439
@@ -7839,7 +7839,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Cozy GUI - Tileset (By Pizza Doggy)_301
+      name: side-slide2-active
       rect:
         serializedVersion: 2
         x: 581
@@ -9005,7 +9005,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Cozy GUI - Tileset (By Pizza Doggy)_354
+      name: filler
       rect:
         serializedVersion: 2
         x: 3
@@ -9014,7 +9014,7 @@ TextureImporter:
         height: 8
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
+      border: {x: 4, y: 3, z: 4, w: 3}
       customData: 
       outline: []
       physicsShape: []
@@ -9027,7 +9027,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Cozy GUI - Tileset (By Pizza Doggy)_355
+      name: cont
       rect:
         serializedVersion: 2
         x: 50
@@ -9036,7 +9036,7 @@ TextureImporter:
         height: 10
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
+      border: {x: 4, y: 3, z: 4, w: 3}
       customData: 
       outline: []
       physicsShape: []
@@ -9049,7 +9049,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Cozy GUI - Tileset (By Pizza Doggy)_356
+      name: side-cont
       rect:
         serializedVersion: 2
         x: 96
@@ -9058,7 +9058,7 @@ TextureImporter:
         height: 10
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
+      border: {x: 4, y: 3, z: 4, w: 3}
       customData: 
       outline: []
       physicsShape: []
@@ -9247,7 +9247,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Cozy GUI - Tileset (By Pizza Doggy)_365
+      name: red-filler-s
       rect:
         serializedVersion: 2
         x: 196
@@ -9256,7 +9256,7 @@ TextureImporter:
         height: 6
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
+      border: {x: 3, y: 2, z: 3, w: 2}
       customData: 
       outline: []
       physicsShape: []
@@ -9269,7 +9269,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Cozy GUI - Tileset (By Pizza Doggy)_366
+      name: yellow-filler-s
       rect:
         serializedVersion: 2
         x: 244
@@ -9278,7 +9278,7 @@ TextureImporter:
         height: 6
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
+      border: {x: 3, y: 2, z: 3, w: 2}
       customData: 
       outline: []
       physicsShape: []
@@ -9291,7 +9291,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Cozy GUI - Tileset (By Pizza Doggy)_367
+      name: green-filler-s
       rect:
         serializedVersion: 2
         x: 292
@@ -9300,7 +9300,7 @@ TextureImporter:
         height: 6
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
+      border: {x: 3, y: 2, z: 3, w: 2}
       customData: 
       outline: []
       physicsShape: []
@@ -9370,6 +9370,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
+      4: -5222054335709936107
       Cozy GUI - Tileset (By Pizza Doggy)_0: 8540156622728525274
       Cozy GUI - Tileset (By Pizza Doggy)_1: 2246923445817651486
       Cozy GUI - Tileset (By Pizza Doggy)_10: -9185794027923818636
@@ -9396,7 +9397,6 @@ TextureImporter:
       Cozy GUI - Tileset (By Pizza Doggy)_119: 5029456983691111514
       Cozy GUI - Tileset (By Pizza Doggy)_12: 5440184069959233591
       Cozy GUI - Tileset (By Pizza Doggy)_120: -2095789366588243888
-      Cozy GUI - Tileset (By Pizza Doggy)_121: -6667767120450429400
       Cozy GUI - Tileset (By Pizza Doggy)_122: -8582149306487020352
       Cozy GUI - Tileset (By Pizza Doggy)_123: -3475912828567573552
       Cozy GUI - Tileset (By Pizza Doggy)_124: 8090571038635558779
@@ -9408,18 +9408,15 @@ TextureImporter:
       Cozy GUI - Tileset (By Pizza Doggy)_13: -2740743529269028778
       Cozy GUI - Tileset (By Pizza Doggy)_130: 8363425742743537658
       Cozy GUI - Tileset (By Pizza Doggy)_131: 3341155839860034102
-      Cozy GUI - Tileset (By Pizza Doggy)_132: 6116430213299404452
       Cozy GUI - Tileset (By Pizza Doggy)_133: 5134078330607523564
       Cozy GUI - Tileset (By Pizza Doggy)_134: -7358385817509287613
       Cozy GUI - Tileset (By Pizza Doggy)_135: -363438871033343751
-      Cozy GUI - Tileset (By Pizza Doggy)_136: 4957386013227465691
       Cozy GUI - Tileset (By Pizza Doggy)_137: 8943577897834796003
       Cozy GUI - Tileset (By Pizza Doggy)_138: 4242092032198258309
       Cozy GUI - Tileset (By Pizza Doggy)_139: -8171758011881703321
       Cozy GUI - Tileset (By Pizza Doggy)_14: 3536393207052302835
       Cozy GUI - Tileset (By Pizza Doggy)_140: -8210621606185169865
       Cozy GUI - Tileset (By Pizza Doggy)_141: 7744181133326641241
-      Cozy GUI - Tileset (By Pizza Doggy)_142: 1539216806405244188
       Cozy GUI - Tileset (By Pizza Doggy)_143: 4545456441120362415
       Cozy GUI - Tileset (By Pizza Doggy)_144: -7084695662880028890
       Cozy GUI - Tileset (By Pizza Doggy)_145: -5700934665269005311
@@ -9431,9 +9428,7 @@ TextureImporter:
       Cozy GUI - Tileset (By Pizza Doggy)_150: 1787916038869720980
       Cozy GUI - Tileset (By Pizza Doggy)_151: -4852691428609721209
       Cozy GUI - Tileset (By Pizza Doggy)_152: 956416283699899213
-      Cozy GUI - Tileset (By Pizza Doggy)_153: 1961876584106372365
       Cozy GUI - Tileset (By Pizza Doggy)_154: 4541810825445114647
-      Cozy GUI - Tileset (By Pizza Doggy)_155: 3627115115545768094
       Cozy GUI - Tileset (By Pizza Doggy)_156: 382075611292329703
       Cozy GUI - Tileset (By Pizza Doggy)_157: 1894195569552498808
       Cozy GUI - Tileset (By Pizza Doggy)_158: -1719002436271148507
@@ -9547,11 +9542,9 @@ TextureImporter:
       Cozy GUI - Tileset (By Pizza Doggy)_260: -5336359292559380045
       Cozy GUI - Tileset (By Pizza Doggy)_261: 8792916825691208172
       Cozy GUI - Tileset (By Pizza Doggy)_262: -5566505787760274244
-      Cozy GUI - Tileset (By Pizza Doggy)_263: 529102089133762590
       Cozy GUI - Tileset (By Pizza Doggy)_264: -1240665194494551263
       Cozy GUI - Tileset (By Pizza Doggy)_265: -2731389579876537571
       Cozy GUI - Tileset (By Pizza Doggy)_266: -6706507968655900358
-      Cozy GUI - Tileset (By Pizza Doggy)_267: -5441241743914102779
       Cozy GUI - Tileset (By Pizza Doggy)_268: -3950804534978988347
       Cozy GUI - Tileset (By Pizza Doggy)_269: -6594206285034447988
       Cozy GUI - Tileset (By Pizza Doggy)_27: 532586678407033253
@@ -9560,17 +9553,13 @@ TextureImporter:
       Cozy GUI - Tileset (By Pizza Doggy)_272: -6770198649036263961
       Cozy GUI - Tileset (By Pizza Doggy)_273: -6545544611942042313
       Cozy GUI - Tileset (By Pizza Doggy)_274: -6600019307401155721
-      Cozy GUI - Tileset (By Pizza Doggy)_275: 4159596676941219949
       Cozy GUI - Tileset (By Pizza Doggy)_276: -308758157470467324
       Cozy GUI - Tileset (By Pizza Doggy)_277: -8086326431272340578
-      Cozy GUI - Tileset (By Pizza Doggy)_278: -3196507026468636193
       Cozy GUI - Tileset (By Pizza Doggy)_279: 8132874187145035727
       Cozy GUI - Tileset (By Pizza Doggy)_28: -6765909140122468115
       Cozy GUI - Tileset (By Pizza Doggy)_280: -1145498028612477908
       Cozy GUI - Tileset (By Pizza Doggy)_281: -9042925584809220210
-      Cozy GUI - Tileset (By Pizza Doggy)_282: 5859307400681057729
       Cozy GUI - Tileset (By Pizza Doggy)_283: -4733830233362539282
-      Cozy GUI - Tileset (By Pizza Doggy)_284: -779958706121949214
       Cozy GUI - Tileset (By Pizza Doggy)_285: -2517625368590584272
       Cozy GUI - Tileset (By Pizza Doggy)_286: 2169427304743098076
       Cozy GUI - Tileset (By Pizza Doggy)_287: 1830870931065979230
@@ -9583,14 +9572,11 @@ TextureImporter:
       Cozy GUI - Tileset (By Pizza Doggy)_293: 8742781690737538035
       Cozy GUI - Tileset (By Pizza Doggy)_294: 6012735209681273675
       Cozy GUI - Tileset (By Pizza Doggy)_295: 4003862380886128386
-      Cozy GUI - Tileset (By Pizza Doggy)_296: -7292708953841758512
       Cozy GUI - Tileset (By Pizza Doggy)_297: -6662726463625433741
       Cozy GUI - Tileset (By Pizza Doggy)_298: 3874857890619480969
-      Cozy GUI - Tileset (By Pizza Doggy)_299: 6806874357555834379
       Cozy GUI - Tileset (By Pizza Doggy)_3: -5139738158495187144
       Cozy GUI - Tileset (By Pizza Doggy)_30: 4292767685671610739
       Cozy GUI - Tileset (By Pizza Doggy)_300: 8676358108718045044
-      Cozy GUI - Tileset (By Pizza Doggy)_301: 2212299929552884601
       Cozy GUI - Tileset (By Pizza Doggy)_302: 6852227257700352749
       Cozy GUI - Tileset (By Pizza Doggy)_303: -5140861709201749577
       Cozy GUI - Tileset (By Pizza Doggy)_304: -1448370789666305226
@@ -9647,9 +9633,6 @@ TextureImporter:
       Cozy GUI - Tileset (By Pizza Doggy)_351: 3755478510351324739
       Cozy GUI - Tileset (By Pizza Doggy)_352: 9035198344860191538
       Cozy GUI - Tileset (By Pizza Doggy)_353: -4260037593950436406
-      Cozy GUI - Tileset (By Pizza Doggy)_354: -1803112814790514243
-      Cozy GUI - Tileset (By Pizza Doggy)_355: -4795741174142230161
-      Cozy GUI - Tileset (By Pizza Doggy)_356: -619181495798963499
       Cozy GUI - Tileset (By Pizza Doggy)_357: -797919093514103631
       Cozy GUI - Tileset (By Pizza Doggy)_358: -7782497073682953377
       Cozy GUI - Tileset (By Pizza Doggy)_359: -6861927066853276348
@@ -9659,9 +9642,6 @@ TextureImporter:
       Cozy GUI - Tileset (By Pizza Doggy)_362: 7553048328062976648
       Cozy GUI - Tileset (By Pizza Doggy)_363: 5675027520125631518
       Cozy GUI - Tileset (By Pizza Doggy)_364: -1766857626571320915
-      Cozy GUI - Tileset (By Pizza Doggy)_365: -8884713969895116143
-      Cozy GUI - Tileset (By Pizza Doggy)_366: -5222054335709936107
-      Cozy GUI - Tileset (By Pizza Doggy)_367: -5716454820944805530
       Cozy GUI - Tileset (By Pizza Doggy)_368: -4524937545441409630
       Cozy GUI - Tileset (By Pizza Doggy)_37: 717318863425633054
       Cozy GUI - Tileset (By Pizza Doggy)_38: -8932482943748549926
@@ -9730,16 +9710,37 @@ TextureImporter:
       Cozy GUI - Tileset (By Pizza Doggy)_97: -4878099390918476965
       Cozy GUI - Tileset (By Pizza Doggy)_98: -5929749682440970513
       Cozy GUI - Tileset (By Pizza Doggy)_99: -3237695003684232749
+      button-wide: 4159596676941219949
+      button-wide-active: -7292708953841758512
+      cont: -4795741174142230161
+      filler: -1803112814790514243
       green bar: 1867529010
+      green-filler-s: -5716454820944805530
+      left-arrow2: 529102089133762590
+      left-arrow2-active: -779958706121949214
+      left-arrow3: -6667767120450429400
+      left-arrow3-active: 1539216806405244188
+      left-arrow4: -5441241743914102779
       pause1: -242055420863910321
       pause1-active: 5939824420275235995
       pause2: -6135700876739068282
       pause2-active: -5514123102319913091
+      red-filler-s: -8884713969895116143
       scroll bar: -7131244214297932999
       settings1: -4104073166698897813
       settings1-active: 3134815996161665821
       settings2: -151936970609205785
       settings2-active: -4914011762951046093
+      side-cont: -619181495798963499
+      side-slide1: 4957386013227465691
+      side-slide1-active: 3627115115545768094
+      side-slide2: 5859307400681057729
+      side-slide2-active: 2212299929552884601
+      switch1: 6116430213299404452
+      switch1-active: 1961876584106372365
+      switch2: -3196507026468636193
+      switch2-active: 6806874357555834379
+      yellow-filler-s: -5222054335709936107
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
