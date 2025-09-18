@@ -343,5 +343,63 @@ namespace GamingProject
             soundEffectDict[name] = newSoundEffect;
             Debug.Log($"[SoundEffectManager] Added sound effect: {name}");
         }
+
+        // Debug method to check audio status
+        [ContextMenu("Debug Audio Status")]
+        public void DebugAudioStatus()
+        {
+            Debug.Log($"[SoundEffectManager] Master Volume: {masterVolume}");
+            Debug.Log($"[SoundEffectManager] SFX Volume: {sfxVolume}");
+            Debug.Log($"[SoundEffectManager] Music Volume: {musicVolume}");
+            Debug.Log($"[SoundEffectManager] AudioListener.pause: {AudioListener.pause}");
+            Debug.Log($"[SoundEffectManager] AudioListener.volume: {AudioListener.volume}");
+            Debug.Log($"[SoundEffectManager] Time.timeScale: {Time.timeScale}");
+            
+            if (musicAudioSource != null)
+            {
+                Debug.Log($"[SoundEffectManager] Music AudioSource - Volume: {musicAudioSource.volume}, Mute: {musicAudioSource.mute}, Playing: {musicAudioSource.isPlaying}");
+            }
+
+            foreach (var audioSource in audioSourcePool)
+            {
+                if (audioSource.isPlaying)
+                {
+                    Debug.Log($"[SoundEffectManager] Playing SFX - Volume: {audioSource.volume}, Mute: {audioSource.mute}");
+                }
+            }
+        }
+        
+        // Test method to play a simple beep sound
+        [ContextMenu("Test Simple Beep")]
+        public void TestSimpleBeep()
+        {
+            Debug.Log("[SoundEffectManager] Playing test beep...");
+            
+            // Create a simple tone programmatically
+            var audioSource = GetAvailableAudioSource();
+            if (audioSource != null)
+            {
+                // Generate a simple beep tone
+                var sampleRate = 44100;
+                var frequency = 440f; // A note
+                var duration = 0.2f;
+                var samples = Mathf.FloorToInt(sampleRate * duration);
+                
+                var clip = AudioClip.Create("TestBeep", samples, 1, sampleRate, false);
+                var data = new float[samples];
+                
+                for (int i = 0; i < samples; i++)
+                {
+                    data[i] = Mathf.Sin(2 * Mathf.PI * frequency * i / sampleRate) * 0.3f;
+                }
+                
+                clip.SetData(data, 0);
+                audioSource.clip = clip;
+                audioSource.volume = masterVolume * sfxVolume;
+                audioSource.Play();
+                
+                Debug.Log("[SoundEffectManager] Test beep should be playing now!");
+            }
+        }
     }
 }
