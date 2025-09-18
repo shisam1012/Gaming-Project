@@ -10,16 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 13b75c95f34a00d4e8c04f76b73312e6, type: 3}
-  m_Name: water_animation
+  m_Name: flowergrowth
   m_EditorClassIdentifier: 
   m_AnimatedSprites:
-  - {fileID: -7349999223442330029, guid: c50ae99dd02d3254daa6f230cd41577a, type: 3}
-  - {fileID: -56631004, guid: c50ae99dd02d3254daa6f230cd41577a, type: 3}
-  - {fileID: -962372483, guid: c50ae99dd02d3254daa6f230cd41577a, type: 3}
-  - {fileID: -428050157, guid: c50ae99dd02d3254daa6f230cd41577a, type: 3}
+  - {fileID: 5671746755192451787, guid: 3fcd2fa5e59662b41ae7f97020d8b09e, type: 3}
+  - {fileID: -8034980094399407375, guid: 3fcd2fa5e59662b41ae7f97020d8b09e, type: 3}
+  - {fileID: 2840298198347058904, guid: 3fcd2fa5e59662b41ae7f97020d8b09e, type: 3}
+  - {fileID: 0}
   m_MinSpeed: 1
-  m_MaxSpeed: 3
+  m_MaxSpeed: 1
   m_AnimationStartTime: 0
   m_AnimationStartFrame: 0
-  m_TileColliderType: 0
-  m_TileAnimationFlags: 16
+  m_TileColliderType: 1
+  m_TileAnimationFlags: 1

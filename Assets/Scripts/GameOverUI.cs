@@ -271,6 +271,19 @@ namespace GamingProject
     
     private void RestartGame()
     {
+        Debug.Log("[GameOverUI] Restarting game and resetting score");
+        
+        // Reset score to 0 when trying again
+        if (ScoreHandler.instance != null)
+        {
+            ScoreHandler.instance.SetScore(0);
+            Debug.Log("[GameOverUI] Score reset to 0");
+        }
+        else
+        {
+            Debug.LogWarning("[GameOverUI] ScoreHandler.instance is null, cannot reset score");
+        }
+        
         // Reset level manager to first level
         if (levelManager != null)
         {

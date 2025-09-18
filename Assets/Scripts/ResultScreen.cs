@@ -75,8 +75,19 @@ public class ResultScreen : MonoBehaviour
 
     public void RepeatLevel(){
         gameObject.SetActive(false);
-        ScoreHandler.instance.SetScore(0);
-        ScoreHandler.instance.ShowScore(true);
+        
+        // Reset score to 0 when repeating level
+        if (ScoreHandler.instance != null)
+        {
+            ScoreHandler.instance.SetScore(0);
+            ScoreHandler.instance.ShowScore(true);
+            Debug.Log("[ResultScreen] Score reset to 0 for level repeat");
+        }
+        else
+        {
+            Debug.LogWarning("[ResultScreen] ScoreHandler.instance is null, cannot reset score");
+        }
+        
         levelManager.StartCoroutine(levelManager.RepeatAfterDelay(betweenLevelDelay));
         levelButton.OnDeselect(null); 
         EventSystem.current.SetSelectedGameObject(null);
